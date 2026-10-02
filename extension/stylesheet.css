@@ -1,0 +1,11 @@
+/* SPDX-License-Identifier: GPL-3.0-or-later
+ * Colors, borders, hover and focus come from GNOME theme classes. */
+.super-v-popup { padding: 18px; border-radius: 16px; }
+.super-v-header, .super-v-tabs, .super-v-footer { spacing: 8px; }
+.super-v-title { font-size: 1.15em; font-weight: bold; }
+.super-v-list { spacing: 5px; }
+.super-v-row { spacing: 4px; }
+.super-v-item { padding: 10px 8px; text-align: left; }
+.super-v-icon { padding: 6px; min-width: 16px; }
+.super-v-empty { padding: 24px 8px; }
+.super-v-hint { font-size: 0.8em; }

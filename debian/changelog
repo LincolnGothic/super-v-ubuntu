@@ -1,0 +1,17 @@
+super-v-ubuntu (0.1.1) unstable; urgency=medium
+
+  * Add GNOME Shell 50 API compatibility for Ubuntu 26.04 Wayland.
+  * Use current widget orientation, stage event actors and stage context seat.
+  * Handle GNOME 46's unfocused stage correctly when checking paste focus.
+  * Add compatibility regression checks and retain explicit runtime status.
+
+ -- Super V Ubuntu contributors <super-v-ubuntu@users.noreply.github.com>  Thu, 01 Oct 2026 15:15:00 +0000
+
+super-v-ubuntu (0.1.0) unstable; urgency=medium
+
+  * Initial implementation for GNOME Shell 46 on Ubuntu 24.04.
+  * Add local clipboard history, Unicode 17 emoji, privacy preferences,
+    automated tests, and reproducible architecture-independent packaging.
+  * Desktop runtime verification is pending; see docs/testing.md.
+
+ -- Super V Ubuntu contributors <super-v-ubuntu@users.noreply.github.com>  Wed, 30 Sep 2026 21:53:28 +0000

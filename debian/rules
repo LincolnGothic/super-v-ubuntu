@@ -1,0 +1,16 @@
+#!/usr/bin/make -f
+# SPDX-License-Identifier: GPL-3.0-or-later
+%:
+	dh $@
+
+override_dh_auto_build:
+	true
+
+override_dh_auto_test:
+	$(MAKE) test NODE=/usr/bin/node
+
+override_dh_auto_install:
+	$(MAKE) install DESTDIR=$(CURDIR)/debian/tmp
+
+override_dh_auto_clean:
+	$(MAKE) clean

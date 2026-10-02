@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schemalist>
+  <schema id="org.gnome.shell.extensions.super-v-ubuntu" path="/org/gnome/shell/extensions/super-v-ubuntu/">
+    <key name="open-popup" type="as"><default>['&lt;Super&gt;v']</default><summary>Open clipboard and emoji picker</summary></key>
+    <key name="history-enabled" type="b"><default>true</default><summary>Capture clipboard text</summary></key>
+    <key name="history-limit" type="i"><range min="1" max="500"/><default>100</default><summary>Maximum unpinned entries</summary></key>
+    <key name="remember-history" type="b"><default>true</default><summary>Keep history and emoji recents after logout</summary></key>
+    <key name="auto-paste" type="b"><default>true</default><summary>Paste into the previously focused window</summary></key>
+    <key name="excluded-apps" type="as"><default>['org.keepassxc.KeePassXC', 'KeePassXC', 'keepass2', 'com.bitwarden.desktop', 'Bitwarden', '1Password', 'com.agilebits.onepassword', 'org.gnome.PasswordSafe', 'org.gnome.World.Secrets']</default><summary>Application IDs or WM classes to exclude</summary></key>
+    <key name="terminal-apps" type="as"><default>['org.gnome.Terminal.desktop', 'gnome-terminal-server', 'Gnome-terminal', 'org.gnome.Console.desktop', 'org.gnome.Console', 'kgx', 'kitty', 'Alacritty', 'org.wezfurlong.wezterm', 'xfce4-terminal', 'terminator', 'Tilix', 'org.gnome.Ptyxis', 'org.gnome.Ptyxis.desktop']</default><summary>Applications using Ctrl+Shift+V</summary></key>
+    <key name="paste-overrides" type="s"><default>'{}'</default><summary>JSON map of application identifiers to paste shortcuts</summary></key>
+    <key name="clear-request" type="s"><default>''</default><summary>Unique request to clear ordinary or all history</summary></key>
+  </schema>
+</schemalist>

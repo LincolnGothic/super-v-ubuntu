@@ -1,0 +1,74 @@
+# Security and privacy
+
+This extension operates inside GNOME Shell and can read clipboard text and
+send input to your applications. Enable it only if you trust the source.
+There are no runtime network calls, telemetry, cloud storage or analytics.
+Developer publishing and upstream-data maintenance scripts are explicit
+network operations; they are not installed as part of the extension.
+
+Persistent history and emoji recents are stored, unencrypted, in
+`${XDG_STATE_HOME:-$HOME/.local/state}/super-v-ubuntu/history.json`. The directory
+is mode 0700 and files are mode 0600. Atomic private replacements keep no
+backup. Symbolic links at the project state-directory path are refused, and
+symbolic links at the history-file path are removed without following them.
+An invalid JSON/version/record is treated as corrupt state and removed.
+Disk loading is bounded to 16 MiB, individual text to 16 KiB, total text to
+2 MiB, ordinary count to 500 and pins to 100. Other users cannot normally read
+this file, but your account, administrator, malware running as you and backups
+can. File permissions do not encrypt it or securely erase storage media.
+
+Capture defaults to enabled, with persistence. Pause capture to prevent future
+automatic additions. Pausing does not delete memory or disk history. Turning
+off **Remember after logout** deletes the state file after pending writes finish
+and keeps current history only in memory. The extension does not capture copies
+while it is disabled or locked; it does not sample the existing clipboard on
+startup. Disabling without turning off persistence keeps the saved history.
+
+Password-manager MIME hints `x-kde-passwordManagerHint`,
+`application/x-keepassxc`, `application/x-keepass`, `x-gtk-password` and
+`application/x-bitwarden` are rejected. Defaults also exclude common password
+manager WM classes/application IDs. Exclusions use the focused app at copy
+time and recheck after the read; that app may differ from the actual origin.
+Background copies, browser password fields, browser extensions, remote
+clipboard services and clipboard managers that strip MIME hints can defeat
+these measures. They are safeguards, not a promise that secrets cannot enter
+history. If a secret was captured, delete it and rotate it where appropriate.
+
+Automatic paste checks the exact destination window, user-session state and
+held modifiers. Each emitted key is released even on failure. Terminals can
+use Ctrl+Shift+V; configurable overrides include manual paste. A receiving
+terminal may execute pasted lines according to its own configuration; inspect
+what you choose to paste. The extension does not run copied text as commands.
+
+Emoji clipboard snapshots are bounded plain text, held only in memory and
+discarded on full clear, a new history choice, disable or lock. Nontext formats
+and password-marked data are not saved. Restore is explicit and only succeeds
+if the current clipboard still equals the selected emoji. Internal writes are
+suppressed from capture for three seconds; copying exactly the same value
+yourself during that brief window may also be ignored. No timer overwrites an
+application's pending paste.
+
+To erase all history while active, use preferences **Erase all saved items**.
+If disabled, a clear request is deferred until enabling. For immediate erasure
+without enabling, run as your desktop user:
+
+```sh
+gnome-extensions disable super-v-ubuntu@super-v-ubuntu.local
+```
+
+Log out and back in to ensure shell memory and pending writes are gone. Then:
+
+```sh
+rm -f -- "${XDG_STATE_HOME:-$HOME/.local/state}/super-v-ubuntu/history.json"
+```
+
+This does not clear the system clipboard or external backups. Settings contain
+no clipboard text; reset them separately if desired using an explicit schema
+directory, as described in `docs/development.md`. Uninstallation deliberately
+does not modify any user's state as root.
+
+For a suspected vulnerability, contact the repository owner privately through
+GitHub rather than posting clipboard contents or exploit-sensitive details in
+a public issue. Private security reporting must be enabled by the owner after
+publication; its availability has not been verified in this local checkout.
+Include version, GNOME version, reproduction steps and redacted logs.
