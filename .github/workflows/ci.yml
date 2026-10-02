@@ -24,10 +24,11 @@ jobs:
           dpkg-deb --info ../super-v-ubuntu_0.1.1_all.deb
           dpkg-deb --contents ../super-v-ubuntu_0.1.1_all.deb
           python3 scripts/audit-package.py ../super-v-ubuntu_0.1.1_all.deb
+          install -D -m 0644 ../super-v-ubuntu_0.1.1_all.deb artifacts/super-v-ubuntu_0.1.1_all.deb
       - uses: actions/upload-artifact@v4
         with:
           name: super-v-ubuntu-deb
-          path: ../super-v-ubuntu_0.1.1_all.deb
+          path: artifacts/super-v-ubuntu_0.1.1_all.deb
           if-no-files-found: error
   publish-release:
     needs: validate-build
