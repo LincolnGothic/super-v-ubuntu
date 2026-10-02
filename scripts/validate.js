@@ -8,7 +8,9 @@ assert.equal(metadata.uuid, 'super-v-ubuntu@super-v-ubuntu.local');
 assert.deepEqual(metadata['shell-version'], ['46', '50']);
 assert.equal(metadata['settings-schema'], 'org.gnome.shell.extensions.super-v-ubuntu');
 assert.deepEqual(metadata['session-modes'], ['user']);
-assert.equal(metadata['version-name'], '0.1.1');
+assert.equal(metadata['version-name'], '0.1.2');
+assert.equal(metadata.version, 3);
+assert.equal(JSON.parse(readFileSync('package.json', 'utf8')).version, metadata['version-name']);
 for (const directory of ['extension', 'tests', 'scripts']) {
     const files = readdirSync(directory, {recursive: true})
         .filter(x => x.endsWith('.js')).map(x => `${directory}/${x}`);

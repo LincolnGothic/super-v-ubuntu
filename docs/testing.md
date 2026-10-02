@@ -11,10 +11,10 @@ without an interactive shell. See `verification.md` for executed results.
 
 ```sh
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.1_all.deb
-dpkg-deb --info ../super-v-ubuntu_0.1.1_all.deb
-dpkg-deb --contents ../super-v-ubuntu_0.1.1_all.deb
-python3 scripts/audit-package.py ../super-v-ubuntu_0.1.1_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.2_all.deb
+dpkg-deb --info ../super-v-ubuntu_0.1.2_all.deb
+dpkg-deb --contents ../super-v-ubuntu_0.1.2_all.deb
+python3 scripts/audit-package.py ../super-v-ubuntu_0.1.2_all.deb
 ```
 
 The archive must contain runtime files and compiled schemas only beneath
@@ -33,7 +33,7 @@ a backup if it contains local changes.
 ```sh
 gnome-shell --version
 printf '%s\n' "$XDG_SESSION_TYPE"
-sudo apt install ./super-v-ubuntu_0.1.1_all.deb
+sudo apt install ./super-v-ubuntu_0.1.2_all.deb
 ```
 
 Log out/in, then enable and inspect it as your desktop user:
@@ -73,6 +73,14 @@ Record any custom notification bindings first; the command replaces them.
    history pollution. Reopen and restore the prior clipboard after paste has
    completed. Copy a different value before restore and verify it is preserved.
    Check missing glyphs separately from insertion failures.
+   Expect six equally sized emoji tiles per row at normal popup width and
+   fewer columns on a narrow monitor. Check a partial final row, an empty
+   Recent category and a no-match search. Up/Down should move one row,
+   Left/Right one emoji, and Enter should insert the highlighted tile. Arrow
+   navigation must stop at the top/bottom row and remain visible when crossing
+   the first 60 results. Use Tab and Shift+Tab to reach tiles and controls,
+   and verify Left/Right still edit a query after Ctrl+F. Check 100% and 200%
+   scaling, hover/focus contrast and emoji names with a screen reader.
 7. Repeat history and emoji insertion in GNOME Terminal, expecting
    Ctrl+Shift+V. Use harmless text such as `example` without newline. Do not
    use commands for this test. Repeat in Firefox's address bar and a normal

@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.1.2 — 2026-10-02
+
+Display emoji as large, centered tiles in a six-column grid instead of text
+rows, reducing the column count on narrow monitors. Preserve accessible names,
+search, categories, tones and recents. Add row/column arrow-key navigation,
+keep the focused selection visible when loading more results, and preserve
+Left/Right text editing in the search field. Clipboard history retains its
+list layout and pin/delete controls.
+
 ## 0.1.1 — 2026-10-01
 
 Add GNOME Shell 50 API compatibility for Ubuntu 26.04 Wayland, preserving the

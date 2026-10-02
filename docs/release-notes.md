@@ -1,31 +1,45 @@
-Super V Ubuntu 0.1.1 implements a GNOME Shell popup for Super+V with local
-clipboard history and a Unicode emoji picker. Clipboard features include
-deduplication, search, keyboard/mouse selection, pins, individual deletion,
-ordinary/full clear, configurable limits and private local persistence.
-Emoji 17.0 includes 3,944 fully-qualified sequences with CLDR 48 search keywords,
-categories, tones and recents. GTK4/libadwaita preferences control capture,
-persistence, automatic paste, exclusions and shortcuts.
+Super V Ubuntu 0.1.2 changes the emoji picker to a Windows-style grid: six
+large, centered emoji per row, fewer columns on narrow monitors, and clear
+hover and selection highlighting. The final partial row keeps aligned columns.
 
-Targets: Ubuntu 24.04 LTS / GNOME Shell 46 and Ubuntu 26.04 LTS / GNOME Shell 50,
-using Wayland. Release 0.1.1 adds current widget orientation, stage event-actor
-and backend seat APIs with GNOME 46 fallbacks, and fixes the older stage focus
-check. Metadata and package dependencies allow Shell 46 and 50.
-API/source checks, automated tests and
-Debian builds exist; **real GNOME Wayland GUI testing is NOT TESTED** in the
-headless development environment. GNOME 47–49 and 51+ are not declared
-supported. Treat desktop usability as pending validation.
+Up/Down move between rows and focus the grid; Left/Right then move between
+emoji. Enter inserts the selection and Ctrl+F returns to search, where
+Left/Right still move the text cursor. Navigation loads additional results
+and keeps the selected row visible. Search, categories, skin tones, recents
+and accessible emoji names are preserved. Clipboard history keeps its text
+rows, pin and delete controls.
 
-Install the attached package with `sudo apt install ./super-v-ubuntu_0.1.1_all.deb`,
-log out/in, then run `gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local`
-as your ordinary user. Read README and SECURITY.md before enabling capture.
+Targets remain Ubuntu 24.04 LTS / GNOME Shell 46 and Ubuntu 26.04 LTS /
+GNOME Shell 50, using Wayland. GNOME 47–49 and 51+ are not declared supported.
+The bundled Emoji 17.0 database contains 3,944 fully-qualified sequences with
+CLDR 48 English search keywords.
 
-Known limitations: text-only history; 16 KiB entry and 2 MiB total limits;
-password-origin identification is best effort; default automatic paste sends
-Ctrl+V or Ctrl+Shift+V for configured terminals and cannot verify reception;
-emoji restoration is explicit to avoid a clipboard-consumption race; nontext
-clipboard formats are not restored; older fonts may lack new emoji glyphs;
-English emoji annotations only. No telemetry or runtime networking.
+Validation includes automated tests, lint, schema/data checks, Debian package
+build and audit. Actual grid rendering, equal columns, partial rows, pagination,
+focus and scrolling were checked in an isolated GNOME Shell 50.1 Wayland session
+with sample data. Full desktop clipboard/paste acceptance, GNOME 46 rendering,
+light theme, HiDPI rendering and multiple monitors remain pending. See
+docs/emoji-grid-verification.md and docs/testing.md for the scope of verification.
 
-Publication script verifies successful remote CI before creating the release
-and verifies the downloaded `.deb` against SHA256SUMS. Desktop testing remains
-a separate requirement documented in docs/testing.md.
+Download the attached package and upgrade with:
+
+```sh
+sudo apt install ./super-v-ubuntu_0.1.2_all.deb
+```
+
+Log out and back in to reload the extension on Wayland. Existing users do not
+need to change their shortcut or enable the extension again. For a first
+installation, follow the README and enable it as your ordinary user:
+
+```sh
+gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
+```
+
+Read README and SECURITY.md before enabling clipboard capture. Known
+limitations remain: text-only history, 16 KiB per entry and 2 MiB total,
+best-effort password-origin identification, unverified paste reception,
+explicit restoration of the prior plain-text clipboard, font-dependent emoji
+glyphs and English annotations. No telemetry or runtime networking.
+
+The release workflow publishes only after a successful build and package
+audit, then downloads the installer and verifies it against SHA256SUMS.
