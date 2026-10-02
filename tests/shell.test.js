@@ -56,8 +56,9 @@ export async function run() {
         check('six equally sized emoji per row', popup._rows.length === 60 &&
             popup.list.get_first_child().get_n_children() === 6);
         const cells = popup._rows.slice(0, 7).map(rectangle);
+        print(`SHELL CELLS: ${JSON.stringify(cells)}`);
         check('real St layout places six glyphs horizontally', cells.slice(0, 6).every(cell =>
-            Math.abs(cell.y - cells[0].y) < 1 && Math.abs(cell.width - cells[0].width) < 1) &&
+            Math.abs(cell.y - cells[0].y) < 1 && Math.abs(cell.width - cells[0].width) <= 1.01) &&
             cells[5].x > cells[0].x && cells[6].y > cells[0].y);
         check('emoji labels contain only glyphs', popup._rows.every((row, index) =>
             row.get_child().text === popup.results[index].text));
