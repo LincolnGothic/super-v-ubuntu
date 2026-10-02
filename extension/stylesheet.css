@@ -1,11 +1,24 @@
 /* SPDX-License-Identifier: GPL-3.0-or-later
- * Colors, borders, hover and focus come from GNOME theme classes. */
+ * GNOME theme classes provide control colors and focus rings. */
 .super-v-popup { padding: 18px; border-radius: 16px; }
 .super-v-header, .super-v-tabs, .super-v-footer { spacing: 8px; }
 .super-v-title { font-size: 1.15em; font-weight: bold; }
 .super-v-list { spacing: 5px; }
 .super-v-row { spacing: 4px; }
 .super-v-item { padding: 10px 8px; text-align: left; }
+.super-v-emoji-row { spacing: 4px; }
+.super-v-emoji {
+    background-color: transparent;
+    padding: 6px;
+    min-width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 28px;
+    text-align: center;
+}
+.super-v-emoji:hover, .super-v-emoji:focus, .super-v-emoji:active {
+    background-color: rgba(128, 128, 128, 0.2);
+}
 .super-v-icon { padding: 6px; min-width: 16px; }
 .super-v-empty { padding: 24px 8px; }
 .super-v-hint { font-size: 0.8em; }

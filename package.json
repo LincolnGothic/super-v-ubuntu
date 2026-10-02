@@ -7,7 +7,7 @@
     "node": ">=18.17"
   },
   "scripts": {
-    "test": "node --experimental-vm-modules --test tests/history.test.js tests/emoji.test.js tests/settings.test.js tests/lifecycle.test.js tests/shell-compat.test.js",
+    "test": "node --experimental-vm-modules --test tests/history.test.js tests/emoji.test.js tests/settings.test.js tests/lifecycle.test.js tests/shell-compat.test.js tests/popup.test.js",
     "check": "node scripts/validate.js"
   },
   "license": "GPL-3.0-or-later"

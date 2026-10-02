@@ -23,8 +23,12 @@ before relying on this implementation.
 
 ## Screenshots
 
-Pending real-desktop verification. Add actual light/dark and HiDPI screenshots
-after the manual tests; no synthetic screenshot is presented as runtime proof.
+![Six-column emoji picker](docs/screenshots/emoji-grid.png)
+
+Actual popup rendering in an isolated GNOME Shell 50.1 Wayland session with
+sample data. This checks the grid layout, not clipboard capture or pasting into
+desktop applications. See [emoji grid checks](docs/emoji-grid-verification.md);
+the full desktop acceptance matrix remains pending.
 
 ## Install the Debian package
 
@@ -95,6 +99,13 @@ Search by name, keyword or emoji. The Category control cycles through All,
 Recent, and Unicode groups; Tone cycles through all/default and five tones.
 All includes mixed-tone sequences; individual tones match uniform variants.
 Recents are capped at 30 and follow the persistence preference.
+
+Emoji appear as large symbols in a six-column grid, with fewer columns on
+narrow monitors. Up/Down move between rows and focus the grid; Left/Right
+then move between emoji. Enter inserts the selected emoji, or click a tile.
+Use Ctrl+F to return to search, where Left/Right still move the text cursor.
+Emoji names remain available to screen readers. More results load as keyboard
+selection passes the current page, or with **Show more**.
 
 Emoji insertion saves the previous bounded plain-text clipboard in memory,
 copies the emoji, and sends the configured paste shortcut. Reopen the popup
