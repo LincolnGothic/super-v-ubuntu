@@ -118,10 +118,11 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this.connect('captured-event', (_actor, event) => {
             if (event.type() === Clutter.EventType.KEY_PRESS)
                 return this._key(event);
-            return Clutter.EVENT_PROPAGATE;
+            // A modal grab can start event propagation at this actor, skipping
+            // the stage. Coordinates still identify clicks outside the panel.
+            return this._outsideEvent(event);
         });
-        // Clicks on other Shell actors are outside this widget's event ancestry.
-        // Observe the stage, rather than waiting for the popup to receive them.
+        // Cover events delivered through the stage as well as the grab root.
         global.stage.connectObject('captured-event', (_stage, event) => this._outsideEvent(event), this);
         this.connect('opened', () => this.positionPanel());
         this._panel.connect('notify::allocation', () => this.positionPanel());

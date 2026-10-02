@@ -173,7 +173,7 @@ test('near-pointer placement clamps at screen edges and center mode resets trans
     assert.equal(popup._panel.translation_y, 0);
 });
 
-test('stage clicks on other actors dismiss the open popup; inside and closed clicks propagate', async () => {
+test('outside clicks dismiss through the stage or modal grab root; inside and closed clicks propagate', async () => {
     const {popup, stage} = await fixture();
     popup._panel.box = {};
     popup.positionPanel();
@@ -184,6 +184,12 @@ test('stage clicks on other actors dismiss the open popup; inside and closed cli
     assert.equal(stage.emit('captured-event', click([0, 0])), true);
     assert.equal(popup.closed, true);
     assert.equal(stage.emit('captured-event', click([0, 0])), false);
+    popup.showPanel();
+    popup.closed = false;
+    assert.equal(popup.emit('captured-event', click([x + 20, y + 20])), false);
+    assert.equal(popup.closed, false);
+    assert.equal(popup.emit('captured-event', click([0, 0])), true);
+    assert.equal(popup.closed, true);
 });
 
 test('emoji form six-column rows and the partial row keeps empty, unfocusable cells', async () => {

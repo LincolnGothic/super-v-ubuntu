@@ -37,8 +37,8 @@ emoji and restoration writes are suppressed from history.
 `popup.js` handles search, keyboard selection, tabs, categories, tone variants,
 pin/delete controls, bounded incremental results, and accessible labels. The
 panel inherits GNOME theme classes; CSS specifies geometry, not fixed colors.
-The stage capture handler dismisses outside clicks on any actor and is
-disconnected with the popup's lifetime. Pointer placement clamps the allocated
+Stage and modal grab-root capture handlers dismiss outside clicks by visible
+panel bounds; the stage connection ends with the popup's lifetime. Pointer placement clamps the allocated
 panel against its monitor work area; a GSettings choice restores centering.
 `core/catalog.js` provides authored text emoticons and symbols. `gifs.js` reads
 local favorites asynchronously with a byte bound, rejects symlinks and invalid

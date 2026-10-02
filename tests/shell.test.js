@@ -64,7 +64,8 @@ export async function run() {
             row.get_child().text === popup.results[index].text));
         const area = Main.layoutManager.getWorkAreaForMonitor(popup._monitor.index);
         const rect = rectangle(popup._panel);
-        print(`SHELL GEOMETRY: ${JSON.stringify({area, pointer: popup._anchor, panel: rect,
+        print(`SHELL GEOMETRY: ${JSON.stringify({area: {x: area.x, y: area.y,
+            width: area.width, height: area.height}, pointer: popup._anchor, panel: rect,
             translation: [popup._panel.translation_x, popup._panel.translation_y]})}`);
         check('near-pointer panel stays within its work area', rect.x >= area.x && rect.y >= area.y &&
             rect.x + rect.width <= area.x + area.width + 1 && rect.y + rect.height <= area.y + area.height + 1);
@@ -86,10 +87,16 @@ export async function run() {
         const monitor = popup._monitor;
         check('center setting clears pointer translation', popup._panel.translation_x === 0 &&
             Math.abs(center.x + center.width / 2 - monitor.x - monitor.width / 2) < 2);
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), center.x + 80, center.y + 72);
+        await Scripting.sleep(100);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+        await Scripting.sleep(100);
+        check('actual inside mouse click keeps the modal open', popup.state === ModalDialog.State.OPENED);
         pointer.notify_absolute_motion(GLib.get_monotonic_time(), 5, 100);
         await Scripting.sleep(100);
-        pointer.notify_button(GLib.get_monotonic_time(), 0x110, Clutter.ButtonState.PRESSED);
-        pointer.notify_button(GLib.get_monotonic_time(), 0x110, Clutter.ButtonState.RELEASED);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
         await Scripting.sleep(150);
         check('actual outside mouse click closes the modal', popup.state === ModalDialog.State.CLOSED);
         print('SHELL CHECKS COMPLETE');
