@@ -10,7 +10,8 @@ import {moveGridSelection} from '../extension/core/grid.js';
 
 const data = JSON.parse(readFileSync('extension/data/emoji.json', 'utf8')).emoji;
 
-async function fixture({count = 125, width = 1920, scale = 1} = {}) {
+async function fixture({count = 125, width = 1920, scale = 1, position = 'pointer',
+    pointer = [500, 400]} = {}) {
     let focus = null;
     class Actor {
         constructor(properties = {}) {
@@ -24,7 +25,7 @@ async function fixture({count = 125, width = 1920, scale = 1} = {}) {
             for (let index = 0; index < args.length - 1; index += 2)
                 this.connect(args[index], args[index + 1]);
         }
-        emit(signal) { return this.signals.get(signal)?.(this); }
+        emit(signal, ...args) { return this.signals.get(signal)?.(this, ...args); }
         add_child(child) { child.parent = this; this.children.push(child); }
         set_child(child) { this.children = []; this.add_child(child); }
         get_child() { return this.children[0]; }
@@ -38,6 +39,9 @@ async function fixture({count = 125, width = 1920, scale = 1} = {}) {
         set_style(style) { this.style = style; }
         has_allocation() { return Boolean(this.box); }
         get_allocation_box() { assert.ok(this.box, 'must wait for layout'); return this.box; }
+        get_transformed_position() { return [this.translation_x || 0, this.translation_y || 0]; }
+        get_transformed_size() { return [390, 600]; }
+        contains(actor) { return this === actor || this.children.some(child => child.contains(actor)); }
     }
     class BoxLayout extends Actor {
         get_layout_manager() { return {set_homogeneous: value => { this.homogeneous = value; }}; }
@@ -60,10 +64,14 @@ async function fixture({count = 125, width = 1920, scale = 1} = {}) {
         get_vadjustment() { return adjustment; }
     }
     class ModalDialog extends Actor {
-        _init() { this.contentLayout = new Actor(); this.dialogLayout = new Actor(); }
+        _init() {
+            this.contentLayout = new Actor(); this.dialogLayout = new Actor();
+            this._monitorConstraint = {};
+            this.state = 0;
+        }
         setInitialKeyFocus() {}
-        open() { return true; }
-        close() { this.closed = true; }
+        open() { this.state = 1; return true; }
+        close() { this.closed = true; this.state = 0; }
     }
     const adjustment = new Actor({value: 0, page_size: 150});
     let scrollValue = 0;
@@ -72,32 +80,106 @@ async function fixture({count = 125, width = 1920, scale = 1} = {}) {
         get: () => scrollValue,
         set: value => { scrollValue = Math.max(0, Math.min(value, adjustment.upper - adjustment.page_size)); },
     });
-    const clutter = {ActorAlign: {CENTER: 1, FILL: 0}, ModifierType: {CONTROL_MASK: 1},
-        EVENT_STOP: true, EVENT_PROPAGATE: false};
+    const clutter = {ActorAlign: {CENTER: 1, FILL: 0, START: 2}, ModifierType: {CONTROL_MASK: 1},
+        EventType: {BUTTON_PRESS: 1, KEY_PRESS: 2}, EVENT_STOP: true, EVENT_PROPAGATE: false};
     for (const key of ['Escape', 'Tab', 'ISO_Left_Tab', 'f', 'F', 'Up', 'Down', 'Left', 'Right',
         'Return', 'KP_Enter', 'Delete'])
         clutter[`KEY_${key}`] = key;
-    const st = {BoxLayout, Button: Actor, Label, Entry, ScrollView, Widget: Actor,
+    const st = {BoxLayout, Button: Actor, Label, Entry, ScrollView, Widget: Actor, Icon: Actor,
         PolicyType: {NEVER: 0, AUTOMATIC: 1}, ThemeContext: {get_for_stage: () => ({scale_factor: scale})}};
     const calls = [];
+    const stage = Object.assign(new Actor(), {get_key_focus: () => focus});
     const controller = {history: new History(), emoji: new EmojiIndex(data.slice(0, count)),
-        settings: {get_boolean: () => true}, select: (...args) => calls.push(args),
+        metadata: {'version-name': '0.1.3'},
+        settings: {get_boolean: () => true, get_string: () => position},
+        gifs: {search: () => [{path: '/tmp/wave.gif', name: 'wave.gif'}]},
+        selectGif: entry => calls.push(['gif', entry]), select: (...args) => calls.push(args),
         deleteEntry: id => calls.push(['delete', id]), pin: id => calls.push(['pin', id])};
     const module = await loadModule('extension/popup.js', {
         'gi://Clutter': {default: clutter}, 'gi://GObject': {default: {registerClass: x => x}},
         'gi://Pango': {default: {EllipsizeMode: {NONE: 0, END: 1}}},
+        'gi://Gio': {default: {FileIcon: {new: file => ({file})}, File: {new_for_path: path => path}}},
         'gi://Shell': {default: {ActionMode: {POPUP: 1}}}, 'gi://St': {default: st},
-        'resource:///org/gnome/shell/ui/modalDialog.js': {ModalDialog},
-        'resource:///org/gnome/shell/ui/main.js': {layoutManager: {focusMonitor: {width, height: 1080}}},
-    }, {stage: {get_key_focus: () => focus}});
+        'resource:///org/gnome/shell/ui/modalDialog.js': {ModalDialog, State: {OPENED: 1, OPENING: 2}},
+        'resource:///org/gnome/shell/ui/main.js': {layoutManager: {
+            focusMonitor: {x: 0, y: 0, width, height: 1080, index: 0},
+            primaryMonitor: {x: 0, y: 0, width, height: 1080, index: 0},
+            monitors: [{x: 0, y: 0, width, height: 1080, index: 0}],
+            getWorkAreaForMonitor: () => ({x: 0, y: 24, width, height: 1056}),
+        }},
+    }, {stage, get_pointer: () => pointer});
     const popup = new module.SuperVPopup();
     popup._init(controller);
     popup.showPanel();
     popup._setTab('emoji');
     const press = (key, ctrl = false) => popup._key({get_key_symbol: () => key,
         get_state: () => ctrl ? 1 : 0});
-    return {popup, controller, calls, press, adjustment, focus: () => focus};
+    return {popup, controller, calls, press, adjustment, stage, focus: () => focus};
 }
+
+test('loaded version is visible and all five tabs can be reached by keyboard', async () => {
+    const {popup, press} = await fixture();
+    assert.equal(popup._title.text, 'Super V 0.1.3');
+    for (const name of ['kaomoji', 'symbols', 'gifs', 'clipboard', 'emoji']) {
+        press('Tab', true);
+        assert.equal(popup.tab, name);
+    }
+    press('ISO_Left_Tab', true);
+    assert.equal(popup.tab, 'clipboard');
+});
+
+test('kaomoji and symbols use glyph-only grids and the character insertion path', async () => {
+    const {popup, press, calls} = await fixture();
+    popup._setTab('kaomoji');
+    assert.equal(popup.list.get_child().get_n_children(), 3);
+    assert.equal(popup._toneButton.visible, false);
+    press('Down');
+    assert.equal(popup.selected, 3);
+    press('Return');
+    assert.equal(calls[0][1], true);
+    popup._setTab('symbols');
+    popup.search.set_text('plus minus');
+    assert.equal(popup._rows[0].get_child().text, '±');
+    press('Return');
+    assert.equal(calls[1][0].text, '±');
+});
+
+test('GIF favorites render previews and dispatch binary insertion', async () => {
+    const {popup, press, calls} = await fixture();
+    popup._setTab('gifs');
+    assert.equal(popup._rows[0].get_child().gicon.file, '/tmp/wave.gif');
+    assert.equal(popup._manageGifs.visible, true);
+    assert.equal(popup._emojiControls.visible, false);
+    press('Return');
+    assert.equal(calls[0][0], 'gif');
+    assert.equal(calls[0][1].path, '/tmp/wave.gif');
+});
+
+test('near-pointer placement clamps at screen edges and center mode resets translations', async () => {
+    const {popup, controller} = await fixture({pointer: [1910, 1070]});
+    popup.dialogLayout.box = {};
+    popup.positionPanel();
+    assert.equal(popup.dialogLayout.translation_x, 1518);
+    assert.equal(popup.dialogLayout.translation_y, 458);
+    controller.settings.get_string = () => 'center';
+    popup.positionPanel();
+    assert.equal(popup.dialogLayout.x_align, 1);
+    assert.equal(popup.dialogLayout.translation_x, 0);
+    assert.equal(popup.dialogLayout.translation_y, 0);
+});
+
+test('stage clicks on other actors dismiss the open popup; inside and closed clicks propagate', async () => {
+    const {popup, stage} = await fixture();
+    popup.dialogLayout.box = {};
+    popup.positionPanel();
+    const [x, y] = popup.dialogLayout.get_transformed_position();
+    const click = coords => ({type: () => 1, get_coords: () => coords});
+    assert.equal(stage.emit('captured-event', click([x + 20, y + 20])), false);
+    assert.equal(popup.closed, undefined);
+    assert.equal(stage.emit('captured-event', click([0, 0])), true);
+    assert.equal(popup.closed, true);
+    assert.equal(stage.emit('captured-event', click([0, 0])), false);
+});
 
 test('emoji form six-column rows and the partial row keeps empty, unfocusable cells', async () => {
     const {popup} = await fixture({count: 8});

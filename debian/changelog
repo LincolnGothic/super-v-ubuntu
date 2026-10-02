@@ -1,3 +1,12 @@
+super-v-ubuntu (0.1.3) unstable; urgency=medium
+
+  * Show the picker near the pointer with a centered preference.
+  * Dismiss on stage-level outside clicks and show the loaded version.
+  * Add kaomoji, symbols and local GIF favorites with bounded image reads.
+  * Preserve the responsive emoji grid and add interaction regression tests.
+
+ -- Super V Ubuntu contributors <super-v-ubuntu@users.noreply.github.com>  Fri, 02 Oct 2026 12:00:00 +0000
+
 super-v-ubuntu (0.1.2) unstable; urgency=medium
 
   * Display emoji in a six-column grid with responsive column counts.

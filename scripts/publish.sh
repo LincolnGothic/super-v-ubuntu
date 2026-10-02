@@ -45,21 +45,21 @@ trap 'rm -rf "$task_temp"' EXIT HUP INT TERM
 git clone --quiet --no-local "$task_root" "$task_temp/source"
 git -C "$task_temp/source" checkout --quiet "$task_sha"
 (cd "$task_temp/source" && make package)
-lintian --fail-on error,warning "$task_temp/super-v-ubuntu_0.1.2_all.deb"
+lintian --fail-on error,warning "$task_temp/super-v-ubuntu_0.1.3_all.deb"
 mkdir -p "$task_root/artifacts"
-cp "$task_temp/super-v-ubuntu_0.1.2_all.deb" "$task_root/artifacts/"
-(cd "$task_root/artifacts" && sha256sum super-v-ubuntu_0.1.2_all.deb > SHA256SUMS)
-if git rev-parse v0.1.2 >/dev/null 2>&1; then
-    test "$(git rev-list -n 1 v0.1.2)" = "$task_sha" || { printf '%s\n' 'Existing v0.1.2 tag differs from main.' >&2; exit 1; }
+cp "$task_temp/super-v-ubuntu_0.1.3_all.deb" "$task_root/artifacts/"
+(cd "$task_root/artifacts" && sha256sum super-v-ubuntu_0.1.3_all.deb > SHA256SUMS)
+if git rev-parse v0.1.3 >/dev/null 2>&1; then
+    test "$(git rev-list -n 1 v0.1.3)" = "$task_sha" || { printf '%s\n' 'Existing v0.1.3 tag differs from main.' >&2; exit 1; }
 else
-    git tag -a v0.1.2 -m 'Super V Ubuntu 0.1.2'
+    git tag -a v0.1.3 -m 'Super V Ubuntu 0.1.3'
 fi
-git push origin v0.1.2
-gh release create v0.1.2 artifacts/super-v-ubuntu_0.1.2_all.deb artifacts/SHA256SUMS \
-    --repo "$task_repo" --verify-tag --title 'Super V Ubuntu 0.1.2' --notes-file docs/release-notes.md
-gh release view v0.1.2 --repo "$task_repo" --json url,isDraft,assets,tagName
+git push origin v0.1.3
+gh release create v0.1.3 artifacts/super-v-ubuntu_0.1.3_all.deb artifacts/SHA256SUMS \
+    --repo "$task_repo" --verify-tag --title 'Super V Ubuntu 0.1.3' --notes-file docs/release-notes.md
+gh release view v0.1.3 --repo "$task_repo" --json url,isDraft,assets,tagName
 mkdir "$task_temp/verify"
-gh release download v0.1.2 --repo "$task_repo" --dir "$task_temp/verify" --pattern '*.deb' --pattern SHA256SUMS
+gh release download v0.1.3 --repo "$task_repo" --dir "$task_temp/verify" --pattern '*.deb' --pattern SHA256SUMS
 (cd "$task_temp/verify" && sha256sum --check SHA256SUMS)
 git status --short
 git log -1 --format='%H %s'

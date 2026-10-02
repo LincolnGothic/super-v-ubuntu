@@ -1,45 +1,32 @@
-Super V Ubuntu 0.1.2 changes the emoji picker to a Windows-style grid: six
-large, centered emoji per row, fewer columns on narrow monitors, and clear
-hover and selection highlighting. The final partial row keeps aligned columns.
+Super V Ubuntu 0.1.3 keeps the six-column, glyph-only emoji grid and adds
+near-pointer placement (with a centered preference), reliable click-away
+dismissal, and a visible loaded-version label. The picker also includes
+searchable kaomoji, symbols, and local GIF favorites.
 
-Up/Down move between rows and focus the grid; Left/Right then move between
-emoji. Enter inserts the selection and Ctrl+F returns to search, where
-Left/Right still move the text cursor. Navigation loads additional results
-and keeps the selected row visible. Search, categories, skin tones, recents
-and accessible emoji names are preserved. Clipboard history keeps its text
-rows, pin and delete controls.
+Click the input field, then press Super+V. In Settings, choose Picker position
+for near-pointer or centered placement. Clicking an input alone does not open
+the picker. Exact caret placement across all applications is unavailable;
+near-pointer placement uses the mouse position when the shortcut is pressed.
 
-Targets remain Ubuntu 24.04 LTS / GNOME Shell 46 and Ubuntu 26.04 LTS /
-GNOME Shell 50, using Wayland. GNOME 47–49 and 51+ are not declared supported.
-The bundled Emoji 17.0 database contains 3,944 fully-qualified sequences with
-CLDR 48 English search keywords.
+Add local .gif files in Settings → GIF favorites. The panel previews the first
+frame and copies the original image/gif bytes. The destination must accept
+images, and animation support varies. Up to 40 favorites are supported, each
+at most 8 MiB and 2048 × 2048 pixels. No online GIF search or runtime networking.
 
-Validation includes automated tests, lint, schema/data checks, Debian package
-build and audit. Actual grid rendering, equal columns, partial rows, pagination,
-focus and scrolling were checked in an isolated GNOME Shell 50.1 Wayland session
-with sample data. Full desktop clipboard/paste acceptance, GNOME 46 rendering,
-light theme, HiDPI rendering and multiple monitors remain pending. See
-docs/emoji-grid-verification.md and docs/testing.md for the scope of verification.
+The release workflow gates publication on syntax, metadata, strict schemas,
+deterministic Unicode data, ESLint, 123 Node checks, 25 GJS checks, Debian
+package build/audit and lintian. An isolated GNOME 46 Wayland automation job
+also checks actual St grid layout, placement and outside mouse dismissal.
+Full desktop capture/paste acceptance on GNOME 46 and 50 remains pending.
 
-Download the attached package and upgrade with:
+Upgrade on your Ubuntu desktop:
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.2_all.deb
+sudo apt install ./super-v-ubuntu_0.1.3_all.deb
 ```
 
-Log out and back in to reload the extension on Wayland. Existing users do not
-need to change their shortcut or enable the extension again. For a first
-installation, follow the README and enable it as your ordinary user:
-
-```sh
-gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
-```
-
-Read README and SECURITY.md before enabling clipboard capture. Known
-limitations remain: text-only history, 16 KiB per entry and 2 MiB total,
-best-effort password-origin identification, unverified paste reception,
-explicit restoration of the prior plain-text clipboard, font-dependent emoji
-glyphs and English annotations. No telemetry or runtime networking.
-
-The release workflow publishes only after a successful build and package
-audit, then downloads the installer and verifies it against SHA256SUMS.
+Log out and back in. The header should read Super V 0.1.3. If it does not,
+inspect `gnome-extensions info super-v-ubuntu@super-v-ubuntu.local`: a copy in
+~/.local/share/gnome-shell/extensions overrides the system package. Back up and
+move that UUID directory out of the extensions folder, then log out/in again.
+History is retained by upgrades; settings and GIF paths stay local.

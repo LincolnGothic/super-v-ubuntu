@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.3 — 2026-10-02
+
+Open the picker near the mouse pointer by default, with a centered option in
+Settings. Clamp it within the monitor work area. Dismiss on an outside click
+even when another Shell actor receives the event. Show the loaded version in
+the header to diagnose stale user-local extension copies. Keep the six-column,
+glyph-only emoji grid introduced in v0.1.2.
+
+Add searchable kaomoji and symbol grids with categories, and local GIF
+favorites managed through a file chooser in Settings. Preview the first frame
+and copy image/gif bytes for apps that accept images. GIFs are limited to 40
+favorites, 8 MiB per file and 2048 × 2048 pixels. No online GIF service or runtime
+network access. Add regression coverage for all new interactions and GIF reads.
+
 ## 0.1.2 — 2026-10-02
 
 Display emoji as large, centered tiles in a six-column grid instead of text

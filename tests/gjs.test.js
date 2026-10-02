@@ -7,6 +7,7 @@ import System from 'system';
 import {History} from '../extension/core/history.js';
 import {EmojiIndex} from '../extension/core/emoji.js';
 import {StateStore} from '../extension/storage.js';
+import {GifLibrary} from '../extension/gifs.js';
 
 let passed = 0;
 function check(name, condition) {
@@ -58,7 +59,9 @@ async function run() {
     const [ok, key, mods] = Gtk.accelerator_parse('<Super>v');
     check('GTK4 shortcut API', ok && Gtk.accelerator_valid(key, mods));
     check('libadwaita preference APIs', typeof Adw.SpinRow.new_with_range === 'function' &&
-        Boolean(Adw.SwitchRow) && Boolean(Adw.EntryRow));
+        Boolean(Adw.SwitchRow) && Boolean(Adw.EntryRow) && Boolean(Adw.ComboRow));
+    check('GTK4 GIF file chooser APIs', Boolean(Gtk.FileDialog) &&
+        typeof Gtk.FileDialog.prototype.open_multiple === 'function' && Boolean(Gtk.StringList));
     const schemaSource = Gio.SettingsSchemaSource.new_from_directory(
         GLib.build_filenamev([GLib.get_current_dir(), 'extension/schemas']),
         Gio.SettingsSchemaSource.get_default(), false);
@@ -67,6 +70,27 @@ async function run() {
     check('GSettings default shortcut and limit', settings.get_int('history-limit') === 100 &&
         settings.get_strv('open-popup')[0] === '<Super>v');
     check('GSettings rejects out-of-range limits', !settings.set_int('history-limit', 501));
+    check('GSettings pointer position default', settings.get_string('popup-position') === 'pointer');
+    check('GSettings center position option', settings.set_string('popup-position', 'center'));
+    check('GSettings rejects unknown position', !settings.set_string('popup-position', 'unknown'));
+    const gifFile = Gio.File.new_for_path(GLib.build_filenamev([base, 'wave.gif']));
+    const gifBytes = GLib.base64_decode('R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==');
+    gifFile.replace_contents(gifBytes, null, false, Gio.FileCreateFlags.PRIVATE, null);
+    settings.set_strv('gif-files', [gifFile.get_path()]);
+    const library = new GifLibrary(settings);
+    check('GIF filename search', library.search('wave').length === 1 && library.search('missing').length === 0);
+    check('Gio asynchronous GIF round trip', (await library.read(library.search()[0])).length === gifBytes.length);
+    const gifLink = Gio.File.new_for_path(GLib.build_filenamev([base, 'link.gif']));
+    gifLink.make_symbolic_link(gifFile.get_path(), null);
+    let linkRejected = false;
+    try { await library.read({path: gifLink.get_path()}); } catch { linkRejected = true; }
+    check('GIF symlink is rejected', linkRejected);
+    gifFile.replace_contents('invalid-gif', null, false, Gio.FileCreateFlags.PRIVATE, null);
+    let invalidRejected = false;
+    try { await library.read({path: gifFile.get_path()}); } catch { invalidRejected = true; }
+    check('Invalid local GIF is rejected', invalidRejected);
+    gifLink.delete(null);
+    gifFile.delete(null);
     const file = Gio.File.new_for_path('extension/data/emoji.json');
     const data = JSON.parse(new TextDecoder().decode(file.load_contents(null)[1]));
     const emoji = new EmojiIndex(data.emoji);

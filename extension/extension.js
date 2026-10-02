@@ -11,6 +11,7 @@ import {StateStore} from './storage.js';
 import {ClipboardMonitor} from './clipboard.js';
 import {PasteBackend} from './paste.js';
 import {SuperVPopup} from './popup.js';
+import {GifLibrary} from './gifs.js';
 
 export default class SuperVExtension extends Extension {
     enable() {
@@ -20,6 +21,7 @@ export default class SuperVExtension extends Extension {
         this._ready = false;
         this._selectionEpoch = 0;
         this.settings = this.getSettings();
+        this.gifs = new GifLibrary(this.settings);
         this.history = new History(this.settings.get_int('history-limit'));
         this.pendingRestore = null;
         this._target = null;
@@ -189,6 +191,26 @@ export default class SuperVExtension extends Extension {
         this.popup.refresh();
     }
 
+    async selectGif(entry) {
+        const epoch = this._epoch;
+        const selectionEpoch = ++this._selectionEpoch;
+        const generation = this.clipboard.generation;
+        const target = this._target;
+        this.popup.close();
+        try {
+            const bytes = await this.gifs.read(entry, this._stateCancellable);
+            if (!this._active || epoch !== this._epoch || selectionEpoch !== this._selectionEpoch ||
+                generation !== this.clipboard.generation)
+                return;
+            this.pendingRestore = null;
+            this.clipboard.writeGif(bytes);
+            this.pasteBackend.paste(target);
+        } catch {
+            if (this._active && epoch === this._epoch)
+                Main.notify('Super V', 'Could not read that GIF. Re-add it in Settings or choose another file.');
+        }
+    }
+
     _settingsChanged(key) {
         if (key === 'history-limit') {
             this.history.setLimit(this.settings.get_int(key));
@@ -211,6 +233,10 @@ export default class SuperVExtension extends Extension {
             }
         } else if (key === 'auto-paste') {
             this.pasteBackend?.cancel();
+        } else if (key === 'gif-files') {
+            this.popup?.refresh();
+        } else if (key === 'popup-position') {
+            this.popup?.positionPanel();
         }
     }
 
@@ -231,7 +257,7 @@ export default class SuperVExtension extends Extension {
         if (this.emoji && this._ready)
             this.store?.save(this.history.toJSON(this.emoji.recent));
         this.popup = this.clipboard = this.pasteBackend = this.settings = null;
-        this.history = this.emoji = this.store = this.pendingRestore = this._target = null;
+        this.history = this.emoji = this.store = this.pendingRestore = this._target = this.gifs = null;
         this._stateCancellable = null;
     }
 }

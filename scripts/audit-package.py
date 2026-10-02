@@ -13,7 +13,8 @@ prefix = './usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local
 with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
     files = {x.name: x for x in tar.getmembers() if x.isfile()}
     for relative in ['extension.js', 'prefs.js', 'metadata.json', 'stylesheet.css', 'shell-compat.js',
-                     'core/history.js', 'data/emoji.json', 'data/LICENSE.txt',
+                     'core/history.js', 'core/catalog.js', 'core/placement.js', 'core/gif.js',
+                     'gifs.js', 'data/emoji.json', 'data/LICENSE.txt',
                      'schemas/org.gnome.shell.extensions.super-v-ubuntu.gschema.xml',
                      'schemas/gschemas.compiled']:
         assert prefix + relative in files, f'Missing {relative}'
@@ -21,12 +22,12 @@ with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
     assert not any('history.json' in name or 'node_modules' in name for name in files)
     metadata = json.load(tar.extractfile(prefix + 'metadata.json'))
     assert metadata['shell-version'] == ['46', '50'], 'Incorrect Shell compatibility'
-    assert metadata['version-name'] == '0.1.2' and metadata['version'] == 3
+    assert metadata['version-name'] == '0.1.3' and metadata['version'] == 4
     for entry in files.values():
         assert entry.uid == 0 and entry.gid == 0, 'Incorrect package ownership'
         assert not entry.mode & 0o022, 'Group/world writable file'
 control = subprocess.check_output(['dpkg-deb', '-f', str(deb), 'Architecture', 'Version'], text=True)
-assert 'all' in control and '0.1.2' in control
+assert 'all' in control and '0.1.3' in control
 dependencies = subprocess.check_output(['dpkg-deb', '-f', str(deb), 'Depends'], text=True)
 for clause in ['gnome-shell (>= 46~)', 'gnome-shell (<< 47~) | gnome-shell (>= 50~)',
                'gnome-shell (<< 51~)']:

@@ -33,7 +33,10 @@ function clipboardFixture() {
     const glib = {PRIORITY_DEFAULT: 0, SOURCE_REMOVE: false, get_monotonic_time: () => 1_000_000,
         timeout_add(priority, time, callback) { const id = ++counter; timers.set(id, callback); return id; },
         source_remove(id) { timers.delete(id); }};
-    const clipboard = {set_text(type, text) {
+    const binary = [];
+    glib.Bytes = class { constructor(bytes) { this.bytes = bytes; } };
+    const clipboard = {set_content(type, mime, bytes) { binary.push({type, mime, bytes: bytes.bytes}); },
+        set_text(type, text) {
         changed?.(selection, 1);
         finish(text);
     }};
@@ -46,7 +49,7 @@ function clipboardFixture() {
         p.output.data = new TextEncoder().encode(text).slice(0, p.size);
         p.callback(selection, {});
     }
-    return {selection, values, settings, captured, pending, timers, finish,
+    return {selection, values, settings, captured, binary, pending, timers, finish,
         event: type => changed?.(selection, type),
         mocks: {'gi://Gio': {default: gio}, 'gi://GLib': {default: glib},
             'gi://Meta': {default: {SelectionType: {SELECTION_CLIPBOARD: 1}}},
@@ -132,6 +135,20 @@ test('own emoji/restore writes do not pollute history', async () => {
     await settle();
     m.write('saved');
     await settle();
+    assert.deepEqual(f.captured, []);
+    m.destroy();
+});
+test('GIF clipboard writes use image/gif bytes and reject non-GIF data', async () => {
+    const f = clipboardFixture();
+    const m = await monitor(f);
+    const bytes = new Uint8Array(Buffer.from('R0lGODlhAQABAIAAAAAAAP///ywAAAAAAQABAAACAUwAOw==', 'base64'));
+    m.writeGif(bytes);
+    assert.deepEqual(f.binary, [{type: 1, mime: 'image/gif', bytes}]);
+    assert.throws(() => m.writeGif(new Uint8Array([1, 2, 3])));
+    f.selection.mimes = ['image/gif'];
+    f.event(1);
+    await settle();
+    assert.equal(f.pending.length, 0);
     assert.deepEqual(f.captured, []);
     m.destroy();
 });
@@ -271,6 +288,7 @@ async function controller() {
         [mockPath('clipboard.js')]: {ClipboardMonitor: class {}},
         [mockPath('paste.js')]: {PasteBackend: class {}},
         [mockPath('popup.js')]: {SuperVPopup: class {}},
+        [mockPath('gifs.js')]: {GifLibrary: class {}},
     };
     const module = await loadModule('extension/extension.js', mocks);
     const c = new module.default();
@@ -287,7 +305,9 @@ async function controller() {
     c.popup = {close() {}, refresh() {}};
     const writes = [];
     const pastes = [];
-    c.clipboard = {generation: 1, readText: async () => 'old', write: x => writes.push(x)};
+    c.clipboard = {generation: 1, readText: async () => 'old', write: x => writes.push(x),
+        writeGif: x => writes.push(x)};
+    c.gifs = {read: async () => new Uint8Array([1, 2, 3])};
     c.pasteBackend = {paste: x => pastes.push(x)};
     return {c, writes, pastes};
 }
@@ -338,4 +358,45 @@ test('history choice promotes selected entry and clears old restoration', async 
     assert.equal(c.pendingRestore, null);
     assert.deepEqual(writes, ['A']);
     assert.equal(pastes[0], c._target);
+});
+test('symbol and kaomoji insertion preserves prior text without adding clipboard history', async () => {
+    const {c, writes} = await controller();
+    await c.select({text: '±'}, true);
+    assert.deepEqual(writes, ['±']);
+    assert.equal(c.pendingRestore.previous, 'old');
+    assert.equal(c.emoji.recent.length, 0);
+    assert.equal(c.history.entries.length, 0);
+});
+test('GIF selection copies binary data and uses the original paste target', async () => {
+    const {c, writes, pastes} = await controller();
+    c.pendingRestore = {previous: 'old', emoji: '😀'};
+    await c.selectGif({path: '/tmp/wave.gif'});
+    assert.deepEqual(writes, [new Uint8Array([1, 2, 3])]);
+    assert.deepEqual(pastes, [c._target]);
+    assert.equal(c.pendingRestore, null);
+    assert.equal(c.history.entries.length, 0);
+});
+for (const change of ['clipboard', 'panel', 'disable']) {
+    test(`GIF selection aborts when ${change} changes during its asynchronous read`, async () => {
+        const {c, writes, pastes} = await controller();
+        c.gifs.read = async () => {
+            if (change === 'clipboard')
+                c.clipboard.generation++;
+            else if (change === 'panel')
+                c._selectionEpoch++;
+            else
+                c._active = false;
+            return new Uint8Array([1, 2, 3]);
+        };
+        await c.selectGif({path: '/tmp/wave.gif'});
+        assert.deepEqual(writes, []);
+        assert.deepEqual(pastes, []);
+    });
+}
+test('unreadable GIF leaves the clipboard and paste target untouched', async () => {
+    const {c, writes, pastes} = await controller();
+    c.gifs.read = async () => { throw new Error('Missing file'); };
+    await c.selectGif({path: '/tmp/missing.gif'});
+    assert.deepEqual(writes, []);
+    assert.deepEqual(pastes, []);
 });

@@ -4,6 +4,7 @@ import GLib from 'gi://GLib';
 import Meta from 'gi://Meta';
 import St from 'gi://St';
 import {MAX_TEXT_BYTES, matchesApplication} from './core/settings.js';
+import {validateGif} from './core/gif.js';
 
 const selectionType = Meta.SelectionType.SELECTION_CLIPBOARD;
 const sensitive = ['x-kde-passwordmanagerhint', 'application/x-keepassxc',
@@ -111,6 +112,11 @@ export class ClipboardMonitor {
                 this._ownWrites.delete(this._ownWrites.keys().next().value);
         }
         this.clipboard.set_text(St.ClipboardType.CLIPBOARD, text);
+    }
+
+    writeGif(bytes) {
+        validateGif(bytes);
+        this.clipboard.set_content(St.ClipboardType.CLIPBOARD, 'image/gif', new GLib.Bytes(bytes));
     }
 
     destroy() {

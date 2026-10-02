@@ -1,13 +1,16 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
+import Gio from 'gi://Gio';
 import Pango from 'gi://Pango';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
-import {getEventActor, verticalBoxProperties} from './shell-compat.js';
+import {getEventActor, verticalBoxProperties, horizontalBoxProperties} from './shell-compat.js';
 import {moveGridSelection} from './core/grid.js';
+import {CatalogIndex, kaomoji, symbols} from './core/catalog.js';
+import {placeNearPointer, pointInRect} from './core/placement.js';
 
 function button(label, action, style = 'button') {
     const actor = new St.Button({label, style_class: style,
@@ -30,19 +33,30 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this.pageSize = 60;
         this._emojiColumns = 6;
         this._visibleCount = this.pageSize;
-        const header = new St.BoxLayout({style_class: 'super-v-header', x_expand: true});
-        header.add_child(new St.Label({text: 'Super V', style_class: 'super-v-title',
-            x_expand: true, y_align: Clutter.ActorAlign.CENTER}));
+        this.catalogs = {kaomoji: new CatalogIndex(kaomoji), symbols: new CatalogIndex(symbols)};
+        const horizontal = horizontalBoxProperties(St.BoxLayout, Clutter);
+        const header = new St.BoxLayout({...horizontal, style_class: 'super-v-header', x_expand: true});
+        this._title = new St.Label({text: `Super V ${controller.metadata?.['version-name'] ?? ''}`.trim(),
+            style_class: 'super-v-title',
+            x_expand: true, y_align: Clutter.ActorAlign.CENTER});
+        header.add_child(this._title);
         header.add_child(button('Settings', () => {
             this.close();
             controller.openPreferences();
         }));
         this.contentLayout.add_child(header);
-        const tabs = new St.BoxLayout({style_class: 'super-v-tabs'});
+        const tabs = new St.BoxLayout({...horizontal, style_class: 'super-v-tabs'});
         this._clipboardTab = button('Clipboard', () => this._setTab('clipboard'));
         this._emojiTab = button('Emoji', () => this._setTab('emoji'));
-        tabs.add_child(this._clipboardTab);
-        tabs.add_child(this._emojiTab);
+        this._tabs = new Map([['clipboard', this._clipboardTab], ['emoji', this._emojiTab]]);
+        for (const [name, label, accessible] of [['kaomoji', ';-)', 'Kaomoji and text emoticons'],
+            ['symbols', 'Ω', 'Symbols'], ['gifs', 'GIF', 'GIF favorites']]) {
+            const actor = button(label, () => this._setTab(name));
+            actor.accessible_name = accessible;
+            this._tabs.set(name, actor);
+        }
+        for (const actor of this._tabs.values())
+            tabs.add_child(actor);
         this.contentLayout.add_child(tabs);
         this.search = new St.Entry({hint_text: 'Search clipboard', can_focus: true,
             x_expand: true, style_class: 'search-entry', accessible_name: 'Search'});
@@ -55,7 +69,8 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         const vertical = verticalBoxProperties(St.BoxLayout, Clutter);
         this._emojiControls = new St.BoxLayout({...vertical, style_class: 'super-v-tabs'});
         this._groupButton = button('Category: All', () => {
-            const groups = ['All', 'Recent', ...controller.emoji.groups];
+            const groups = this.tab === 'emoji' ? ['All', 'Recent', ...controller.emoji.groups]
+                : ['All', ...this.catalogs[this.tab].groups];
             this.group = groups[(groups.indexOf(this.group) + 1) % groups.length];
             this.selected = 0;
             this._visibleCount = this.pageSize;
@@ -81,11 +96,16 @@ class SuperVPopup extends ModalDialog.ModalDialog {
             'notify::upper', () => this._scrollToSelection(),
             'notify::page-size', () => this._scrollToSelection(), this);
         this.contentLayout.add_child(this.scroll);
-        const footer = new St.BoxLayout({style_class: 'super-v-footer'});
+        const footer = new St.BoxLayout({...horizontal, style_class: 'super-v-footer'});
         this._clear = button('Clear unpinned', () => controller.clear(false));
         this._restore = button('Restore clipboard', () => controller.restoreClipboard());
         footer.add_child(this._clear);
         footer.add_child(this._restore);
+        this._manageGifs = button('Add / manage GIFs', () => {
+            this.close();
+            controller.openPreferences();
+        });
+        footer.add_child(this._manageGifs);
         this.contentLayout.add_child(footer);
         this._hint = new St.Label({text: '↑↓ Select · Enter Paste · Esc Close · Ctrl+Tab Switch',
             style_class: 'super-v-hint'});
@@ -95,15 +115,13 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this.connect('captured-event', (_actor, event) => {
             if (event.type() === Clutter.EventType.KEY_PRESS)
                 return this._key(event);
-            if (event.type() === Clutter.EventType.BUTTON_PRESS) {
-                const actor = getEventActor(global.stage, event);
-                if (!actor || !this.dialogLayout.contains(actor)) {
-                    this.close();
-                    return Clutter.EVENT_STOP;
-                }
-            }
             return Clutter.EVENT_PROPAGATE;
         });
+        // Clicks on other Shell actors are outside this widget's event ancestry.
+        // Observe the stage, rather than waiting for the popup to receive them.
+        global.stage.connectObject('captured-event', (_stage, event) => this._outsideEvent(event), this);
+        this.connect('opened', () => this.positionPanel());
+        this.dialogLayout.connect('notify::allocation', () => this.positionPanel());
     }
 
     showPanel() {
@@ -111,7 +129,13 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this.selected = 0;
         this._visibleCount = this.pageSize;
         this.search.set_text('');
-        const monitor = Main.layoutManager.focusMonitor ?? Main.layoutManager.primaryMonitor;
+        this._anchor = global.get_pointer().slice(0, 2);
+        this._positionMode = this.controller.settings.get_string('popup-position');
+        const monitor = this._positionMode === 'center'
+            ? Main.layoutManager.focusMonitor ?? Main.layoutManager.primaryMonitor
+            : Main.layoutManager.monitors.find(m => pointInRect(this._anchor, [m.x, m.y], [m.width, m.height]))
+                ?? Main.layoutManager.primaryMonitor;
+        this._monitor = monitor;
         const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
         const height = Math.max(160, Math.min(330, monitor.height / scale - 230));
         const width = Math.max(220, Math.min(390, monitor.width / scale - 48));
@@ -121,13 +145,51 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this.dialogLayout.set_style(`width: ${width}px;`);
         this.refresh();
         const opened = this.open();
-        if (opened)
+        if (opened) {
+            this._monitorConstraint.index = monitor.index;
+            this.positionPanel();
             this.search.grab_key_focus();
+        }
         return opened;
+    }
+
+    positionPanel() {
+        if (!this._monitor)
+            return;
+        const centered = this.controller.settings.get_string('popup-position') === 'center';
+        this.dialogLayout.x_align = centered ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START;
+        this.dialogLayout.y_align = centered ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START;
+        if (centered) {
+            this.dialogLayout.translation_x = 0;
+            this.dialogLayout.translation_y = 0;
+        } else if (this.dialogLayout.has_allocation()) {
+            const area = Main.layoutManager.getWorkAreaForMonitor(this._monitor.index);
+            const size = this.dialogLayout.get_transformed_size();
+            const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+            const position = placeNearPointer(this._anchor, area, size, 12 * scale);
+            this.dialogLayout.translation_x = position.x - this._monitor.x;
+            this.dialogLayout.translation_y = position.y - this._monitor.y;
+        }
+    }
+
+    _outsideEvent(event) {
+        if (![ModalDialog.State.OPENED, ModalDialog.State.OPENING].includes(this.state) ||
+            event.type() !== Clutter.EventType.BUTTON_PRESS)
+            return Clutter.EVENT_PROPAGATE;
+        const inside = this.dialogLayout.has_allocation()
+            ? pointInRect(event.get_coords(), this.dialogLayout.get_transformed_position(),
+                this.dialogLayout.get_transformed_size())
+            : Boolean(getEventActor(global.stage, event) &&
+                this.dialogLayout.contains(getEventActor(global.stage, event)));
+        if (inside)
+            return Clutter.EVENT_PROPAGATE;
+        this.close();
+        return Clutter.EVENT_STOP;
     }
 
     _setTab(tab) {
         this.tab = tab;
+        this.group = 'All';
         this.selected = 0;
         this._visibleCount = this.pageSize;
         this.search.set_text('');
@@ -138,15 +200,23 @@ class SuperVPopup extends ModalDialog.ModalDialog {
     refresh() {
         this.list.destroy_all_children();
         const clipboard = this.tab === 'clipboard';
-        this._emojiControls.visible = !clipboard;
+        const gif = this.tab === 'gifs';
+        const emoji = this.tab === 'emoji';
+        const columns = this.tab === 'kaomoji' ? Math.min(3, this._emojiColumns)
+            : gif ? Math.min(3, this._emojiColumns) : this._emojiColumns;
+        this._emojiControls.visible = !clipboard && !gif;
+        this._toneButton.visible = emoji;
         this._clear.visible = clipboard;
+        this._manageGifs.visible = gif;
         this._restore.visible = Boolean(this.controller.pendingRestore);
         this._groupButton.label = `Category: ${this.group}`;
         this._toneButton.label = `Tone: ${this.tone}`;
-        this.search.hint_text = clipboard ? 'Search clipboard' : 'Search emoji by name or keyword';
+        this.search.hint_text = clipboard ? 'Search clipboard' : gif ? 'Search GIF filenames'
+            : emoji ? 'Search emoji' : this.tab === 'kaomoji' ? 'Search kaomoji' : 'Search symbols';
         this._hint.text = clipboard ? '↑↓ Select · Enter Paste · Esc Close · Ctrl+Tab Switch'
             : '↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close';
-        for (const [actor, active] of [[this._clipboardTab, clipboard], [this._emojiTab, !clipboard]]) {
+        for (const [name, actor] of this._tabs) {
+            const active = name === this.tab;
             if (active)
                 actor.add_style_pseudo_class('checked');
             else
@@ -154,22 +224,26 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         }
         const query = this.search.get_text();
         this.results = clipboard ? this.controller.history.search(query)
-            : this.controller.emoji.search(query, this.group, this.tone);
+            : gif ? this.controller.gifs.search(query)
+                : emoji ? this.controller.emoji.search(query, this.group, this.tone)
+                    : this.catalogs[this.tab].search(query, this.group);
         this.selected = Math.max(0, Math.min(this.selected, this.results.length - 1));
         this._rows = [];
         if (!this.results.length) {
             const message = query ? 'No matching items.' : clipboard
                 ? this.controller.settings.get_boolean('history-enabled')
                     ? 'Copy some text to start your history.' : 'History is paused. Enable it in Settings.'
-                : this.group === 'Recent' ? 'Your recently used emoji will appear here.' : 'No emoji in this filter.';
+                : gif ? 'Add GIF files in Settings. GIF insertion requires an app that accepts images.'
+                    : this.group === 'Recent' ? 'Your recently used emoji will appear here.' : 'No items in this filter.';
             const label = new St.Label({text: message, style_class: 'super-v-empty'});
             label.clutter_text.line_wrap = true;
             this.list.add_child(label);
         }
         let row;
         for (const [index, entry] of this.results.slice(0, this._visibleCount).entries()) {
-            if (clipboard || index % this._emojiColumns === 0) {
-                row = new St.BoxLayout({style_class: clipboard ? 'super-v-row' : 'super-v-emoji-row',
+            if (clipboard || index % columns === 0) {
+                row = new St.BoxLayout({...horizontalBoxProperties(St.BoxLayout, Clutter),
+                    style_class: clipboard ? 'super-v-row' : 'super-v-emoji-row',
                     x_expand: true});
                 if (!clipboard)
                     row.get_layout_manager().set_homogeneous(true);
@@ -181,16 +255,19 @@ class SuperVPopup extends ModalDialog.ModalDialog {
                 this.list.add_child(row);
             }
             const select = button('', () => this._activate(index),
-                clipboard ? 'button super-v-item' : 'button super-v-emoji');
+                clipboard ? 'button super-v-item' : gif ? 'button super-v-gif'
+                    : this.tab === 'kaomoji' ? 'button super-v-kaomoji' : 'button super-v-emoji');
             select.x_expand = true;
-            const text = entry.text;
+            const text = entry.text ?? '';
             select.accessible_name = clipboard ? `${entry.pinned ? 'Pinned: ' : ''}${text.slice(0, 500)}` : entry.name;
             const preview = Array.from(text).slice(0, 240).join('')
                 .replace(/[\r\n]+/gu, ' ↵ ').replace(/[\x01-\x1f\x7f]/gu, ' ');
-            const label = new St.Label({text: clipboard ? preview : text, x_expand: clipboard,
+            const label = gif ? new St.Icon({gicon: Gio.FileIcon.new(Gio.File.new_for_path(entry.path)),
+                icon_size: 84}) : new St.Label({text: clipboard ? preview : text, x_expand: clipboard,
                 x_align: clipboard ? Clutter.ActorAlign.FILL : Clutter.ActorAlign.CENTER,
                 y_align: Clutter.ActorAlign.CENTER});
-            label.clutter_text.ellipsize = clipboard ? Pango.EllipsizeMode.END : Pango.EllipsizeMode.NONE;
+            if (!gif)
+                label.clutter_text.ellipsize = clipboard ? Pango.EllipsizeMode.END : Pango.EllipsizeMode.NONE;
             select.set_child(label);
             select.connect('key-focus-in', () => {
                 this.selected = index;
@@ -210,7 +287,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         }
         // Preserve column widths in a partially filled last row without adding focus targets.
         if (!clipboard && row) {
-            while (row.get_n_children() < this._emojiColumns)
+            while (row.get_n_children() < columns)
                 row.add_child(new St.Widget({x_expand: true}));
         }
         if (this.results.length > this._visibleCount) {
@@ -246,8 +323,12 @@ class SuperVPopup extends ModalDialog.ModalDialog {
 
     _activate(index) {
         const entry = this.results[index];
-        if (entry)
-            this.controller.select(entry, this.tab === 'emoji');
+        if (entry) {
+            if (this.tab === 'gifs')
+                this.controller.selectGif(entry);
+            else
+                this.controller.select(entry, this.tab !== 'clipboard');
+        }
     }
 
     _key(event) {
@@ -258,7 +339,9 @@ class SuperVPopup extends ModalDialog.ModalDialog {
             return Clutter.EVENT_STOP;
         }
         if (ctrl && [Clutter.KEY_Tab, Clutter.KEY_ISO_Left_Tab].includes(key)) {
-            this._setTab(this.tab === 'clipboard' ? 'emoji' : 'clipboard');
+            const names = [...this._tabs.keys()];
+            const step = key === Clutter.KEY_ISO_Left_Tab ? names.length - 1 : 1;
+            this._setTab(names[(names.indexOf(this.tab) + step) % names.length]);
             return Clutter.EVENT_STOP;
         }
         if (ctrl && [Clutter.KEY_f, Clutter.KEY_F].includes(key)) {
@@ -267,14 +350,15 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         }
         const focus = global.stage.get_key_focus();
         const itemFocused = this._rows.includes(focus);
-        const emoji = this.tab === 'emoji';
+        const emoji = this.tab !== 'clipboard';
         // Left/Right keep editing the query until focus has moved into the grid.
         const horizontal = emoji && itemFocused && [Clutter.KEY_Left, Clutter.KEY_Right].includes(key);
         if ([Clutter.KEY_Up, Clutter.KEY_Down].includes(key) || horizontal) {
             const direction = key === Clutter.KEY_Up ? 'up' : key === Clutter.KEY_Down ? 'down'
                 : key === Clutter.KEY_Left ? 'left' : 'right';
             this.selected = moveGridSelection(this.selected, this.results.length,
-                emoji ? this._emojiColumns : 1, direction);
+                emoji ? ['kaomoji', 'gifs'].includes(this.tab) ? Math.min(3, this._emojiColumns)
+                    : this._emojiColumns : 1, direction);
             if (this.selected >= this._visibleCount) {
                 this._visibleCount += this.pageSize;
                 this.refresh();

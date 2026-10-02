@@ -11,10 +11,10 @@ without an interactive shell. See `verification.md` for executed results.
 
 ```sh
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.2_all.deb
-dpkg-deb --info ../super-v-ubuntu_0.1.2_all.deb
-dpkg-deb --contents ../super-v-ubuntu_0.1.2_all.deb
-python3 scripts/audit-package.py ../super-v-ubuntu_0.1.2_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.3_all.deb
+dpkg-deb --info ../super-v-ubuntu_0.1.3_all.deb
+dpkg-deb --contents ../super-v-ubuntu_0.1.3_all.deb
+python3 scripts/audit-package.py ../super-v-ubuntu_0.1.3_all.deb
 ```
 
 The archive must contain runtime files and compiled schemas only beneath
@@ -33,7 +33,7 @@ a backup if it contains local changes.
 ```sh
 gnome-shell --version
 printf '%s\n' "$XDG_SESSION_TYPE"
-sudo apt install ./super-v-ubuntu_0.1.2_all.deb
+sudo apt install ./super-v-ubuntu_0.1.3_all.deb
 ```
 
 Log out/in, then enable and inspect it as your desktop user:
@@ -98,6 +98,21 @@ Record any custom notification bindings first; the command replaces them.
     entries or cause shell exceptions. Test light/dark themes, 100%/200% scale,
     multiple monitors, long previews, scrolling beyond 60 results and keyboard
     navigation through incrementally rendered results.
+11. Confirm the header reads Super V 0.1.3. With pointer placement selected,
+    open next to an input and near each screen edge. Check work-area bounds,
+    different monitor origins and 200% scale. Choose centered placement and
+    verify the panel centers on the focused monitor. Outside clicks on the
+    desktop, another window and Shell controls must dismiss without pasting.
+12. Insert kaomoji and symbols (for example ±, β, and →), search and filter by
+    category, and restore the prior text clipboard. Cycle all five tabs using
+    Ctrl+Tab and Ctrl+Shift+Tab. Text emoticons should have three columns and
+    symbols six at normal width, with accessible descriptive names.
+13. Add a valid local GIF in Settings. Verify first-frame preview, filename
+    search, copying and pasting into an image-capable app. Record whether that
+    app preserves animation. Test missing, malformed, symlink and oversized
+    files, remove a favorite without deleting its file, and verify that no
+    image is stored in text history. Reopen or disable while a GIF read waits:
+    the stale selection must not replace a newer clipboard or send a paste.
 
 Check permissions and shell logs after the matrix:
 

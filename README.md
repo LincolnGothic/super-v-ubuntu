@@ -1,6 +1,6 @@
 # Super V Ubuntu
 
-A local clipboard-history and emoji picker implemented as a GNOME Shell
+A local clipboard-history, emoji, kaomoji, symbols and GIF picker implemented as a GNOME Shell
 extension. Press **Super+V** to open a compact shell popup, search immediately,
 then select text or an emoji. GPL-3.0-or-later; Unicode data uses Unicode-3.0.
 
@@ -25,19 +25,19 @@ before relying on this implementation.
 
 ![Six-column emoji picker](docs/screenshots/emoji-grid.png)
 
-Actual popup rendering in an isolated GNOME Shell 50.1 Wayland session with
+v0.1.2 popup rendering in an isolated GNOME Shell 50.1 Wayland session with
 sample data. This checks the grid layout, not clipboard capture or pasting into
 desktop applications. See [emoji grid checks](docs/emoji-grid-verification.md);
 the full desktop acceptance matrix remains pending.
 
 ## Install the Debian package
 
-Download [`super-v-ubuntu_0.1.2_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.2/super-v-ubuntu_0.1.2_all.deb)
-from [release v0.1.2](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.2),
+Download [`super-v-ubuntu_0.1.3_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.3/super-v-ubuntu_0.1.3_all.deb)
+from [release v0.1.3](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.3),
 save it to Downloads, then run on your Ubuntu desktop:
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.2_all.deb"
+sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.3_all.deb"
 ```
 
 Log out and back in so GNOME discovers the system extension. Then, as your
@@ -61,6 +61,23 @@ Press Super+V. Capture begins after extension initialization, with a default
 disable persistence or automatic paste, and choose another shortcut.
 Enabling this extension grants it access to clipboard text; read `SECURITY.md`.
 
+The header must show **Super V 0.1.3** after upgrading. GNOME can keep old code
+loaded until logout/login. A user-local installation of the same UUID also
+overrides the system package: inspect the **Path** shown by `gnome-extensions
+info` above. If it points into your home directory, back up and move that UUID
+directory out of `~/.local/share/gnome-shell/extensions`, then log out/in to
+load the package from `/usr/share/gnome-shell/extensions`.
+
+## Position and dismissal
+
+Click the input field you want to use, then press Super+V. By default the panel
+opens near the mouse pointer and stays inside that monitor's work area. In
+Settings, **Picker position → Center of screen** restores centered placement.
+The shortcut remains the trigger; clicking an input field alone does not open
+the panel. Pointer placement is approximate: GNOME does not expose a universal
+text-caret position across application toolkits. Clicking anywhere outside
+the panel closes it without pasting; Escape and Super+V also close it.
+
 ## Clipboard
 
 Copied plain text appears newest first. Exact duplicates move to the front
@@ -73,7 +90,7 @@ ordinary trimming and **Clear unpinned**. A total 2 MiB text budget may trim
 ordinary entries earlier than their count limit.
 
 Use Up/Down to select, Enter to paste, Delete to remove the selected entry,
-Escape to close, Ctrl+F to focus search, and Ctrl+Tab to switch Clipboard/Emoji.
+Escape to close, Ctrl+F to focus search, and Ctrl+Tab to cycle through all five tabs.
 Tab navigates controls; the pin and delete buttons have accessible labels.
 Mouse selection is supported. Preferences can erase pins and emoji recents too.
 Clear requests made while disabled are applied on the next enable.
@@ -118,6 +135,25 @@ are not snapshotted. Temporary emoji and restore writes do not enter history.
 New emoji may appear as missing glyphs with older installed emoji fonts.
 The database is complete even where the system font cannot render a sequence.
 
+## Kaomoji, symbols and GIFs
+
+The **;-)** tab contains text emoticons, and **Ω** contains math symbols, Greek
+letters, arrows, currency, punctuation and units. Search by name or character,
+choose a category, and click or press Enter to insert. Their grids use the same
+keyboard navigation and guarded prior-text restoration as emoji.
+
+In **Settings → GIF favorites**, choose local `.gif` files. The GIF tab previews
+their first frame and searches filenames. Up to 40 favorites are supported;
+each file must be at most 8 MiB with dimensions no larger than 2048 × 2048.
+Files remain in their original location, so moving or deleting one requires
+re-adding it. Removing a favorite does not delete the original file.
+
+Choosing a GIF copies the original `image/gif` bytes and sends the normal paste
+shortcut. The destination must accept images; some apps paste a still frame
+or do not accept this format. GIF insertion replaces the clipboard without a
+restore snapshot, and image data does not enter text history. There is no
+online GIF search, account, API key or runtime network request.
+
 ## Privacy
 
 Everything stays local. There is no telemetry, synchronization, analytics,
@@ -138,7 +174,7 @@ sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 eslint 
     gir1.2-gtk-4.0 gir1.2-adw-1 lintian git gh
 make test
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.2_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.3_all.deb
 ```
 
 No npm dependencies or runtime downloads are required. Debian's build invokes
@@ -197,7 +233,7 @@ performed before initial publication, not current GitHub publication status.
 This checkout includes `scripts/publish.sh`. After committing on main, run
 `gh auth login`, then `./scripts/publish.sh`. It creates a PUBLIC
 `<authenticated-account>/super-v-ubuntu` repository, pushes source, waits for
-successful CI, builds from a clean checkout, checks lintian, creates `v0.1.2`,
+successful CI, builds from a clean checkout, checks lintian, creates `v0.1.3`,
 uploads the `.deb` and SHA256SUMS, and downloads the release asset to verify it.
 It refuses a different origin or an existing private repository. Actual remote
 publication is recorded separately from local build success.

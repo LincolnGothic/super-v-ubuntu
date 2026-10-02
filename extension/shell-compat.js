@@ -5,6 +5,11 @@ export function verticalBoxProperties(BoxLayout, Clutter) {
         ? {orientation: Clutter.Orientation.VERTICAL} : {vertical: true};
 }
 
+export function horizontalBoxProperties(BoxLayout, Clutter) {
+    return typeof BoxLayout.prototype.set_orientation === 'function'
+        ? {orientation: Clutter.Orientation.HORIZONTAL} : {vertical: false};
+}
+
 export function getDefaultSeat(stage, Clutter) {
     const backend = stage.context
         ? stage.context.get_backend() : Clutter.get_default_backend();

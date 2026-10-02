@@ -20,5 +20,13 @@
     background-color: rgba(128, 128, 128, 0.2);
 }
 .super-v-icon { padding: 6px; min-width: 16px; }
+.super-v-kaomoji {
+    padding: 8px 3px;
+    height: 36px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+}
+.super-v-gif { padding: 6px; height: 84px; border-radius: 8px; }
 .super-v-empty { padding: 24px 8px; }
 .super-v-hint { font-size: 0.8em; }
