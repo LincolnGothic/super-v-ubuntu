@@ -38,10 +38,10 @@ jobs:
       - name: Install isolated Shell test tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends gnome-shell dbus-x11 libgl1-mesa-dri fonts-noto-color-emoji libglib2.0-bin
+          sudo apt-get install -y --no-install-recommends gnome-shell dbus-x11 libgl1-mesa-dri fonts-noto-color-emoji libglib2.0-bin ripgrep
       - name: Check real popup layout and outside mouse clicks
         run: |
-          set -eu
+          set -euo pipefail
           glib-compile-schemas --strict extension/schemas
           task_session=$(mktemp -d)
           mkdir -p "$task_session/runtime" "$task_session/config" "$task_session/data" "$task_session/cache"

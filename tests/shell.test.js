@@ -29,7 +29,8 @@ function rectangle(actor) {
 export async function run() {
     await Scripting.sleep(300);
     Main.overview.hide();
-    const base = GLib.get_current_dir();
+    // Shell changes its working directory at startup; resolve from this module.
+    const base = Gio.File.new_for_uri(import.meta.url).get_parent().get_parent().get_path();
     const read = path => new TextDecoder().decode(Gio.File.new_for_path(`${base}/${path}`).load_contents(null)[1]);
     const schemaSource = Gio.SettingsSchemaSource.new_from_directory(`${base}/extension/schemas`,
         Gio.SettingsSchemaSource.get_default(), false);
