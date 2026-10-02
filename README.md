@@ -123,7 +123,7 @@ for exact erasure steps and limitations.
 On Ubuntu 24.04:
 
 ```sh
-sudo apt install debhelper libglib2.0-bin nodejs python3 eslint gjs \
+sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 eslint gjs \
     gir1.2-gtk-4.0 gir1.2-adw-1 lintian git gh
 make test
 make package

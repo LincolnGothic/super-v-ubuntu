@@ -15,7 +15,7 @@ jobs:
       - name: Install build tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends debhelper libglib2.0-bin nodejs python3 eslint gjs gir1.2-gtk-4.0 gir1.2-adw-1 lintian
+          sudo apt-get install -y --no-install-recommends build-essential debhelper libglib2.0-bin nodejs python3 eslint gjs gir1.2-gtk-4.0 gir1.2-adw-1 lintian
       - name: Validate, test, and build Debian package
         run: make package
       - name: Audit package
