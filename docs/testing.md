@@ -11,10 +11,10 @@ without an interactive shell. See `verification.md` for executed results.
 
 ```sh
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.1_all.deb
-dpkg-deb --info ../super-v-ubuntu_0.1.1_all.deb
-dpkg-deb --contents ../super-v-ubuntu_0.1.1_all.deb
-python3 scripts/audit-package.py ../super-v-ubuntu_0.1.1_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.2_all.deb
+dpkg-deb --info ../super-v-ubuntu_0.1.2_all.deb
+dpkg-deb --contents ../super-v-ubuntu_0.1.2_all.deb
+python3 scripts/audit-package.py ../super-v-ubuntu_0.1.2_all.deb
 ```
 
 The archive must contain runtime files and compiled schemas only beneath
@@ -33,7 +33,7 @@ a backup if it contains local changes.
 ```sh
 gnome-shell --version
 printf '%s\n' "$XDG_SESSION_TYPE"
-sudo apt install ./super-v-ubuntu_0.1.1_all.deb
+sudo apt install ./super-v-ubuntu_0.1.2_all.deb
 ```
 
 Log out/in, then enable and inspect it as your desktop user:

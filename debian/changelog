@@ -1,3 +1,12 @@
+super-v-ubuntu (0.1.2) unstable; urgency=medium
+
+  * Display emoji in a six-column grid with responsive column counts.
+  * Add row/column keyboard navigation and preserve search cursor movement.
+  * Keep selection visible after pagination and align incomplete rows.
+  * Add popup regression tests and record isolated GNOME 50.1 rendering checks.
+
+ -- Super V Ubuntu contributors <super-v-ubuntu@users.noreply.github.com>  Fri, 02 Oct 2026 09:00:00 +0000
+
 super-v-ubuntu (0.1.1) unstable; urgency=medium
 
   * Add GNOME Shell 50 API compatibility for Ubuntu 26.04 Wayland.

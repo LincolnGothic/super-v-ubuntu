@@ -32,12 +32,12 @@ the full desktop acceptance matrix remains pending.
 
 ## Install the Debian package
 
-Download [`super-v-ubuntu_0.1.1_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.1/super-v-ubuntu_0.1.1_all.deb)
-from [release v0.1.1](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.1),
+Download [`super-v-ubuntu_0.1.2_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.2/super-v-ubuntu_0.1.2_all.deb)
+from [release v0.1.2](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.2),
 save it to Downloads, then run on your Ubuntu desktop:
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.1_all.deb"
+sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.2_all.deb"
 ```
 
 Log out and back in so GNOME discovers the system extension. Then, as your
@@ -138,7 +138,7 @@ sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 eslint 
     gir1.2-gtk-4.0 gir1.2-adw-1 lintian git gh
 make test
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.1_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.2_all.deb
 ```
 
 No npm dependencies or runtime downloads are required. Debian's build invokes
@@ -197,7 +197,7 @@ performed before initial publication, not current GitHub publication status.
 This checkout includes `scripts/publish.sh`. After committing on main, run
 `gh auth login`, then `./scripts/publish.sh`. It creates a PUBLIC
 `<authenticated-account>/super-v-ubuntu` repository, pushes source, waits for
-successful CI, builds from a clean checkout, checks lintian, creates `v0.1.1`,
+successful CI, builds from a clean checkout, checks lintian, creates `v0.1.2`,
 uploads the `.deb` and SHA256SUMS, and downloads the release asset to verify it.
 It refuses a different origin or an existing private repository. Actual remote
 publication is recorded separately from local build success.

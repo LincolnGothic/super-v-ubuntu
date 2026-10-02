@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.2 — 2026-10-02
 
 Display emoji as large, centered tiles in a six-column grid instead of text
 rows, reducing the column count on narrow monitors. Preserve accessible names,

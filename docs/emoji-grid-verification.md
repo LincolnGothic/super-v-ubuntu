@@ -1,8 +1,8 @@
 # Emoji grid verification — 2026-10-02
 
 The emoji picker now uses six columns at normal popup width and fewer columns
-on narrow monitors. Clipboard history retains its list layout. This change is
-unreleased; the existing v0.1.1 release asset does not include it.
+on narrow monitors. Clipboard history retains its list layout. The grid is
+included in v0.1.2; the earlier v0.1.1 release asset does not include it.
 
 ## Automated checks
 
