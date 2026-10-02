@@ -66,6 +66,11 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
     class ModalDialog extends Actor {
         _init() {
             this.contentLayout = new Actor(); this.dialogLayout = new Actor();
+            const panel = new Actor();
+            panel.add_child(this.contentLayout);
+            this.dialogLayout.add_child(panel);
+            this.dialogLayout.box = {};
+            this.dialogLayout.get_transformed_size = () => [width, 1080];
             this._monitorConstraint = {};
             this.state = 0;
         }
@@ -157,22 +162,22 @@ test('GIF favorites render previews and dispatch binary insertion', async () => 
 
 test('near-pointer placement clamps at screen edges and center mode resets translations', async () => {
     const {popup, controller} = await fixture({pointer: [1910, 1070]});
-    popup.dialogLayout.box = {};
+    popup._panel.box = {};
     popup.positionPanel();
-    assert.equal(popup.dialogLayout.translation_x, 1518);
-    assert.equal(popup.dialogLayout.translation_y, 458);
+    assert.equal(popup._panel.translation_x, 1518);
+    assert.equal(popup._panel.translation_y, 458);
     controller.settings.get_string = () => 'center';
     popup.positionPanel();
-    assert.equal(popup.dialogLayout.x_align, 1);
-    assert.equal(popup.dialogLayout.translation_x, 0);
-    assert.equal(popup.dialogLayout.translation_y, 0);
+    assert.equal(popup._panel.x_align, 1);
+    assert.equal(popup._panel.translation_x, 0);
+    assert.equal(popup._panel.translation_y, 0);
 });
 
 test('stage clicks on other actors dismiss the open popup; inside and closed clicks propagate', async () => {
     const {popup, stage} = await fixture();
-    popup.dialogLayout.box = {};
+    popup._panel.box = {};
     popup.positionPanel();
-    const [x, y] = popup.dialogLayout.get_transformed_position();
+    const [x, y] = popup._panel.get_transformed_position();
     const click = coords => ({type: () => 1, get_coords: () => coords});
     assert.equal(stage.emit('captured-event', click([x + 20, y + 20])), false);
     assert.equal(popup.closed, undefined);

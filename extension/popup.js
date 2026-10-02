@@ -26,6 +26,9 @@ class SuperVPopup extends ModalDialog.ModalDialog {
             shellReactive: true, actionMode: Shell.ActionMode.POPUP,
             shouldFadeIn: false, shouldFadeOut: false, destroyOnClose: false});
         this.controller = controller;
+        // Dialog.Dialog wraps the styled panel in a monitor-sized event actor.
+        // Position and hit-test the visible panel, not that outer wrapper.
+        this._panel = this.contentLayout.get_parent();
         this.tab = 'clipboard';
         this.group = 'All';
         this.tone = 'all';
@@ -121,7 +124,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         // Observe the stage, rather than waiting for the popup to receive them.
         global.stage.connectObject('captured-event', (_stage, event) => this._outsideEvent(event), this);
         this.connect('opened', () => this.positionPanel());
-        this.dialogLayout.connect('notify::allocation', () => this.positionPanel());
+        this._panel.connect('notify::allocation', () => this.positionPanel());
     }
 
     showPanel() {
@@ -142,7 +145,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         // Leave room for popup padding and keep tiles usable on narrow monitors.
         this._emojiColumns = Math.max(1, Math.min(6, Math.floor((width - 36) / 54)));
         this.scroll.set_style(`height: ${height}px;`);
-        this.dialogLayout.set_style(`width: ${width}px;`);
+        this._panel.set_style(`width: ${width}px;`);
         this.refresh();
         const opened = this.open();
         if (opened) {
@@ -157,18 +160,19 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         if (!this._monitor)
             return;
         const centered = this.controller.settings.get_string('popup-position') === 'center';
-        this.dialogLayout.x_align = centered ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START;
-        this.dialogLayout.y_align = centered ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START;
+        this._panel.x_align = centered ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START;
+        this._panel.y_align = centered ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START;
         if (centered) {
-            this.dialogLayout.translation_x = 0;
-            this.dialogLayout.translation_y = 0;
-        } else if (this.dialogLayout.has_allocation()) {
+            this._panel.translation_x = 0;
+            this._panel.translation_y = 0;
+        } else if (this._panel.has_allocation() && this.dialogLayout.has_allocation()) {
             const area = Main.layoutManager.getWorkAreaForMonitor(this._monitor.index);
-            const size = this.dialogLayout.get_transformed_size();
+            const size = this._panel.get_transformed_size();
             const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
             const position = placeNearPointer(this._anchor, area, size, 12 * scale);
-            this.dialogLayout.translation_x = position.x - this._monitor.x;
-            this.dialogLayout.translation_y = position.y - this._monitor.y;
+            const origin = this.dialogLayout.get_transformed_position();
+            this._panel.translation_x = position.x - origin[0];
+            this._panel.translation_y = position.y - origin[1];
         }
     }
 
@@ -176,11 +180,11 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         if (![ModalDialog.State.OPENED, ModalDialog.State.OPENING].includes(this.state) ||
             event.type() !== Clutter.EventType.BUTTON_PRESS)
             return Clutter.EVENT_PROPAGATE;
-        const inside = this.dialogLayout.has_allocation()
-            ? pointInRect(event.get_coords(), this.dialogLayout.get_transformed_position(),
-                this.dialogLayout.get_transformed_size())
+        const inside = this._panel.has_allocation()
+            ? pointInRect(event.get_coords(), this._panel.get_transformed_position(),
+                this._panel.get_transformed_size())
             : Boolean(getEventActor(global.stage, event) &&
-                this.dialogLayout.contains(getEventActor(global.stage, event)));
+                this._panel.contains(getEventActor(global.stage, event)));
         if (inside)
             return Clutter.EVENT_PROPAGATE;
         this.close();

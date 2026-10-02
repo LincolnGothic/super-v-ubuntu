@@ -62,10 +62,11 @@ export async function run() {
         check('emoji labels contain only glyphs', popup._rows.every((row, index) =>
             row.get_child().text === popup.results[index].text));
         const area = Main.layoutManager.getWorkAreaForMonitor(popup._monitor.index);
-        const rect = rectangle(popup.dialogLayout);
+        const rect = rectangle(popup._panel);
+        print(`SHELL GEOMETRY: ${JSON.stringify({area, pointer: popup._anchor, panel: rect,
+            translation: [popup._panel.translation_x, popup._panel.translation_y]})}`);
         check('near-pointer panel stays within its work area', rect.x >= area.x && rect.y >= area.y &&
             rect.x + rect.width <= area.x + area.width + 1 && rect.y + rect.height <= area.y + area.height + 1);
-        print(`SHELL GEOMETRY: ${JSON.stringify({area, pointer: popup._anchor, panel: rect})}`);
         popup._setTab('kaomoji');
         await Scripting.sleep(100);
         check('kaomoji has three columns', popup.list.get_first_child().get_n_children() === 3);
@@ -80,9 +81,9 @@ export async function run() {
         settings.set_string('popup-position', 'center');
         popup.positionPanel();
         await Scripting.sleep(100);
-        const center = rectangle(popup.dialogLayout);
+        const center = rectangle(popup._panel);
         const monitor = popup._monitor;
-        check('center setting clears pointer translation', popup.dialogLayout.translation_x === 0 &&
+        check('center setting clears pointer translation', popup._panel.translation_x === 0 &&
             Math.abs(center.x + center.width / 2 - monitor.x - monitor.width / 2) < 2);
         pointer.notify_absolute_motion(GLib.get_monotonic_time(), 5, 100);
         await Scripting.sleep(100);
