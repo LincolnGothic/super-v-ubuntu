@@ -28,4 +28,3 @@ export async function loadModule(file, mocks, globalObject = {}) {
     await module.evaluate();
     return module.namespace;
 }
-
