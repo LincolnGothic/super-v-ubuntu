@@ -5,16 +5,16 @@ emoji generation, ESLint, Node logic/adapter tests, and GJS/Gio filesystem
 integration. Mock adapter tests exercise the actual asynchronous controller
 and clipboard modules, but do not prove Mutter clipboard, shell rendering or
 input delivery works on a real desktop. CI builds the `.deb` and checks it
-without an interactive shell. See `verification-v0.1.8.md` for current executed results.
+without an interactive shell. See `verification-v0.1.10.md` for current executed results.
 
 ## Package checks
 
 ```sh
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.8_all.deb
-dpkg-deb --info ../super-v-ubuntu_0.1.8_all.deb
-dpkg-deb --contents ../super-v-ubuntu_0.1.8_all.deb
-python3 scripts/audit-package.py ../super-v-ubuntu_0.1.8_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.10_all.deb
+dpkg-deb --info ../super-v-ubuntu_0.1.10_all.deb
+dpkg-deb --contents ../super-v-ubuntu_0.1.10_all.deb
+python3 scripts/audit-package.py ../super-v-ubuntu_0.1.10_all.deb
 ```
 
 The archive must contain runtime files and compiled schemas only beneath
@@ -33,7 +33,7 @@ a backup if it contains local changes.
 ```sh
 gnome-shell --version
 printf '%s\n' "$XDG_SESSION_TYPE"
-sudo apt install ./super-v-ubuntu_0.1.8_all.deb
+sudo apt install ./super-v-ubuntu_0.1.10_all.deb
 ```
 
 Log out/in, then enable and inspect it as your desktop user:
@@ -171,7 +171,7 @@ Additional interactive checks:
 1. Open an image, draw several marks, select an earlier one, move and resize it,
    change its color/size, delete it, then undo/redo. Later marks stay unchanged.
 2. Add numbered markers with clicks; exported PNG includes labels but no handles.
-3. Create five screen pins. Drag, zoom, change opacity, copy, and close them.
+3. Create five screen pins. Use real mouse clicks for Zoom in/out, all opacity levels, Copy and Close; buttons must not start a drag. Drag the image and empty header space, release outside the pin, and check input is released. Press Escape during a drag. Take another screenshot with Super+Shift+S while a pin is visible, then cancel another capture and verify Close still works.
    Try multi-monitor moves and removing a monitor; pins remain reachable.
 4. Confirm lock, clear, source deletion, and disabling close screen pins and editor.
 5. Test OCR with actual Chinese, Japanese, Korean, Spanish, and French images after

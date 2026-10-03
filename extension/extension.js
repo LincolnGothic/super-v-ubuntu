@@ -389,6 +389,7 @@ export default class SuperVExtension extends Extension {
         if (!this._active || !this._ready || Main.sessionMode.isLocked || Main.sessionMode.isGreeter)
             return;
         this._cancelScreenshot();
+        this.screenPins?.releaseInput();
         this._selectionEpoch++;
         this.popup.close();
         this.pasteBackend.cancel();

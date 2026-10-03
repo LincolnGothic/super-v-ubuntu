@@ -8,7 +8,7 @@ import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import {gettext as _} from './translations.js';
 import {format, N_} from './core/localization.js';
 import {PinBudget, pinGeometry} from './core/pins.js';
-import {verticalBoxProperties} from './shell-compat.js';
+import {getEventActor, verticalBoxProperties} from './shell-compat.js';
 
 export class ScreenPins {
     constructor(onCopy) {
@@ -16,6 +16,7 @@ export class ScreenPins {
         this.items = new Map();
         this.budget = new PinBudget();
         this.monitorSignal = Main.layoutManager.connect('monitors-changed', () => {
+            this._endDrag();
             for (const pin of this.items.values()) this._place(pin);
         });
     }
@@ -65,6 +66,7 @@ export class ScreenPins {
             pin.more = button('+', N_('Zoom in'), () => this.zoom(id, 1.25));
             pin.opacityButton = button('100%', N_('Opacity'), () => this.opacity(id, pin.opacity === 25 ? 100 : pin.opacity - 25));
             pin.close = button('×', N_('Close pinned image'), () => this.remove(id));
+            pin.controls = [pin.copy, pin.less, pin.more, pin.opacityButton, pin.close];
             root.connect('scroll-event', (_actor, event) => {
                 const direction = event.get_scroll_direction();
                 const delta = direction === Clutter.ScrollDirection.SMOOTH ? event.get_scroll_delta()[1] :
@@ -75,6 +77,11 @@ export class ScreenPins {
             for (const target of [header, image]) {
                 target.connect('button-press-event', (_actor, event) => {
                     if (event.get_button() !== 1) return Clutter.EVENT_PROPAGATE;
+                    // A toolbar button needs its own complete press/release.
+                    // Grabbing the parent here cancels St.Button activation.
+                    const source = getEventActor(global.stage, event);
+                    if (source && pin.controls.some(control => control.contains(source)))
+                        return Clutter.EVENT_PROPAGATE;
                     this._drag(pin, event); return Clutter.EVENT_STOP;
                 });
             }
@@ -124,6 +131,9 @@ export class ScreenPins {
         this.grab = global.stage.grab(pin.root);
         this.dragActor = pin.root;
         this.dragSignal = pin.root.connect('captured-event', (_stage, current) => {
+            if (current.type() === Clutter.EventType.KEY_PRESS && current.get_key_symbol() === Clutter.KEY_Escape) {
+                this.remove(pin.id); return Clutter.EVENT_STOP;
+            }
             if (current.type() === Clutter.EventType.MOTION) {
                 const [cx, cy] = current.get_coords(); this._place(pin, x + cx - startX, y + cy - startY);
                 return Clutter.EVENT_STOP;
@@ -135,9 +145,16 @@ export class ScreenPins {
         });
     }
     _endDrag() {
-        if (this.dragSignal) this.dragActor.disconnect(this.dragSignal);
-        this.dragActor = null;
-        this.dragSignal = 0; this.grab?.dismiss(); this.grab = null;
+        const actor = this.dragActor, signal = this.dragSignal, grab = this.grab;
+        this.dragActor = null; this.dragSignal = 0; this.grab = null;
+        try { if (signal) actor.disconnect(signal); }
+        finally { grab?.dismiss(); }
+    }
+    releaseInput() {
+        this._endDrag();
+        const focus = global.stage.get_key_focus();
+        if (focus && [...this.items.values()].some(pin => pin.root.contains(focus)))
+            global.stage.set_key_focus(null);
     }
     remove(id) {
         this._endDrag();
