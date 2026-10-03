@@ -2,14 +2,16 @@
 
 One build supports English (source/fallback), Simplified Chinese (`zh_CN`),
 Traditional Chinese (`zh_TW`), Japanese (`ja`), Spanish (`es`), French (`fr`) and
-Korean (`ko`). GNOME initializes the `super-v-ubuntu` gettext domain through
-`metadata.json`; the popup and preferences follow the session locale. English
-source strings are the fallback and do not need a separate catalog.
+Korean (`ko`). Settings stores `ui-language`: `system` by default, or an explicit
+supported language. The popup, preferences, notifications and character search
+use this app-only choice. English source strings are the fallback and do not need
+a separate catalog. Language names in the selector remain in their native form.
 
 Chinese catalogs are compiled under regional/script aliases, including Singapore,
 Taiwan, Hong Kong and Macau. `extension/core/localization.js` maps the ordered
 GLib language list to the corresponding CLDR dataset. Explicit Hans/Hant script
-selection takes precedence over the region. Locale changes require logout/login.
+selection takes precedence over the region. App language changes take effect
+immediately; changing the desktop session language requires logout/login.
 
 ## Update an interface translation
 
@@ -37,8 +39,11 @@ sentences rather than concatenating translated fragments.
 `make check` compares the template with current source, rejects missing/fuzzy/
 empty/obsolete messages, compiles with `msgfmt --check --check-format`, and checks
 placeholders. `make translations` builds private `extension/locale/*/LC_MESSAGES`
-catalogs. Both `.deb` and local installation include these and localized emoji
-data. Compiled `.mo` files are build products, not committed sources.
+catalogs and six `extension/locale/{language}/messages.json` lookups generated
+from the same validated messages. App-local JSON lookups support live switching
+without changing the process-wide locale. Both `.deb` and local installation
+include these and localized emoji data. Generated catalogs are build products,
+not committed sources.
 
 ## Emoji translations
 
@@ -59,11 +64,14 @@ welcome to improve regional wording. Detailed developer/security documentation
 remains in English; translated guides cover installation and everyday use.
 
 `make test` includes pure search/locale checks, 17 actual GJS/Gettext lookups and
-English fallback. Those checks generate an isolated `en_US.UTF-8` test locale
+English fallback, plus all seven explicit choices in each process. Those checks
+generate an isolated `en_US.UTF-8` test locale
 using `localedef` (from the `locales` build dependency), without altering global
 locale settings. `scripts/test-shell.sh` checks real St/Clutter layout in seven
-fresh headless Wayland sessions; it requires GNOME Shell and a generated UTF-8
-locale. CI also checks packaged catalogs, schemas, data and lintian.
+fresh headless Wayland sessions, live preferences/popup language switching,
+horizontal category layout and scrolling, keyboard focus and skin-tone menus;
+it requires GNOME Shell and a generated UTF-8 locale. CI also checks packaged
+catalogs, schemas, data and lintian.
 
 These checks cover rendering and localization. Full desktop clipboard/paste
 acceptance remains the separate procedure in [testing.md](testing.md).

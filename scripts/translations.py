@@ -78,6 +78,13 @@ def run(mode):
                 assert re.findall(r'%[sd]', message) == re.findall(r'%[sd]', catalog.gettext(message)), \
                     f'{language}: incorrect placeholders in {message}'
             if mode == 'build':
+                # The explicit language setting uses these app-local lookups;
+                # both formats come from the same checked .po/.mo messages.
+                lookup = ROOT / 'extension/locale' / language / 'messages.json'
+                lookup.parent.mkdir(parents=True, exist_ok=True)
+                lookup.write_text(json.dumps({message: catalog.gettext(message) for message in messages},
+                                             ensure_ascii=False, indent=2) + '\n')
+                lookup.chmod(0o644)
                 for alias in aliases:
                     destination = ROOT / 'extension/locale' / alias / 'LC_MESSAGES' / f'{DOMAIN}.mo'
                     destination.parent.mkdir(parents=True, exist_ok=True)

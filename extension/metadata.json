@@ -6,8 +6,8 @@
     "46",
     "50"
   ],
-  "version": 5,
-  "version-name": "0.1.4",
+  "version": 6,
+  "version-name": "0.1.5",
   "settings-schema": "org.gnome.shell.extensions.super-v-ubuntu",
   "session-modes": [
     "user"

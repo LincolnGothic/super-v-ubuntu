@@ -2,6 +2,30 @@
 // Mark stable data labels for gettext extraction without translating their IDs.
 export const N_ = message => message;
 
+export const languageOptions = [
+    {id: 'system', label: N_('Follow system')},
+    {id: 'en', label: 'English'}, {id: 'zh_CN', label: '简体中文'},
+    {id: 'zh_TW', label: '繁體中文'}, {id: 'ja', label: '日本語'},
+    {id: 'es', label: 'Español'}, {id: 'fr', label: 'Français'},
+    {id: 'ko', label: '한국어'},
+];
+
+export function resolveLanguage(choice, languages) {
+    if (choice !== 'system' && languageOptions.some(option => option.id === choice))
+        return choice;
+    const locale = emojiLocale(languages);
+    return {zh: 'zh_CN', zh_Hant: 'zh_TW'}[locale] ?? locale;
+}
+
+export const annotationLocale = language => ({zh_CN: 'zh', zh_TW: 'zh_Hant'}[language] ?? language);
+
+export function catalogTranslator(messages = {}) {
+    if (!messages || typeof messages !== 'object' || Array.isArray(messages))
+        messages = {};
+    return message => Object.hasOwn(messages, message) && typeof messages[message] === 'string' && messages[message]
+        ? messages[message] : message;
+}
+
 export const groupLabels = {
     All: N_('All'), Recent: N_('Recent'),
     'Smileys & Emotion': N_('Smileys & Emotion'),

@@ -38,12 +38,12 @@ the full desktop acceptance matrix remains pending.
 
 ## Install the Debian package
 
-Download [`super-v-ubuntu_0.1.4_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.4/super-v-ubuntu_0.1.4_all.deb)
-from [release v0.1.4](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.4),
+Download [`super-v-ubuntu_0.1.5_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.5/super-v-ubuntu_0.1.5_all.deb)
+from [release v0.1.5](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.5),
 save it to Downloads, then run on your Ubuntu desktop:
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.4_all.deb"
+sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.5_all.deb"
 ```
 
 Log out and back in so GNOME discovers the system extension. Then, as your
@@ -67,7 +67,7 @@ Press Super+V. Capture begins after extension initialization, with a default
 disable persistence or automatic paste, and choose another shortcut.
 Enabling this extension grants it access to clipboard text; read `SECURITY.md`.
 
-The header must show **Super V 0.1.4** after upgrading. GNOME can keep old code
+The header must show **Super V 0.1.5** after upgrading. GNOME can keep old code
 loaded until logout/login. A user-local installation of the same UUID also
 overrides the system package: inspect the **Path** shown by `gnome-extensions
 info` above. If it points into your home directory, back up and move that UUID
@@ -77,10 +77,14 @@ load the package from `/usr/share/gnome-shell/extensions`.
 ## Languages
 
 One installer includes English, Simplified Chinese, Traditional Chinese, Japanese,
-Spanish, French and Korean. The interface follows the GNOME session language;
-unsupported languages and missing messages fall back to English. Change the
-language in Ubuntu's **Settings → System → Region & Language**, then log out/in.
-There is no separate language edition or in-app language setting.
+Spanish, French and Korean. Open **Super+V → Settings → Appearance → Language**
+to choose a language for Super V. The interface, preferences and localized search
+update immediately, without logging out or changing Ubuntu's display language.
+Language names stay in their native form so you can always switch back.
+
+The default, **Follow system**, uses the GNOME session language. Unsupported
+languages and missing messages fall back to English. Changing Ubuntu's session
+language itself still requires logging out/in.
 
 Chinese is selected by script/region: Taiwan, Hong Kong and Macau use Traditional
 Chinese; mainland China, Singapore and generic Chinese use Simplified Chinese.
@@ -88,6 +92,12 @@ Spanish and French use a shared translation across their regional locales.
 Emoji names, search keywords, kaomoji/symbol labels, settings, notifications and
 accessible control labels are localized. English emoji and character names remain
 searchable in every language. See [translation contributions](docs/translations.md).
+
+Emoji categories appear in a single horizontal icon bar, with translated tooltips
+and a selected highlight. Use the arrows or horizontal scrolling to reveal more
+categories. Focus a category and use Left/Right or Home/End to move along the bar;
+Enter selects it and Down moves into the grid. Kaomoji and symbols use horizontal
+category labels. The hand button opens a skin-tone menu.
 
 ## Position and dismissal
 
@@ -133,8 +143,8 @@ extension cannot verify that a receiving application accepted the text.
 
 The bundled database contains 3,944 fully-qualified Emoji 17.0 sequences,
 including ZWJ, flags and skin-tone combinations, with CLDR 48 names and keywords in the six additional languages and English.
-Search by name, keyword or emoji. The Category control cycles through All,
-Recent, and Unicode groups; Tone cycles through all/default and five tones.
+Search by name, keyword or emoji. Select All, Recent or a Unicode group directly
+from the horizontal category bar; the hand button opens the skin-tone menu.
 All includes mixed-tone sequences; individual tones match uniform variants.
 Recents are capped at 30 and follow the persistence preference.
 
@@ -195,7 +205,7 @@ sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 gettext
     gir1.2-gtk-4.0 gir1.2-adw-1 lintian git gh
 make test
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.4_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.5_all.deb
 ```
 
 No npm dependencies or runtime downloads are required. Debian's build invokes
@@ -254,7 +264,7 @@ performed before initial publication, not current GitHub publication status.
 This checkout includes `scripts/publish.sh`. After committing on main, run
 `gh auth login`, then `./scripts/publish.sh`. It creates a PUBLIC
 `<authenticated-account>/super-v-ubuntu` repository, pushes source, waits for
-successful CI, builds from a clean checkout, checks lintian, creates `v0.1.4`,
+successful CI, builds from a clean checkout, checks lintian, creates `v0.1.5`,
 uploads the `.deb` and SHA256SUMS, and downloads the release asset to verify it.
 It refuses a different origin or an existing private repository. Actual remote
 publication is recorded separately from local build success.

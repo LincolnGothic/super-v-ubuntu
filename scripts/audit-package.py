@@ -22,8 +22,13 @@ with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
     assert not any('history.json' in name or 'node_modules' in name for name in files)
     metadata = json.load(tar.extractfile(prefix + 'metadata.json'))
     assert metadata['shell-version'] == ['46', '50'], 'Incorrect Shell compatibility'
-    assert metadata['version-name'] == '0.1.4' and metadata['version'] == 5
+    assert metadata['version-name'] == '0.1.5' and metadata['version'] == 6
     assert metadata['gettext-domain'] == 'super-v-ubuntu'
+    for locale in ['zh_CN', 'zh_TW', 'ja', 'es', 'fr', 'ko']:
+        name = prefix + f'locale/{locale}/messages.json'
+        assert name in files, f'Missing explicit-language messages for {locale}'
+        messages = json.load(tar.extractfile(name))
+        assert len(messages) == 271 and messages['Language'] and messages['Follow system']
     for locale in ['zh', 'zh_CN', 'zh_SG', 'zh_TW', 'zh_HK', 'zh_MO', 'zh_Hans', 'zh_Hant',
                    'ja', 'es', 'fr', 'ko']:
         assert prefix + f'locale/{locale}/LC_MESSAGES/super-v-ubuntu.mo' in files, f'Missing {locale} gettext catalog'
@@ -36,7 +41,7 @@ with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
         assert entry.uid == 0 and entry.gid == 0, 'Incorrect package ownership'
         assert not entry.mode & 0o022, 'Group/world writable file'
 control = subprocess.check_output(['dpkg-deb', '-f', str(deb), 'Architecture', 'Version'], text=True)
-assert 'all' in control and '0.1.4' in control
+assert 'all' in control and '0.1.5' in control
 dependencies = subprocess.check_output(['dpkg-deb', '-f', str(deb), 'Depends'], text=True)
 for clause in ['gnome-shell (>= 46~)', 'gnome-shell (<< 47~) | gnome-shell (>= 50~)',
                'gnome-shell (<< 51~)']:

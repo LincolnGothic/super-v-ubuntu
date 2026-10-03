@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
-import GLib from 'gi://GLib';
-import {emojiLocale} from './core/localization.js';
+import {annotationLocale} from './core/localization.js';
 import Gio from 'gi://Gio';
 import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
-import {gettext as _} from './translations.js';
+import {gettext as _, initTranslations} from './translations.js';
 import {History} from './core/history.js';
 import {EmojiIndex} from './core/emoji.js';
 import {StateStore} from './storage.js';
@@ -23,7 +22,9 @@ export default class SuperVExtension extends Extension {
         this._stateRevision = 0;
         this._ready = false;
         this._selectionEpoch = 0;
+        this._languageRevision = 0;
         this.settings = this.getSettings();
+        initTranslations(this.dir, this.settings.get_string('ui-language'));
         this.gifs = new GifLibrary(this.settings);
         this.history = new History(this.settings.get_int('history-limit'));
         this.pendingRestore = null;
@@ -55,24 +56,13 @@ export default class SuperVExtension extends Extension {
         if (!this._active || epoch !== this._epoch)
             return;
         const data = JSON.parse(new TextDecoder().decode(contents));
-        let annotations = {};
-        const locale = emojiLocale(GLib.get_language_names());
-        if (locale !== 'en') {
-            try {
-                const file = this.dir.get_child('data').get_child('emoji-locales').get_child(`${locale}.json`);
-                const bytes = await new Promise((resolve, reject) => {
-                    file.load_contents_async(this._stateCancellable, (source, result) => {
-                        try { resolve(source.load_contents_finish(result)[1]); } catch (error) { reject(error); }
-                    });
-                });
-                annotations = JSON.parse(new TextDecoder().decode(bytes)).annotations;
-            } catch {
-                // An absent catalog falls back to the bundled English data.
-            }
-        }
+        this._emojiRecords = data.emoji;
+        do {
+            await this._updateLanguage();
+        } while (this._active && epoch === this._epoch &&
+            this._appliedLanguage !== this.settings.get_string('ui-language'));
         if (!this._active || epoch !== this._epoch)
             return;
-        this.emoji = new EmojiIndex(data.emoji, [], annotations);
         const store = this.store;
         const raw = store.persist ? await store.load(this._stateCancellable) : null;
         if (!this._active || epoch !== this._epoch)
@@ -88,6 +78,14 @@ export default class SuperVExtension extends Extension {
             }
         } else if (!store.persist) {
             await store.erase();
+        }
+        if (!this._active || epoch !== this._epoch)
+            return;
+        if (this._appliedLanguage !== this.settings.get_string('ui-language')) {
+            do {
+                await this._updateLanguage();
+            } while (this._active && epoch === this._epoch &&
+                this._appliedLanguage !== this.settings.get_string('ui-language'));
         }
         if (!this._active || epoch !== this._epoch)
             return;
@@ -120,6 +118,36 @@ export default class SuperVExtension extends Extension {
         Main.wm.addKeybinding('open-popup', this.settings, Meta.KeyBindingFlags.NONE,
             Shell.ActionMode.NORMAL | Shell.ActionMode.POPUP, () => this.toggle());
         this._binding = true;
+    }
+
+    async _updateLanguage() {
+        const revision = ++this._languageRevision;
+        const epoch = this._epoch;
+        const choice = this.settings.get_string('ui-language');
+        const language = initTranslations(this.dir, choice);
+        if (!this._emojiRecords)
+            return;
+        let annotations = {};
+        const locale = annotationLocale(language);
+        if (locale !== 'en') {
+            try {
+                const file = this.dir.get_child('data').get_child('emoji-locales').get_child(`${locale}.json`);
+                const bytes = await new Promise((resolve, reject) => {
+                    file.load_contents_async(this._stateCancellable, (source, result) => {
+                        try { resolve(source.load_contents_finish(result)[1]); } catch (error) { reject(error); }
+                    });
+                });
+                annotations = JSON.parse(new TextDecoder().decode(bytes)).annotations;
+            } catch {
+                // An absent catalog falls back to the bundled English data.
+            }
+        }
+        if (!this._active || epoch !== this._epoch || revision !== this._languageRevision ||
+            choice !== this.settings.get_string('ui-language'))
+            return;
+        this._appliedLanguage = choice;
+        this.emoji = new EmojiIndex(this._emojiRecords, this.emoji?.recent ?? [], annotations);
+        this.popup?.retranslate();
     }
 
     identifiers(window) {
@@ -257,6 +285,10 @@ export default class SuperVExtension extends Extension {
             this.popup?.refresh();
         } else if (key === 'popup-position') {
             this.popup?.positionPanel();
+        } else if (key === 'ui-language') {
+            initTranslations(this.dir, this.settings.get_string('ui-language'));
+            if (this._ready)
+                this._updateLanguage().catch(error => console.error(`Super V language: ${error.message}`));
         }
     }
 
@@ -279,5 +311,6 @@ export default class SuperVExtension extends Extension {
         this.popup = this.clipboard = this.pasteBackend = this.settings = null;
         this.history = this.emoji = this.store = this.pendingRestore = this._target = this.gifs = null;
         this._stateCancellable = null;
+        this._emojiRecords = null;
     }
 }

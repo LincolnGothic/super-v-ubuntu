@@ -4,8 +4,8 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk?version=4.0';
 import {ExtensionPreferences} from 'resource:///org/gnome/Shell/Extensions/js/extensions/prefs.js';
-import {gettext as _} from './translations.js';
-import {format} from './core/localization.js';
+import {gettext as _, initTranslations} from './translations.js';
+import {format, languageOptions} from './core/localization.js';
 import {parsePasteOverrides, validateAppList} from './core/settings.js';
 import {gifPaths, MAX_GIF_FILES} from './core/gif.js';
 import {GifLibrary} from './gifs.js';
@@ -14,8 +14,49 @@ export default class SuperVPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
         const settings = this.getSettings();
         window.set_default_size(680, 720);
+        let content;
+        const rebuild = () => {
+            if (content) {
+                content.cleanup();
+                window.remove(content.page);
+            }
+            initTranslations(this.dir, settings.get_string('ui-language'));
+            content = this._fillPage(window, settings);
+        };
+        rebuild();
+        let rebuildSource = 0;
+        const languageSignal = settings.connect('changed::ui-language', () => {
+            // Let the native dropdown finish handling selection before removing
+            // its page, and coalesce rapid changes into one refresh.
+            if (!rebuildSource) {
+                rebuildSource = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                    rebuildSource = 0;
+                    rebuild();
+                    return GLib.SOURCE_REMOVE;
+                });
+            }
+        });
+        window.connect('close-request', () => {
+            if (rebuildSource)
+                GLib.source_remove(rebuildSource);
+            settings.disconnect(languageSignal);
+            content.cleanup();
+            return false;
+        });
+    }
+
+    _fillPage(window, settings) {
         const page = new Adw.PreferencesPage({title: _('Super V'), icon_name: 'edit-paste-symbolic'});
         window.add(page);
+        const appearance = new Adw.PreferencesGroup({title: _('Appearance')});
+        page.add(appearance);
+        const language = new Adw.ComboRow({title: _('Language'),
+            subtitle: _('Changes Super V immediately. Language names stay in their native form.'),
+            model: Gtk.StringList.new(languageOptions.map(option => option.id === 'system' ? _(option.label) : option.label)),
+            selected: languageOptions.findIndex(option => option.id === settings.get_string('ui-language'))});
+        language.connect('notify::selected', () =>
+            settings.set_string('ui-language', languageOptions[language.selected]?.id ?? 'system'));
+        appearance.add(language);
         const history = new Adw.PreferencesGroup({title: _('Clipboard history'),
             description: _('History stays on this computer. It may contain private text. Pausing capture does not erase existing entries.')});
         page.add(history);
@@ -160,13 +201,10 @@ export default class SuperVPreferences extends ExtensionPreferences {
             }
         };
         const gifSignal = settings.connect('changed::gif-files', refreshGifs);
-        window.connect('close-request', () => {
-            settings.disconnect(gifSignal);
-            return false;
-        });
         refreshGifs();
         const privacy = new Adw.PreferencesGroup({title: _('Local storage'),
             description: format(_('Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access.'), GLib.build_filenamev([GLib.get_user_state_dir(), 'super-v-ubuntu', 'history.json']))});
         page.add(privacy);
+        return {page, cleanup: () => settings.disconnect(gifSignal)};
     }
 }

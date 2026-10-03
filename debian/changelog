@@ -1,3 +1,12 @@
+super-v-ubuntu (0.1.5) unstable; urgency=medium
+
+  * Add an app-only language selector with live interface and search updates.
+  * Replace cycling categories with horizontal, directly selectable buttons.
+  * Add localized tooltips, keyboard navigation and a skin-tone menu.
+  * Check live language changes, category scrolling and packaged catalogs.
+
+ -- Super V Ubuntu contributors <super-v-ubuntu@users.noreply.github.com>  Fri, 02 Oct 2026 21:00:00 +0000
+
 super-v-ubuntu (0.1.4) unstable; urgency=medium
 
   * Add English, Simplified/Traditional Chinese, Japanese, Spanish, French
