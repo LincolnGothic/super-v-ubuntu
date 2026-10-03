@@ -280,10 +280,12 @@ async function controller() {
     const emoji = JSON.parse(readFileSync('extension/data/emoji.json', 'utf8'));
     const mockPath = name => resolve(`extension/${name}`);
     const mocks = {
+        'gettext': {dgettext: (_domain, message) => message},
+        'gi://GLib': {default: {get_language_names: () => ['en']}},
         'gi://Gio': {default: {}}, 'gi://Meta': {default: {}}, 'gi://Shell': {default: {}},
         'resource:///org/gnome/shell/ui/main.js': {notify() {}},
         'resource:///org/gnome/shell/ui/modalDialog.js': {State: {OPENED: 1, OPENING: 2}},
-        'resource:///org/gnome/shell/extensions/extension.js': {Extension: class {}},
+        'resource:///org/gnome/shell/extensions/extension.js': {Extension: class {}, gettext: message => message},
         [mockPath('storage.js')]: {StateStore: class {}},
         [mockPath('clipboard.js')]: {ClipboardMonitor: class {}},
         [mockPath('paste.js')]: {PasteBackend: class {}},

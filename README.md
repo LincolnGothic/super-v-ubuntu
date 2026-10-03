@@ -1,8 +1,14 @@
 # Super V Ubuntu
 
-A local clipboard-history, emoji, kaomoji, symbols and GIF picker implemented as a GNOME Shell
-extension. Press **Super+V** to open a compact shell popup, search immediately,
-then select text or an emoji. GPL-3.0-or-later; Unicode data uses Unicode-3.0.
+A Windows-style **Super+V** picker for Ubuntu GNOME, with clipboard history,
+emoji, kaomoji, symbols, and local GIF favorites. Open the popup, search, and
+insert a selection using the keyboard or mouse. Everything stays on your computer.
+GPL-3.0-or-later; Unicode data uses Unicode-3.0.
+
+[English](README.md) · [简体中文](docs/i18n/README.zh-CN.md) ·
+[繁體中文](docs/i18n/README.zh-TW.md) · [日本語](docs/i18n/README.ja.md) ·
+[Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) ·
+[한국어](docs/i18n/README.ko.md)
 
 **Release status:** implementation and automated/package validation are
 available. This build has **not** been exercised in a real GNOME Wayland
@@ -32,12 +38,12 @@ the full desktop acceptance matrix remains pending.
 
 ## Install the Debian package
 
-Download [`super-v-ubuntu_0.1.3_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.3/super-v-ubuntu_0.1.3_all.deb)
-from [release v0.1.3](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.3),
+Download [`super-v-ubuntu_0.1.4_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.4/super-v-ubuntu_0.1.4_all.deb)
+from [release v0.1.4](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.4),
 save it to Downloads, then run on your Ubuntu desktop:
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.3_all.deb"
+sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.4_all.deb"
 ```
 
 Log out and back in so GNOME discovers the system extension. Then, as your
@@ -61,12 +67,27 @@ Press Super+V. Capture begins after extension initialization, with a default
 disable persistence or automatic paste, and choose another shortcut.
 Enabling this extension grants it access to clipboard text; read `SECURITY.md`.
 
-The header must show **Super V 0.1.3** after upgrading. GNOME can keep old code
+The header must show **Super V 0.1.4** after upgrading. GNOME can keep old code
 loaded until logout/login. A user-local installation of the same UUID also
 overrides the system package: inspect the **Path** shown by `gnome-extensions
 info` above. If it points into your home directory, back up and move that UUID
 directory out of `~/.local/share/gnome-shell/extensions`, then log out/in to
 load the package from `/usr/share/gnome-shell/extensions`.
+
+## Languages
+
+One installer includes English, Simplified Chinese, Traditional Chinese, Japanese,
+Spanish, French and Korean. The interface follows the GNOME session language;
+unsupported languages and missing messages fall back to English. Change the
+language in Ubuntu's **Settings → System → Region & Language**, then log out/in.
+There is no separate language edition or in-app language setting.
+
+Chinese is selected by script/region: Taiwan, Hong Kong and Macau use Traditional
+Chinese; mainland China, Singapore and generic Chinese use Simplified Chinese.
+Spanish and French use a shared translation across their regional locales.
+Emoji names, search keywords, kaomoji/symbol labels, settings, notifications and
+accessible control labels are localized. English emoji and character names remain
+searchable in every language. See [translation contributions](docs/translations.md).
 
 ## Position and dismissal
 
@@ -111,7 +132,7 @@ extension cannot verify that a receiving application accepted the text.
 ## Emoji
 
 The bundled database contains 3,944 fully-qualified Emoji 17.0 sequences,
-including ZWJ, flags and skin-tone combinations, with English CLDR 48 keywords.
+including ZWJ, flags and skin-tone combinations, with CLDR 48 names and keywords in the six additional languages and English.
 Search by name, keyword or emoji. The Category control cycles through All,
 Recent, and Unicode groups; Tone cycles through all/default and five tones.
 All includes mixed-tone sequences; individual tones match uniform variants.
@@ -170,11 +191,11 @@ for exact erasure steps and limitations.
 On Ubuntu 24.04:
 
 ```sh
-sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 eslint gjs \
+sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 gettext locales eslint gjs \
     gir1.2-gtk-4.0 gir1.2-adw-1 lintian git gh
 make test
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.3_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.4_all.deb
 ```
 
 No npm dependencies or runtime downloads are required. Debian's build invokes
@@ -233,7 +254,7 @@ performed before initial publication, not current GitHub publication status.
 This checkout includes `scripts/publish.sh`. After committing on main, run
 `gh auth login`, then `./scripts/publish.sh`. It creates a PUBLIC
 `<authenticated-account>/super-v-ubuntu` repository, pushes source, waits for
-successful CI, builds from a clean checkout, checks lintian, creates `v0.1.3`,
+successful CI, builds from a clean checkout, checks lintian, creates `v0.1.4`,
 uploads the `.deb` and SHA256SUMS, and downloads the release asset to verify it.
 It refuses a different origin or an existing private repository. Actual remote
 publication is recorded separately from local build success.

@@ -1,0 +1,809 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Super V Ubuntu interface and character names.
+msgid ""
+msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: ko\nLanguage: ko\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Activities"
+msgstr "활동"
+
+msgid "Add / manage GIFs"
+msgstr "GIF 추가 / 관리"
+
+msgid "Add GIF favorites"
+msgstr "즐겨찾는 GIF 추가"
+
+msgid "Add GIF files"
+msgstr "GIF 파일 추가"
+
+msgid "Add GIF files in Settings. GIF insertion requires an app that accepts images."
+msgstr "설정에서 GIF 파일을 추가하세요. GIF를 삽입하려면 이미지를 지원하는 앱이 필요합니다."
+
+msgid "Add local GIF files (up to 40, 8 MiB each, 2048 × 2048 pixels). The picker shows the first frame and copies the GIF image. Pasting requires an app that accepts images; animation support depends on the app. Files stay in their original location. No online search."
+msgstr "로컬 GIF 파일을 추가합니다(최대 40개, 파일당 8 MiB 이하, 2048 × 2048픽셀 이하). 선택기는 첫 프레임을 표시하고 GIF 이미지를 복사합니다. 붙여넣을 앱이 이미지를 지원해야 하며, 애니메이션 지원 여부는 앱에 따라 다릅니다. 파일은 원래 위치에 유지됩니다. 온라인 검색은 제공하지 않습니다."
+
+msgid "All"
+msgstr "전체"
+
+msgid "Also removes pinned entries and emoji recents."
+msgstr "고정된 항목과 최근 사용한 이모지도 삭제합니다."
+
+msgid "Animals"
+msgstr "동물"
+
+msgid "Animals & Nature"
+msgstr "동물과 자연"
+
+msgid "Apps using Ctrl+Shift+V (comma-separated)"
+msgstr "Ctrl+Shift+V를 사용하는 앱(쉼표로 구분)"
+
+msgid "Arrows"
+msgstr "화살표"
+
+msgid "Capture clipboard history"
+msgstr "클립보드 기록 수집"
+
+#, javascript-format
+msgid "Category: %s"
+msgstr "카테고리: %s"
+
+msgid "Center of screen"
+msgstr "화면 중앙"
+
+msgid "Choose files"
+msgstr "파일 선택"
+
+msgid "Classic"
+msgstr "기본"
+
+msgid "Clear"
+msgstr "지우기"
+
+msgid "Clear requested; applied when the extension is active."
+msgstr "삭제를 요청했습니다. 확장 기능이 활성화되면 적용됩니다."
+
+msgid "Clear unpinned"
+msgstr "고정되지 않은 항목 지우기"
+
+msgid "Clear unpinned history"
+msgstr "고정되지 않은 기록 지우기"
+
+msgid "Clipboard"
+msgstr "클립보드"
+
+msgid "Clipboard changed; the newer clipboard was preserved."
+msgstr "클립보드가 변경되어 최신 내용을 유지했습니다."
+
+msgid "Clipboard history"
+msgstr "클립보드 기록"
+
+msgid "Copied to clipboard. Use your application’s paste shortcut."
+msgstr "클립보드에 복사했습니다. 앱의 붙여넣기 단축키를 사용하세요."
+
+msgid "Copy some text to start your history."
+msgstr "텍스트를 복사하면 기록이 시작됩니다."
+
+msgid "Could not initialize the extension. Disable and re-enable it."
+msgstr "확장 기능을 초기화할 수 없습니다. 비활성화한 후 다시 활성화하세요."
+
+msgid "Could not read that GIF. Re-add it in Settings or choose another file."
+msgstr "GIF를 읽을 수 없습니다. 설정에서 다시 추가하거나 다른 파일을 선택하세요."
+
+msgid "Could not update local history storage. Check directory permissions."
+msgstr "로컬 기록을 업데이트할 수 없습니다. 디렉터리 권한을 확인하세요."
+
+msgid "Currency"
+msgstr "통화"
+
+msgid "Dark"
+msgstr "어두운색"
+
+msgid "Default"
+msgstr "기본"
+
+msgid "Delete entry"
+msgstr "항목 삭제"
+
+msgid "Desktop integration"
+msgstr "데스크톱 통합"
+
+msgid "Emoji"
+msgstr "이모지"
+
+msgid "Erase all saved items"
+msgstr "저장된 모든 항목 삭제"
+
+msgid "Excluded apps (comma-separated)"
+msgstr "제외할 앱(쉼표로 구분)"
+
+#, javascript-format
+msgid "Files skipped: %d. Invalid, too large, or favorites full."
+msgstr "건너뛴 파일: %d개. 유효하지 않거나 너무 크거나 즐겨찾기가 가득 찼습니다."
+
+msgid "Flags"
+msgstr "깃발"
+
+msgid "Food & Drink"
+msgstr "음식과 음료"
+
+msgid "GIF favorites"
+msgstr "즐겨찾는 GIF"
+
+msgid "GIF images"
+msgstr "GIF 이미지"
+
+msgid "Greek"
+msgstr "그리스 문자"
+
+msgid "Happy"
+msgstr "행복"
+
+msgid "History exceeds the storage limit."
+msgstr "기록이 저장 용량 제한을 초과합니다."
+
+msgid "History is paused. Enable it in Settings."
+msgstr "기록 수집이 일시 중지되었습니다. 설정에서 활성화하세요."
+
+msgid "History stays on this computer. It may contain private text. Pausing capture does not erase existing entries."
+msgstr "기록은 이 컴퓨터에 저장되며 개인 정보가 포함될 수 있습니다. 수집을 일시 중지해도 기존 항목은 삭제되지 않습니다."
+
+msgid "Invalid stored history was removed."
+msgstr "유효하지 않은 저장 기록을 삭제했습니다."
+
+msgid "Kaomoji and text emoticons"
+msgstr "카오모지와 텍스트 이모티콘"
+
+msgid "Light"
+msgstr "밝은색"
+
+msgid "Local storage"
+msgstr "로컬 저장소"
+
+msgid "Love"
+msgstr "사랑"
+
+msgid "Math"
+msgstr "수학"
+
+msgid "Maximum unpinned entries"
+msgstr "고정되지 않은 항목의 최대 개수"
+
+msgid "Medium"
+msgstr "중간색"
+
+msgid "Medium dark"
+msgstr "약간 어두운색"
+
+msgid "Medium light"
+msgstr "약간 밝은색"
+
+msgid "Near mouse pointer"
+msgstr "마우스 포인터 근처"
+
+msgid "No items in this filter."
+msgstr "이 필터에 해당하는 항목이 없습니다."
+
+msgid "No matching items."
+msgstr "일치하는 항목이 없습니다."
+
+msgid "Objects"
+msgstr "사물"
+
+msgid "Paste automatically"
+msgstr "자동으로 붙여넣기"
+
+msgid "Paste overrides (JSON)"
+msgstr "붙여넣기 단축키 개별 설정(JSON)"
+
+msgid "People & Body"
+msgstr "사람과 신체"
+
+msgid "Picker position"
+msgstr "선택기 위치"
+
+msgid "Pin entry"
+msgstr "항목 고정"
+
+msgid "Pinned entries are kept."
+msgstr "고정된 항목은 유지됩니다."
+
+msgid "Pinned entries have a separate maximum of 100. Total text is limited to 2 MiB."
+msgstr "고정된 항목은 별도로 최대 100개까지 저장할 수 있습니다. 전체 텍스트 용량은 2 MiB로 제한됩니다."
+
+#, javascript-format
+msgid "Pinned: %s"
+msgstr "고정됨: %s"
+
+#, javascript-format
+msgid "Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access."
+msgstr "평문 기록: %s. 디렉터리 권한 0700, 파일 권한 0600. 비밀번호 관리자 MIME 힌트와 활성 앱 제외 기능은 완벽하지 않을 수 있습니다. 원격 측정이나 실행 중 네트워크 접근은 없습니다."
+
+msgid "Playful"
+msgstr "장난"
+
+msgid "Punctuation"
+msgstr "문장 부호"
+
+msgid "Recent"
+msgstr "최근 사용"
+
+msgid "Remember after logout"
+msgstr "로그아웃 후에도 유지"
+
+msgid "Remove favorite (keep file)"
+msgstr "즐겨찾기 제거(파일 유지)"
+
+msgid "Restore clipboard"
+msgstr "클립보드 복원"
+
+msgid "Sad"
+msgstr "슬픔"
+
+msgid "Search"
+msgstr "검색"
+
+msgid "Search GIF filenames"
+msgstr "GIF 파일 이름 검색"
+
+msgid "Search clipboard"
+msgstr "클립보드 검색"
+
+msgid "Search emoji"
+msgstr "이모지 검색"
+
+msgid "Search kaomoji"
+msgstr "카오모지 검색"
+
+msgid "Search symbols"
+msgstr "기호 검색"
+
+msgid "Settings"
+msgstr "설정"
+
+msgid "Shortcut (GTK accelerator syntax)"
+msgstr "단축키(GTK 액셀러레이터 문법)"
+
+msgid "Shortcuts: ctrl-v, ctrl-shift-v, shift-insert, manual."
+msgstr "단축키: ctrl-v, ctrl-shift-v, shift-insert, manual."
+
+#, javascript-format
+msgid "Show more (%d)"
+msgstr "더 보기(%d)"
+
+msgid "Smileys & Emotion"
+msgstr "얼굴과 감정"
+
+msgid "Stored history could not be read. It has been removed."
+msgstr "저장된 기록을 읽을 수 없어 삭제했습니다."
+
+msgid "Super V"
+msgstr "Super V"
+
+msgid "Super+V opens near the mouse pointer, or in the center of the focused screen."
+msgstr "Super+V를 누르면 마우스 포인터 근처 또는 활성 화면 중앙에 열립니다."
+
+msgid "Surprised"
+msgstr "놀람"
+
+msgid "Symbols"
+msgstr "기호"
+
+msgid "Text copied after enabling the extension is collected."
+msgstr "확장 기능을 활성화한 후 복사한 텍스트를 수집합니다."
+
+#, javascript-format
+msgid "Tone: %s"
+msgstr "피부색: %s"
+
+msgid "Travel & Places"
+msgstr "여행과 장소"
+
+msgid "Turn off to copy selections without sending a paste shortcut."
+msgstr "끄면 붙여넣기 단축키를 보내지 않고 선택한 항목만 복사합니다."
+
+msgid "Turning this off removes the saved file; current memory is retained."
+msgstr "끄면 저장된 파일이 삭제되지만 현재 메모리의 기록은 유지됩니다."
+
+msgid "Units"
+msgstr "단위"
+
+msgid "Unpin entry"
+msgstr "항목 고정 해제"
+
+msgid "Use a shortcut such as <Super>v or <Control><Alt>v."
+msgstr "<Super>v 또는 <Control><Alt>v 같은 단축키를 사용하세요."
+
+msgid "Use exact desktop application IDs (including .desktop where present) or WM classes. Clipboard origin cannot always be identified."
+msgstr "정확한 데스크톱 앱 ID(해당하는 경우 .desktop 포함) 또는 WM 클래스를 사용하세요. 클립보드의 출처를 항상 식별할 수 있는 것은 아닙니다."
+
+msgid "You can pin up to 100 entries."
+msgstr "최대 100개 항목을 고정할 수 있습니다."
+
+msgid "Your recently used emoji will appear here."
+msgstr "최근 사용한 이모지가 여기에 표시됩니다."
+
+msgid "adoration"
+msgstr "애정"
+
+msgid "affection"
+msgstr "호감"
+
+msgid "alpha"
+msgstr "알파"
+
+msgid "angstrom"
+msgstr "옹스트롬"
+
+msgid "angstrom sign"
+msgstr "옹스트롬 기호"
+
+msgid "approximately equal"
+msgstr "약 같음"
+
+msgid "astonished"
+msgstr "깜짝 놀람"
+
+msgid "bear"
+msgstr "곰"
+
+msgid "beta"
+msgstr "베타"
+
+msgid "bird"
+msgstr "새"
+
+msgid "bitcoin"
+msgstr "비트코인"
+
+msgid "bullet"
+msgstr "글머리 기호"
+
+msgid "capital delta"
+msgstr "대문자 델타"
+
+msgid "capital gamma"
+msgstr "대문자 감마"
+
+msgid "capital lambda"
+msgstr "대문자 람다"
+
+msgid "capital omega"
+msgstr "대문자 오메가"
+
+msgid "capital phi"
+msgstr "대문자 파이"
+
+msgid "capital pi"
+msgstr "대문자 파이"
+
+msgid "capital sigma"
+msgstr "대문자 시그마"
+
+msgid "capital theta"
+msgstr "대문자 세타"
+
+msgid "cat"
+msgstr "고양이"
+
+msgid "cat eyes"
+msgstr "고양이 눈"
+
+msgid "celebrate"
+msgstr "축하"
+
+msgid "celebration sparkles"
+msgstr "축하 반짝임"
+
+msgid "cent"
+msgstr "센트"
+
+msgid "chi"
+msgstr "카이"
+
+msgid "confused"
+msgstr "혼란"
+
+msgid "copyright"
+msgstr "저작권"
+
+msgid "cry"
+msgstr "울음"
+
+msgid "crying"
+msgstr "우는 중"
+
+msgid "cubed"
+msgstr "세제곱"
+
+msgid "cute smile"
+msgstr "귀여운 미소"
+
+msgid "dagger"
+msgstr "단검표"
+
+msgid "degree"
+msgstr "도"
+
+msgid "degrees Celsius"
+msgstr "섭씨"
+
+msgid "degrees Fahrenheit"
+msgstr "화씨"
+
+msgid "delighted"
+msgstr "기쁨"
+
+msgid "delta"
+msgstr "델타"
+
+msgid "determined"
+msgstr "결의"
+
+msgid "divide"
+msgstr "나누기"
+
+msgid "dog"
+msgstr "개"
+
+msgid "dollar"
+msgstr "달러"
+
+msgid "double dagger"
+msgstr "이중 단검표"
+
+msgid "down arrow"
+msgstr "아래쪽 화살표"
+
+msgid "element of"
+msgstr "원소임"
+
+msgid "ellipsis"
+msgstr "줄임표"
+
+msgid "em dash"
+msgstr "긴 대시"
+
+msgid "empty set"
+msgstr "공집합"
+
+msgid "en dash"
+msgstr "짧은 대시"
+
+msgid "epsilon"
+msgstr "엡실론"
+
+msgid "equilibrium reversible reaction"
+msgstr "평형 가역 반응"
+
+msgid "equivalent"
+msgstr "동치"
+
+msgid "eta"
+msgstr "에타"
+
+msgid "euro"
+msgstr "유로"
+
+msgid "flower smile"
+msgstr "꽃 미소"
+
+msgid "full width percent"
+msgstr "전각 퍼센트"
+
+msgid "gamma"
+msgstr "감마"
+
+msgid "gradient"
+msgstr "기울기"
+
+msgid "greater than or equal"
+msgstr "크거나 같음"
+
+msgid "happy"
+msgstr "행복"
+
+msgid "heart"
+msgstr "하트"
+
+msgid "heart eyes"
+msgstr "하트 눈"
+
+msgid "hug"
+msgstr "포옹"
+
+msgid "identical"
+msgstr "항등"
+
+msgid "implies"
+msgstr "함의"
+
+msgid "infinity"
+msgstr "무한대"
+
+msgid "integral"
+msgstr "적분"
+
+msgid "intersection"
+msgstr "교집합"
+
+msgid "iota"
+msgstr "요타"
+
+msgid "joy"
+msgstr "즐거움"
+
+msgid "kappa"
+msgstr "카파"
+
+msgid "kiss"
+msgstr "키스"
+
+msgid "lambda"
+msgstr "람다"
+
+msgid "laugh"
+msgstr "웃음"
+
+msgid "left arrow"
+msgstr "왼쪽 화살표"
+
+msgid "left double arrow"
+msgstr "왼쪽 이중 화살표"
+
+msgid "left guillemet"
+msgstr "왼쪽 겹화살괄호"
+
+msgid "left quotation mark"
+msgstr "왼쪽 큰따옴표"
+
+msgid "left right arrow"
+msgstr "좌우 화살표"
+
+msgid "left single quote"
+msgstr "왼쪽 작은따옴표"
+
+msgid "less than or equal"
+msgstr "작거나 같음"
+
+msgid "litre"
+msgstr "리터"
+
+msgid "long right arrow"
+msgstr "긴 오른쪽 화살표"
+
+msgid "love"
+msgstr "사랑"
+
+msgid "maps to"
+msgstr "사상"
+
+msgid "micro"
+msgstr "마이크로"
+
+msgid "middle dot"
+msgstr "가운뎃점"
+
+msgid "minus"
+msgstr "빼기"
+
+msgid "mu micro"
+msgstr "뮤 마이크로"
+
+msgid "multiply"
+msgstr "곱하기"
+
+msgid "nervous"
+msgstr "긴장"
+
+msgid "north east arrow"
+msgstr "오른쪽 위 화살표"
+
+msgid "north west arrow"
+msgstr "왼쪽 위 화살표"
+
+msgid "not element of"
+msgstr "원소가 아님"
+
+msgid "not equal"
+msgstr "같지 않음"
+
+msgid "nu"
+msgstr "뉴"
+
+msgid "omega"
+msgstr "오메가"
+
+msgid "paragraph"
+msgstr "문단 기호"
+
+msgid "partial derivative"
+msgstr "편미분"
+
+msgid "per mille"
+msgstr "퍼밀"
+
+msgid "phi"
+msgstr "파이"
+
+msgid "pi"
+msgstr "파이"
+
+msgid "plus minus"
+msgstr "플러스 마이너스"
+
+msgid "point left"
+msgstr "왼쪽 가리키기"
+
+msgid "point right"
+msgstr "오른쪽 가리키기"
+
+msgid "pound"
+msgstr "파운드"
+
+msgid "product"
+msgstr "곱"
+
+msgid "proportional"
+msgstr "비례"
+
+msgid "psi"
+msgstr "프사이"
+
+msgid "rabbit"
+msgstr "토끼"
+
+msgid "reduced Planck constant"
+msgstr "환산 플랑크 상수"
+
+msgid "registered"
+msgstr "등록 상표"
+
+msgid "restore table"
+msgstr "탁자 되돌리기"
+
+msgid "rho"
+msgstr "로"
+
+msgid "right arrow"
+msgstr "오른쪽 화살표"
+
+msgid "right guillemet"
+msgstr "오른쪽 겹화살괄호"
+
+msgid "right quotation mark"
+msgstr "오른쪽 큰따옴표"
+
+msgid "right single quote"
+msgstr "오른쪽 작은따옴표"
+
+msgid "ruble"
+msgstr "루블"
+
+msgid "rupee"
+msgstr "루피"
+
+msgid "sad"
+msgstr "슬픔"
+
+msgid "section"
+msgstr "절 기호"
+
+msgid "shocked"
+msgstr "충격"
+
+msgid "shrug"
+msgstr "어깨 으쓱"
+
+msgid "sigma"
+msgstr "시그마"
+
+msgid "sleep"
+msgstr "수면"
+
+msgid "smile"
+msgstr "미소"
+
+msgid "smiling"
+msgstr "미소 짓기"
+
+msgid "smirk"
+msgstr "씨익 웃기"
+
+msgid "south east arrow"
+msgstr "오른쪽 아래 화살표"
+
+msgid "south west arrow"
+msgstr "왼쪽 아래 화살표"
+
+msgid "square root"
+msgstr "제곱근"
+
+msgid "squared"
+msgstr "제곱"
+
+msgid "subscript one"
+msgstr "아래 첨자 1"
+
+msgid "subscript three"
+msgstr "아래 첨자 3"
+
+msgid "subscript two"
+msgstr "아래 첨자 2"
+
+msgid "subscript zero"
+msgstr "아래 첨자 0"
+
+msgid "sum"
+msgstr "합"
+
+msgid "superscript minus"
+msgstr "위 첨자 빼기"
+
+msgid "superscript plus"
+msgstr "위 첨자 더하기"
+
+msgid "surprise"
+msgstr "놀람"
+
+msgid "surprised"
+msgstr "놀람"
+
+msgid "table flip"
+msgstr "탁자 뒤집기"
+
+msgid "tau"
+msgstr "타우"
+
+msgid "tears"
+msgstr "눈물"
+
+msgid "theta"
+msgstr "세타"
+
+msgid "tongue"
+msgstr "혀 내밀기"
+
+msgid "trademark"
+msgstr "상표"
+
+msgid "unhappy"
+msgstr "불행"
+
+msgid "union"
+msgstr "합집합"
+
+msgid "unsure"
+msgstr "망설임"
+
+msgid "up arrow"
+msgstr "위쪽 화살표"
+
+msgid "up down arrow"
+msgstr "상하 화살표"
+
+msgid "weeping"
+msgstr "흐느낌"
+
+msgid "wide eyes"
+msgstr "눈 크게 뜨기"
+
+msgid "wink"
+msgstr "윙크"
+
+msgid "won"
+msgstr "원"
+
+msgid "xi"
+msgstr "크시"
+
+msgid "yen yuan"
+msgstr "엔 위안"
+
+msgid "zeta"
+msgstr "제타"
+
+msgid "↑↓ Select · Enter Paste · Esc Close · Ctrl+Tab Switch"
+msgstr "↑↓ 선택 · Enter 붙여넣기 · Esc 닫기 · Ctrl+Tab 전환"
+
+msgid "↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close"
+msgstr "↑↓←→ 선택 · Enter 붙여넣기 · Ctrl+F 검색 · Esc 닫기"
+

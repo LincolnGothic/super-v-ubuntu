@@ -11,7 +11,7 @@ import {moveGridSelection} from '../extension/core/grid.js';
 const data = JSON.parse(readFileSync('extension/data/emoji.json', 'utf8')).emoji;
 
 async function fixture({count = 125, width = 1920, scale = 1, position = 'pointer',
-    pointer = [500, 400]} = {}) {
+    pointer = [500, 400], translate = message => message} = {}) {
     let focus = null;
     class Actor {
         constructor(properties = {}) {
@@ -19,6 +19,7 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
             this.signals = new Map();
             this.pseudoClasses = new Set();
             Object.assign(this, properties);
+            this.clutter_text = {line_wrap: false};
         }
         connect(signal, callback) { this.signals.set(signal, callback); }
         connectObject(...args) {
@@ -28,7 +29,7 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
         emit(signal, ...args) { return this.signals.get(signal)?.(this, ...args); }
         add_child(child) { child.parent = this; this.children.push(child); }
         set_child(child) { this.children = []; this.add_child(child); }
-        get_child() { return this.children[0]; }
+        get_child() { return this.children[0] ?? {clutter_text: this.clutter_text}; }
         get_parent() { return this.parent; }
         get_last_child() { return this.children.at(-1); }
         get_n_children() { return this.children.length; }
@@ -102,9 +103,10 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
         deleteEntry: id => calls.push(['delete', id]), pin: id => calls.push(['pin', id])};
     const module = await loadModule('extension/popup.js', {
         'gi://Clutter': {default: clutter}, 'gi://GObject': {default: {registerClass: x => x}},
-        'gi://Pango': {default: {EllipsizeMode: {NONE: 0, END: 1}}},
+        'gi://Pango': {default: {EllipsizeMode: {NONE: 0, END: 1}, WrapMode: {WORD_CHAR: 1}}},
         'gi://Gio': {default: {FileIcon: {new: file => ({file})}, File: {new_for_path: path => path}}},
         'gi://Shell': {default: {ActionMode: {POPUP: 1}}}, 'gi://St': {default: st},
+        'gettext': {dgettext: (_domain, message) => translate(message)},
         'resource:///org/gnome/shell/ui/modalDialog.js': {ModalDialog, State: {OPENED: 1, OPENING: 2}},
         'resource:///org/gnome/shell/ui/main.js': {layoutManager: {
             focusMonitor: {x: 0, y: 0, width, height: 1080, index: 0},
@@ -340,4 +342,18 @@ test('clipboard keeps text rows, pin/delete buttons and one-item Up/Down navigat
     firstRow.children[1].emit('clicked');
     firstRow.children[2].emit('clicked');
     assert.deepEqual(calls.slice(1), [['pin', popup.results[0].id], ['delete', popup.results[0].id]]);
+});
+
+// Translated labels must not become filter IDs or alter keyboard navigation.
+test('translated category and tone labels preserve filtering and accessibility', async () => {
+    const labels = {'Category: %s': '类别：%s', 'People & Body': '人物与身体',
+        'Tone: %s': '肤色：%s', Medium: '中等', Settings: '设置', 'Pin entry': '固定条目'};
+    const {popup} = await fixture({count: data.length, translate: message => labels[message] ?? message});
+    popup.group = 'People & Body';
+    popup.tone = 'medium';
+    popup.search.set_text('scientist');
+    assert.equal(popup._groupButton.label, '类别：人物与身体');
+    assert.equal(popup._toneButton.label, '肤色：中等');
+    assert.ok(popup.results.some(x => x.text === '👩🏽‍🔬'));
+    assert.equal(popup.group, 'People & Body');
 });

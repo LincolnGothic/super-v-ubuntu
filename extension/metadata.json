@@ -1,15 +1,16 @@
 {
   "uuid": "super-v-ubuntu@super-v-ubuntu.local",
   "name": "Super V Ubuntu",
-  "description": "Local clipboard history and Unicode emoji picker on Super+V.",
+  "description": "A Windows-style Super+V picker for Ubuntu GNOME, with clipboard history, emoji, kaomoji, symbols, and local GIF favorites.",
   "shell-version": [
     "46",
     "50"
   ],
-  "version": 4,
-  "version-name": "0.1.3",
+  "version": 5,
+  "version-name": "0.1.4",
   "settings-schema": "org.gnome.shell.extensions.super-v-ubuntu",
   "session-modes": [
     "user"
-  ]
+  ],
+  "gettext-domain": "super-v-ubuntu"
 }

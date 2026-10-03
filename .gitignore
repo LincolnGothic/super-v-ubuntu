@@ -9,6 +9,7 @@
 __pycache__/
 node_modules/
 extension/schemas/gschemas.compiled
+extension/locale/
 debian/.debhelper/
 debian/super-v-ubuntu/
 debian/tmp/

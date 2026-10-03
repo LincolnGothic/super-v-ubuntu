@@ -9,6 +9,29 @@ import xml.etree.ElementTree as ET
 
 ROOT = Path(__file__).resolve().parent.parent
 INPUT = ROOT / 'vendor/unicode'
+LOCALES = ['zh', 'zh_Hant', 'ja', 'es', 'fr', 'ko']
+
+
+def generate_locale(locale, records):
+    annotations = {}
+    files = [f'{locale}.xml', f'{locale}-derived.xml']
+    for name in files:
+        for node in ET.parse(INPUT / name).iter('annotation'):
+            key = node.attrib['cp'].replace('\ufe0f', '')
+            entry = annotations.setdefault(key, dict(name='', keywords=set()))
+            if node.attrib.get('type') == 'tts':
+                entry['name'] = node.text or ''
+            else:
+                entry['keywords'].update(x.strip() for x in (node.text or '').split('|') if x.strip())
+    output = {}
+    for record in records:
+        entry = annotations.get(record['text'].replace('\ufe0f', ''))
+        if entry:
+            output[record['text']] = dict(name=entry['name'], keywords=sorted(entry['keywords']))
+    result = dict(locale=locale, cldrVersion='48',
+                  inputHashes={name: hashlib.sha256((INPUT / name).read_bytes()).hexdigest() for name in files},
+                  annotations=output)
+    return json.dumps(result, ensure_ascii=False, separators=(',', ':')) + '\n'
 
 
 def generate():
@@ -46,4 +69,9 @@ def generate():
 if __name__ == '__main__':
     output = ROOT / 'extension/data/emoji.json'
     output.write_text(generate())
+    directory = ROOT / 'extension/data/emoji-locales'
+    directory.mkdir(exist_ok=True)
+    records = json.loads(output.read_text())['emoji']
+    for locale in LOCALES:
+        (directory / f'{locale}.json').write_text(generate_locale(locale, records))
     print(f'Generated {len(json.loads(output.read_text())["emoji"])} fully-qualified emoji')

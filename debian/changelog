@@ -1,3 +1,15 @@
+super-v-ubuntu (0.1.4) unstable; urgency=medium
+
+  * Add English, Simplified/Traditional Chinese, Japanese, Spanish, French
+    and Korean UI.
+  * Bundle CLDR 48 localized emoji names and search keywords with
+    English fallback.
+  * Translate accessible labels, character catalogs, settings and notifications.
+  * Add localized guides, translation checks and seven-language
+    Shell layout checks.
+
+ -- Super V Ubuntu contributors <super-v-ubuntu@users.noreply.github.com>  Fri, 02 Oct 2026 18:00:00 +0000
+
 super-v-ubuntu (0.1.3) unstable; urgency=medium
 
   * Show the picker near the pointer with a centered preference.

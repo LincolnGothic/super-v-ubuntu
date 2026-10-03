@@ -22,12 +22,21 @@ with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
     assert not any('history.json' in name or 'node_modules' in name for name in files)
     metadata = json.load(tar.extractfile(prefix + 'metadata.json'))
     assert metadata['shell-version'] == ['46', '50'], 'Incorrect Shell compatibility'
-    assert metadata['version-name'] == '0.1.3' and metadata['version'] == 4
+    assert metadata['version-name'] == '0.1.4' and metadata['version'] == 5
+    assert metadata['gettext-domain'] == 'super-v-ubuntu'
+    for locale in ['zh', 'zh_CN', 'zh_SG', 'zh_TW', 'zh_HK', 'zh_MO', 'zh_Hans', 'zh_Hant',
+                   'ja', 'es', 'fr', 'ko']:
+        assert prefix + f'locale/{locale}/LC_MESSAGES/super-v-ubuntu.mo' in files, f'Missing {locale} gettext catalog'
+    for locale in ['zh', 'zh_Hant', 'ja', 'es', 'fr', 'ko']:
+        name = prefix + f'data/emoji-locales/{locale}.json'
+        assert name in files, f'Missing emoji locale {locale}'
+        data = json.load(tar.extractfile(name))
+        assert data['locale'] == locale and len(data['annotations']) > 3800
     for entry in files.values():
         assert entry.uid == 0 and entry.gid == 0, 'Incorrect package ownership'
         assert not entry.mode & 0o022, 'Group/world writable file'
 control = subprocess.check_output(['dpkg-deb', '-f', str(deb), 'Architecture', 'Version'], text=True)
-assert 'all' in control and '0.1.3' in control
+assert 'all' in control and '0.1.4' in control
 dependencies = subprocess.check_output(['dpkg-deb', '-f', str(deb), 'Depends'], text=True)
 for clause in ['gnome-shell (>= 46~)', 'gnome-shell (<< 47~) | gnome-shell (>= 50~)',
                'gnome-shell (<< 51~)']:

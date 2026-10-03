@@ -18,7 +18,7 @@ License: GPL-3.0-or-later
  On Debian systems, the complete text of the GNU General Public
  License version 3 can be found in /usr/share/common-licenses/GPL-3.
 
-Files: vendor/unicode/* extension/data/emoji.json
+Files: vendor/unicode/* extension/data/emoji.json extension/data/emoji-locales/*
 Copyright: 1991-2026 Unicode, Inc.
 License: Unicode-3.0
  UNICODE LICENSE V3
