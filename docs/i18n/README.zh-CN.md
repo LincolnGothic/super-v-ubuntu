@@ -2,9 +2,11 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
+v0.1.10 修复了屏幕贴图工具栏不响应的问题。缩放、透明度、复制和关闭按钮现在可以正常点击；贴图保留在屏幕上时，也可以继续按 Super+Shift+S 截图。拖动图片或工具栏空白处移动贴图；拖动时按 Escape 可关闭贴图并释放输入。
+
 v0.1.9 修复文字输入：点击「文字」即可在图片上显示带光标的输入框；点击其他位置移动输入框，按 Enter 完成。「浅色马赛克」可自由涂画，分别调节画笔粗细和方块大小；方块为不透明的浅灰色与白色。「黑白滤镜」是单独的可撤销开关。Super+Shift+S 和相机按钮每次只显示新的十字光标，不保留旧选框；拖动后松开即可截图，Escape 取消。截图进入剪贴板和可选历史，使用「保存图像」选择文件位置；Print Screen 保留 GNOME 原有截图界面。
 
-v0.1.9 增加可拖动、缩放和调节透明度的屏幕贴图、自动编号标记、可选取并移动/缩放/删除的标注，以及本地 OCR 文字识别。编辑器中的「贴到屏幕」可固定参考图；「从图像复制文字」可选择已安装的识别语言，检查并编辑结果后复制。在「设置 → 截图导出和 OCR」可选择保存文件夹、文件名格式及 OCR 语言。English OCR 随安装包提供；其他语言需安装对应 Tesseract 语言包。屏幕贴图与历史中的固定项目不同，锁屏、清空或禁用扩展会关闭贴图。
+v0.1.8 增加可拖动、缩放和调节透明度的屏幕贴图、自动编号标记、可选取并移动/缩放/删除的标注，以及本地 OCR 文字识别。编辑器中的「贴到屏幕」可固定参考图；「从图像复制文字」可选择已安装的识别语言，检查并编辑结果后复制。在「设置 → 截图导出和 OCR」可选择保存文件夹、文件名格式及 OCR 语言。English OCR 随安装包提供；其他语言需安装对应 Tesseract 语言包。屏幕贴图与历史中的固定项目不同，锁屏、清空或禁用扩展会关闭贴图。
 
 v0.1.6 支持 PNG/JPEG 图片历史、缩略图、固定和粘贴。点击标题栏的相机按钮，或按 Super+Shift+S，可使用 GNOME 的区域、窗口和全屏截图工具。快捷键可在设置中修改或禁用。启用「关机时清空历史记录」后，文本、图片、固定项目和最近使用的表情仅保存在内存中，关机、重启、注销或重新加载扩展时都会清空。启用时也会删除已有的磁盘历史记录，但不删除 GNOME 的截图文件。
 
@@ -14,10 +16,10 @@ Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Debian 13 / GNOME 48 · Wa
 
 ## 首次安装
 
-下载 [v0.1.9 安装包](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.9/super-v-ubuntu_0.1.9_all.deb)，在安装包所在文件夹中打开终端：
+下载 [v0.1.10 安装包](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.10/super-v-ubuntu_0.1.10_all.deb)，在安装包所在文件夹中打开终端：
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.9_all.deb
+sudo apt install ./super-v-ubuntu_0.1.10_all.deb
 ```
 
 安装后**保存工作、注销并重新登录**，再以普通用户运行以下命令（不使用 sudo）。第一个命令将通知快捷键设为 Super+M，为本应用释放 Super+V；它会替换自定义通知快捷键。
@@ -28,11 +30,11 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-按 **Super+V**，标题应为 **Super V 0.1.9**。
+按 **Super+V**，标题应为 **Super V 0.1.10**。
 
-## 升级到 v0.1.9
+## 升级到 v0.1.10
 
-下载上面的安装包，在安装包所在文件夹中运行同一个 apt 命令，即可覆盖升级，无须先卸载。随后**保存工作、注销并重新登录**，再按 **Super+V** 检查标题是否为 **Super V 0.1.9**。语言和快捷键设置会保留，已保存的文本历史、固定项目和最近使用的表情会迁移；设置为注销时清空的历史会按设置清空。
+下载上面的安装包，在安装包所在文件夹中运行同一个 apt 命令，即可覆盖升级，无须先卸载。随后**保存工作、注销并重新登录**，再按 **Super+V** 检查标题是否为 **Super V 0.1.10**。语言和快捷键设置会保留，已保存的文本历史、固定项目和最近使用的表情会迁移；设置为注销时清空的历史会按设置清空。
 
 以普通用户检查安装包和 GNOME 当前加载的版本：
 
@@ -41,9 +43,9 @@ dpkg-query -W super-v-ubuntu
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-两个版本都应为 **0.1.9**（扩展内部编号为 10）。若安装包为新版而 GNOME 仍加载旧版，请先注销并重新登录。系统安装的 Path 应为 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`；若指向用户目录，请备份并将该 UUID 文件夹移到扩展目录之外，再注销登录。若 Super+V 没有反应，可运行上面的 enable 命令；若打开的是通知，检查首次安装中的通知快捷键命令。设置打不开时，可运行 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`。
+两个版本都应为 **0.1.10**（扩展内部编号为 11）。若安装包为新版而 GNOME 仍加载旧版，请先注销并重新登录。系统安装的 Path 应为 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`；若指向用户目录，请备份并将该 UUID 文件夹移到扩展目录之外，再注销登录。若 Super+V 没有反应，可运行上面的 enable 命令；若打开的是通知，检查首次安装中的通知快捷键命令。设置打不开时，可运行 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`。
 
-## v0.1.9 设置速查
+## v0.1.10 设置速查
 
 按 Super+V，点击标题栏的齿轮按钮打开“设置”。
 

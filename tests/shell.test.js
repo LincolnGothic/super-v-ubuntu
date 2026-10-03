@@ -159,7 +159,7 @@ export async function run() {
         check('popup opens', popup.showPanel());
         popup._setTab('emoji');
         await Scripting.sleep(300);
-        check('loaded version is visible', popup._title.text === 'Super V 0.1.9');
+        check('loaded version is visible', popup._title.text === 'Super V 0.1.10');
         check('six equally sized emoji per row', popup._rows.length === 60 &&
             popup.list.get_first_child().get_n_children() === 6);
         const cells = popup._rows.slice(0, 7).map(rectangle);
@@ -363,10 +363,25 @@ export async function run() {
         const pin = extension.screenPins.items.get(pinId);
         await Scripting.sleep(100);
         check('screen pin renders a native image above application windows', pin.image.content && pin.root.visible && pin.root.width >= 240);
-        pin.more.emit('clicked', 1);
+        const clickActor = async actor => {
+            const bounds = rectangle(actor);
+            pointer.notify_absolute_motion(GLib.get_monotonic_time(), bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+            await Scripting.sleep(50);
+            pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+            await Scripting.sleep(50);
+            pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+            await Scripting.sleep(50);
+        };
+        await clickActor(pin.more);
         check('pin zoom control changes its scale', pin.zoom > 1);
-        pin.opacityButton.emit('clicked', 1);
+        check('toolbar clicks do not start a pin drag or retain pressed buttons',
+            !extension.screenPins.grab && !extension.screenPins.dragSignal && pin.controls.every(control => !control.pressed));
+        await clickActor(pin.less);
+        check('physical Zoom out click restores the original pin scale', pin.zoom === 1);
+        await clickActor(pin.opacityButton);
         check('pin opacity changes the image while keeping controls readable', pin.image.opacity < 255 && pin.root.opacity === 255);
+        for (let i = 0; i < 3; i++) await clickActor(pin.opacityButton);
+        check('physical opacity clicks cycle back to fully opaque', pin.opacity === 100 && pin.image.opacity === 255);
         extension.screenPins._place(pin, 9999, 9999);
         await Scripting.sleep(50);
         const pinRect = rectangle(pin.root);
@@ -386,8 +401,65 @@ export async function run() {
         pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
         await Scripting.sleep(50);
         check('physical pointer drag moves a screen pin', pin.root.x !== oldX || pin.root.y !== oldY);
-        pin.copy.emit('clicked', 1);
+        check('releasing a pin drag releases its input grab', !extension.screenPins.grab && !extension.screenPins.dragSignal);
+        await clickActor(pin.copy);
         check('pin Copy preserves original PNG bytes', (await extension.clipboard.readImage())?.mime === 'image/png');
+        const previousAutoEdit = extension.settings.get_boolean('edit-after-screenshot');
+        extension.settings.set_boolean('edit-after-screenshot', false);
+        const beforePinCapture = extension.history.entries.length;
+        for (const key of [Clutter.KEY_Super_L, Clutter.KEY_Shift_L, Clutter.KEY_s])
+            keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.PRESSED);
+        for (const key of [Clutter.KEY_s, Clutter.KEY_Shift_L, Clutter.KEY_Super_L])
+            keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.RELEASED);
+        await waitFor(() => extension._areaCapture?.visible);
+        check('screenshot shortcut works with a pinned image and focused toolbar',
+            !extension._areaCapture._rubberband.visible && extension.screenPins.items.has(pinId));
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), 16, 60);
+        await Scripting.sleep(50);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+        await Scripting.sleep(50);
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), 128, 120);
+        await Scripting.sleep(50);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+        await waitFor(() => extension.history.entries.length > beforePinCapture && !extension._areaCapture);
+        check('a new screenshot finishes while preserving the pinned reference',
+            extension.screenPins.items.has(pinId) && (await extension.clipboard.readImage())?.mime === 'image/png');
+        extension.settings.set_boolean('edit-after-screenshot', previousAutoEdit);
+        await clickActor(pin.close);
+        check('physical Close click removes the overlay and releases its budget',
+            !extension.screenPins.items.size && !extension.screenPins.budget.items.size && !extension.screenPins.grab);
+        const beginPinDrag = async reference => {
+            const bounds = rectangle(reference.image);
+            pointer.notify_absolute_motion(GLib.get_monotonic_time(), bounds.x + bounds.width / 2, bounds.y + bounds.height / 2);
+            await Scripting.sleep(50);
+            pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+            await waitFor(() => extension.screenPins.grab);
+        };
+        const pressEscape = () => {
+            keyboard.notify_keyval(GLib.get_monotonic_time(), Clutter.KEY_Escape, Clutter.KeyState.PRESSED);
+            keyboard.notify_keyval(GLib.get_monotonic_time(), Clutter.KEY_Escape, Clutter.KeyState.RELEASED);
+        };
+        const escapeId = extension.screenPins.add(GLib.base64_decode(fixtures.png), 'image/png');
+        await Scripting.sleep(100);
+        await beginPinDrag(extension.screenPins.items.get(escapeId));
+        pressEscape();
+        await waitFor(() => !extension.screenPins.items.has(escapeId));
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+        check('Escape during a pin drag removes its overlay and releases input', !extension.screenPins.grab);
+        const busyId = extension.screenPins.add(GLib.base64_decode(fixtures.png), 'image/png');
+        const busyPin = extension.screenPins.items.get(busyId);
+        await Scripting.sleep(100);
+        await beginPinDrag(busyPin);
+        extension.takeScreenshot();
+        await waitFor(() => extension._areaCapture?.visible);
+        check('starting capture cancels an in-progress pin drag', !extension.screenPins.grab && !extension.screenPins.dragSignal);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+        pressEscape();
+        await waitFor(() => !extension._areaCapture);
+        await Scripting.sleep(100);
+        await clickActor(busyPin.close);
+        check('pin Close still responds after cancelling capture during a drag', !extension.screenPins.items.size);
+        extension.screenPins.add(GLib.base64_decode(fixtures.png), 'image/png', 'fixture');
         extension.screenPins.removeSource('fixture');
         check('deleting a pin source releases its overlay and budget', !extension.screenPins.items.size && !extension.screenPins.budget.items.size);
         let unexpectedCopy = false;
