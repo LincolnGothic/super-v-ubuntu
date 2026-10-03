@@ -57,6 +57,11 @@ class SuperVPopup extends ModalDialog.ModalDialog {
             style_class: 'super-v-title',
             x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         header.add_child(this._title);
+        this._screenshotButton = new St.Button({style_class: 'button super-v-icon',
+            can_focus: true, reactive: true, accessible_name: _('Screenshot'),
+            child: new St.Icon({icon_name: 'camera-photo-symbolic', icon_size: 18})});
+        this._screenshotButton.connect('clicked', () => controller.takeScreenshot());
+        header.add_child(this._screenshotButton);
         this._settingsButton = button(_('Settings'), () => {
             this.close();
             controller.openPreferences();
@@ -87,6 +92,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         const vertical = verticalBoxProperties(St.BoxLayout, Clutter);
         this._tooltip = new St.Label({style_class: 'dash-label', visible: false, reactive: false});
         Main.uiGroup.add_child(this._tooltip);
+        this._bindTooltip(this._screenshotButton);
         this._emojiControls = new St.BoxLayout({...horizontal, style_class: 'super-v-categories'});
         this._categoryBack = button('‹', () => this._scrollCategories(-140), 'button super-v-category-arrow');
         this._categoryForward = button('›', () => this._scrollCategories(140), 'button super-v-category-arrow');
@@ -176,6 +182,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this._tabs.get('symbols').accessible_name = _('Symbols');
         this._tabs.get('gifs').accessible_name = _('GIF favorites');
         this.search.accessible_name = _('Search');
+        this._screenshotButton.accessible_name = _('Screenshot');
         this._buildToneMenu();
         this._categoryTab = null;
         this.refresh();
@@ -403,7 +410,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
                 actor.remove_style_pseudo_class('checked');
         }
         const query = this.search.get_text();
-        this.results = clipboard ? this.controller.history.search(query)
+        this.results = clipboard ? this.controller.history.search(query, _('Image'))
             : gif ? this.controller.gifs.search(query)
                 : emoji ? this.controller.emoji.search(query, this.group, this.tone)
                     : this.catalogs[this.tab].search(query, this.group);
@@ -412,7 +419,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         if (!this.results.length) {
             const message = query ? _('No matching items.') : clipboard
                 ? this.controller.settings.get_boolean('history-enabled')
-                    ? _('Copy some text to start your history.') : _('History is paused. Enable it in Settings.')
+                    ? _('Copy text or an image to start your history.') : _('History is paused. Enable it in Settings.')
                 : gif ? _('Add GIF files in Settings. GIF insertion requires an app that accepts images.')
                     : this.group === 'Recent' ? _('Your recently used emoji will appear here.') : _('No items in this filter.');
             const label = new St.Label({text: message, style_class: 'super-v-empty'});
@@ -439,16 +446,28 @@ class SuperVPopup extends ModalDialog.ModalDialog {
                     : this.tab === 'kaomoji' ? 'button super-v-kaomoji' : 'button super-v-emoji');
             select.x_expand = true;
             const text = entry.text ?? '';
-            select.accessible_name = clipboard ? (entry.pinned ? format(_('Pinned: %s'), text.slice(0, 500)) : text.slice(0, 500)) : entry.name;
+            const image = clipboard && entry.kind === 'image';
+            const imageLabel = image ? format(_('Image · %d × %d'), entry.width, entry.height) : '';
+            const name = image ? imageLabel : text.slice(0, 500);
+            select.accessible_name = clipboard ? (entry.pinned ? format(_('Pinned: %s'), name) : name) : entry.name;
             const preview = Array.from(text).slice(0, 240).join('')
                 .replace(/[\r\n]+/gu, ' ↵ ').replace(/[\x01-\x1f\x7f]/gu, ' ');
             const label = gif ? new St.Icon({gicon: Gio.FileIcon.new(Gio.File.new_for_path(entry.path)),
-                icon_size: 84}) : new St.Label({text: clipboard ? preview : text, x_expand: clipboard,
+                icon_size: 84}) : new St.Label({text: image ? imageLabel : clipboard ? preview : text, x_expand: clipboard,
                 x_align: clipboard ? Clutter.ActorAlign.FILL : Clutter.ActorAlign.CENTER,
                 y_align: Clutter.ActorAlign.CENTER});
             if (!gif)
                 label.clutter_text.ellipsize = clipboard ? Pango.EllipsizeMode.END : Pango.EllipsizeMode.NONE;
-            select.set_child(label);
+            if (image) {
+                const content = new St.BoxLayout({...horizontalBoxProperties(St.BoxLayout, Clutter),
+                    style_class: 'super-v-image-preview', x_expand: true});
+                content.add_child(new St.Icon({gicon: this.controller.images.get(entry).gicon,
+                    icon_size: 112, x_align: Clutter.ActorAlign.START}));
+                content.add_child(label);
+                select.set_child(content);
+            } else {
+                select.set_child(label);
+            }
             select.connect('key-focus-in', () => {
                 this.selected = index;
                 this._highlight();

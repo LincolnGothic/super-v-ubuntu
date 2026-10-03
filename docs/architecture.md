@@ -1,7 +1,7 @@
 # Architecture
 
-Super V Ubuntu runs as a GNOME Shell 46/50 ES-module extension. It adds one
-user-mode keybinding and a reusable, compact St/Clutter shell dialog. There is
+Super V Ubuntu runs as a GNOME Shell 46/50 ES-module extension. It adds two
+user-mode keybindings and a reusable, compact St/Clutter shell dialog. There is
 no application window, daemon, Electron runtime, X11 automation, or runtime
 network access. The Debian package installs it at
 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local/`.
@@ -9,17 +9,28 @@ Users explicitly enable it; package scripts never change user settings.
 
 `core/history.js`, `core/emoji.js`, `core/settings.js`, and `core/paste.js` are
 platform-independent modules exercised under Node and GJS. `clipboard.js`
-listens to Mutter's `Meta.Selection::owner-changed`, transfers only text with
-a byte bound, rejects advertised password-manager MIME types, and prevents
+listens to Mutter's `Meta.Selection::owner-changed`, transfers text and PNG/JPEG images with
+byte bounds, rejects advertised password-manager MIME types, and prevents
 stale asynchronous reads from entering history. Focus-based exclusions are
 best effort, not reliable clipboard-origin identification.
 
 `storage.js` uses Gio asynchronous file operations. Data lives in
 `${XDG_STATE_HOME:-$HOME/.local/state}/super-v-ubuntu/history.json` with directory
-mode 0700 and file mode 0600. No backup file is retained. Malformed state is
+mode 0700 and file mode 0600. Image records reference checked SHA-256 names
+in an equally private images/ subdirectory; image bytes are never embedded in JSON. No backup file is retained. Malformed state is
 deleted instead of logging clipboard contents. Writes are serialized and
 coalesced, with deletion ordered after pending writes when persistence is
 disabled. Memory and disk loads have limits. Privacy changes invalidate reads.
+`images.js` checks image dimensions before native decoding, keeps bounded
+thumbnails in memory, and deduplicates original bytes by digest. `core/image.js`
+checks PNG/JPEG structure, size, dimensions, and stored metadata. Image writes
+precede the JSON replacement; orphaned image files are removed after a save.
+Deletion and persistence changes are ordered after pending image writes.
+The clear-on-shutdown preference forces memory-only storage, avoiding reliance
+on shutdown callbacks; no history can be restored after the session ends.
+The Screenshot button and second keybinding release the picker’s modal grab
+before opening Main.screenshotUI. The normal clipboard monitor captures its PNG.
+
 
 `paste.js` creates a Mutter/Clutter virtual keyboard, returns focus, waits for
 physical shortcut modifiers to be released, rechecks the exact destination,
@@ -43,7 +54,7 @@ panel against its monitor work area; a GSettings choice restores centering.
 `core/catalog.js` provides authored text emoticons and symbols. `gifs.js` reads
 local favorites asynchronously with a byte bound, rejects symlinks and invalid
 GIF headers/dimensions, and copies GIF data with St.Clipboard's image/gif MIME.
-Favorite paths live in GSettings; images are never serialized into history.
+Favorite paths live in GSettings; GIF favorites remain separate from PNG/JPEG history.
 `prefs.js` runs separately in the GTK4/libadwaita preferences process. The shell
 extension is active only in the normal user session, never at the lock screen.
 

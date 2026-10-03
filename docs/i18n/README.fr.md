@@ -2,16 +2,18 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
+v0.1.6 conserve les images PNG/JPEG avec miniatures, épinglage et collage. Le bouton de caméra ou Super+Shift+S ouvre l’outil GNOME pour capturer une zone, une fenêtre ou l’écran. Le raccourci est modifiable ou désactivable dans les paramètres. «Effacer l’historique à l’arrêt» garde le texte, les images, les éléments épinglés et les emojis récents uniquement en mémoire ; ils disparaissent aussi au redémarrage, à la déconnexion ou au rechargement de l’extension. L’historique enregistré est supprimé dès l’activation, mais pas les fichiers de capture de GNOME.
+
 Un sélecteur Super+V inspiré de Windows pour Ubuntu GNOME : historique du presse-papiers, émojis, kaomoji, symboles et GIF locaux favoris. Les données restent sur votre ordinateur, sans télémétrie ni accès réseau à l’exécution.
 
 Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
 
 ## Installation et mise à jour
 
-Enregistrez le [paquet v0.1.5](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.5) dans votre dossier de téléchargements :
+Enregistrez le [paquet v0.1.6](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6) dans votre dossier de téléchargements :
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.5_all.deb"
+sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
 ```
 
 Après l’installation, déconnectez-vous puis reconnectez-vous. Exécutez ces commandes avec votre compte habituel, sans sudo. La première réserve Super+M aux notifications et libère Super+V ; elle remplace tout raccourci de notification personnalisé.
@@ -22,7 +24,7 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-Après une mise à jour, déconnectez-vous puis reconnectez-vous. Le titre doit afficher **Super V 0.1.5**. Si une ancienne version apparaît, vérifiez le chemin indiqué par info : une copie utilisateur portant le même UUID prend priorité sur le paquet système.
+Après une mise à jour, déconnectez-vous puis reconnectez-vous. Le titre doit afficher **Super V 0.1.6**. Si une ancienne version apparaît, vérifiez le chemin indiqué par info : une copie utilisateur portant le même UUID prend priorité sur le paquet système.
 
 ## Utilisation et langues
 

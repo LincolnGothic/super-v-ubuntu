@@ -8,6 +8,8 @@ import {History} from '../extension/core/history.js';
 import {EmojiIndex} from '../extension/core/emoji.js';
 import {StateStore} from '../extension/storage.js';
 import {GifLibrary} from '../extension/gifs.js';
+import {ImageLibrary} from '../extension/images.js';
+import {imageFilename, imageInfo} from '../extension/core/image.js';
 
 let passed = 0;
 function check(name, condition) {
@@ -69,6 +71,9 @@ async function run() {
         'org.gnome.shell.extensions.super-v-ubuntu', true)});
     check('GSettings default shortcut and limit', settings.get_int('history-limit') === 100 &&
         settings.get_strv('open-popup')[0] === '<Super>v');
+    check('GSettings screenshot shortcut and shutdown privacy defaults',
+        settings.get_strv('take-screenshot')[0] === '<Super><Shift>s' &&
+        !settings.get_boolean('clear-on-shutdown'));
     check('GSettings rejects out-of-range limits', !settings.set_int('history-limit', 501));
     check('GSettings pointer position default', settings.get_string('popup-position') === 'pointer');
     check('GSettings center position option', settings.set_string('popup-position', 'center'));
@@ -95,11 +100,62 @@ async function run() {
     const data = JSON.parse(new TextDecoder().decode(file.load_contents(null)[1]));
     const emoji = new EmojiIndex(data.emoji);
     check('GJS emoji search/skin tone', emoji.search('scientist', 'All', 'medium').some(x => x.text === '👩🏽‍🔬'));
+    const fixtures = JSON.parse(new TextDecoder().decode(
+        Gio.File.new_for_path('tests/fixtures/images.json').load_contents(null)[1]));
+    const images = new ImageLibrary();
+    const imageHistory = new History();
+    for (const [format, mime] of [['png', 'image/png'], ['jpeg', 'image/jpeg']]) {
+        const bytes = GLib.base64_decode(fixtures[format]);
+        const image = images.add(bytes, mime);
+        check(`Native ${format} decoder and thumbnail`, image.width === 64 && image.height === 48 &&
+            imageInfo(images.get(image).gicon.get_bytes().get_data(), 'image/png').width === 64);
+        imageHistory.addImage(image);
+    }
+    imageHistory.add('text with images');
+    await store.save(imageHistory.toJSON(), images.snapshot());
+    const image = imageHistory.entries.find(entry => entry.kind === 'image');
+    const imageFile = store.imageDirectory.get_child(imageFilename(image));
+    check('Image storage uses a private directory and file',
+        store.imageDirectory.query_info('unix::mode', nofollow(), null).get_attribute_uint32('unix::mode') % 512 === 0o700 &&
+        imageFile.query_info('unix::mode', nofollow(), null).get_attribute_uint32('unix::mode') % 512 === 0o600);
+    check('Image bytes and checksum survive asynchronous storage',
+        (await store.loadImage(image)).length === images.get(image).bytes.length);
+    const damaged = images.get(image).bytes.slice();
+    damaged[30] ^= 1;
+    imageFile.replace_contents(damaged, null, false, Gio.FileCreateFlags.PRIVATE, null);
+    let checksumRejected = false;
+    try { await store.loadImage(image); } catch { checksumRejected = true; }
+    check('Changed image data is rejected by checksum', checksumRejected);
+    imageFile.delete(null);
+    imageFile.make_symbolic_link(outside.get_path(), null);
+    let imageLinkRejected = false;
+    try { await store.loadImage(image); } catch { imageLinkRejected = true; }
+    check('Image symlinks are rejected without reading their target', imageLinkRejected);
+    imageHistory.clear(true);
+    images.retain(imageHistory.entries);
+    await store.save(imageHistory.toJSON(), images.snapshot());
+    check('Clearing image history removes its managed files and preserves symlink targets',
+        !imageFile.query_exists(null) && new TextDecoder().decode(outside.load_contents(null)[1]) === 'do-not-touch');
+    const sessionImage = images.add(GLib.base64_decode(fixtures.png), 'image/png');
+    imageHistory.addImage(sessionImage);
+    const imageWrite = store.save(imageHistory.toJSON(['😀']), images.snapshot());
+    settings.set_boolean('clear-on-shutdown', true);
+    store.persist = settings.get_boolean('remember-history') && !settings.get_boolean('clear-on-shutdown');
+    await store.erase();
+    await imageWrite;
+    check('Shutdown privacy erases image and JSON writes in flight', !store.file.query_exists(null) &&
+        !store.imageDirectory.get_child(imageFilename(sessionImage)).query_exists(null));
+    await store.save(imageHistory.toJSON(), images.snapshot());
+    check('Session-only history stays in memory and a fresh session loads nothing',
+        imageHistory.entries.length === 1 && await new StateStore(base).load() === null);
+    store.imageDirectory.delete(null);
     outside.delete(null);
     store.directory.delete(null);
     Gio.File.new_for_path(base).delete(null);
     print(`GJS checks: ${passed} passed, 0 failed`);
 }
+
+function nofollow() { return Gio.FileQueryInfoFlags.NOFOLLOW_SYMLINKS; }
 
 let status = 0;
 const loop = new GLib.MainLoop(null, false);

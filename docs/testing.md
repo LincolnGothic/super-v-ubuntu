@@ -5,16 +5,16 @@ emoji generation, ESLint, Node logic/adapter tests, and GJS/Gio filesystem
 integration. Mock adapter tests exercise the actual asynchronous controller
 and clipboard modules, but do not prove Mutter clipboard, shell rendering or
 input delivery works on a real desktop. CI builds the `.deb` and checks it
-without an interactive shell. See `verification.md` for executed results.
+without an interactive shell. See `verification-v0.1.6.md` for current executed results.
 
 ## Package checks
 
 ```sh
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.3_all.deb
-dpkg-deb --info ../super-v-ubuntu_0.1.3_all.deb
-dpkg-deb --contents ../super-v-ubuntu_0.1.3_all.deb
-python3 scripts/audit-package.py ../super-v-ubuntu_0.1.3_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.6_all.deb
+dpkg-deb --info ../super-v-ubuntu_0.1.6_all.deb
+dpkg-deb --contents ../super-v-ubuntu_0.1.6_all.deb
+python3 scripts/audit-package.py ../super-v-ubuntu_0.1.6_all.deb
 ```
 
 The archive must contain runtime files and compiled schemas only beneath
@@ -33,7 +33,7 @@ a backup if it contains local changes.
 ```sh
 gnome-shell --version
 printf '%s\n' "$XDG_SESSION_TYPE"
-sudo apt install ./super-v-ubuntu_0.1.3_all.deb
+sudo apt install ./super-v-ubuntu_0.1.6_all.deb
 ```
 
 Log out/in, then enable and inspect it as your desktop user:
@@ -98,7 +98,7 @@ Record any custom notification bindings first; the command replaces them.
     entries or cause shell exceptions. Test light/dark themes, 100%/200% scale,
     multiple monitors, long previews, scrolling beyond 60 results and keyboard
     navigation through incrementally rendered results.
-11. Confirm the header reads Super V 0.1.3. With pointer placement selected,
+11. Confirm the header reads Super V 0.1.6. With pointer placement selected,
     open next to an input and near each screen edge. Check work-area bounds,
     different monitor origins and 200% scale. Choose centered placement and
     verify the panel centers on the focused monitor. Outside clicks on the
@@ -113,6 +113,22 @@ Record any custom notification bindings first; the command replaces them.
     files, remove a favorite without deleting its file, and verify that no
     image is stored in text history. Reopen or disable while a GIF read waits:
     the stale selection must not replace a newer clipboard or send a paste.
+
+14. Copy PNG and JPEG image pixels from an image editor or browser. Verify
+    thumbnails and dimensions, exact duplicate recency, pin/delete, image search
+    by format/dimensions, and image paste into an accepting application. Test
+    text/image order, limits, malformed images and excluded sources. Copying a
+    file path is not image capture. Reload with persistence enabled and confirm
+    image bytes return; missing/corrupt image files must not erase text history.
+15. Open the camera button and Super+Shift+S. Capture an area, a window and the
+    screen; the picker must not cover the capture. Escape should cancel without
+    a new entry. Change and disable the screenshot shortcut in Settings. With
+    history paused, GNOME still copies the screenshot but no history is added.
+16. Enable Clear history on shutdown with text, images, pins and emoji recents
+    present. Confirm JSON and managed image files disappear and current items
+    remain in memory. Copy more items and verify no files return. Restart or
+    log out/in: history, pins and recents must be empty. Turning the option off
+    must respect Remember after logout. GNOME’s own screenshot files stay.
 
 Check permissions and shell logs after the matrix:
 

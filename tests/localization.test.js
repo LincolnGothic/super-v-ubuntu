@@ -76,4 +76,6 @@ test('localized catalog names search in both languages while category IDs stay s
 test('format inserts filenames and paths literally', () => {
     assert.equal(format('Pinned: %s', '$& 100% text'), 'Pinned: $& 100% text');
     assert.equal(format('Show more (%d)', 21), 'Show more (21)');
+    assert.equal(format('Image · %d × %d', 1280, 960), 'Image · 1280 × 960');
+    assert.equal(format('%s %s', '$& %d', 'second'), '$& %d second');
 });

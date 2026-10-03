@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 msgid ""
-msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: ko\nLanguage: ko\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+msgstr "Project-Id-Version: super-v-ubuntu 0.1.6\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-03 12:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: ko\nLanguage: ko\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
 
 msgid "Activities"
 msgstr "활동"
@@ -59,6 +59,9 @@ msgstr "기본"
 msgid "Clear"
 msgstr "지우기"
 
+msgid "Clear history on shutdown"
+msgstr "종료 시 기록 지우기"
+
 msgid "Clear requested; applied when the extension is active."
 msgstr "삭제를 요청했습니다. 확장 기능이 활성화되면 적용됩니다."
 
@@ -77,14 +80,20 @@ msgstr "클립보드가 변경되어 최신 내용을 유지했습니다."
 msgid "Clipboard history"
 msgstr "클립보드 기록"
 
+msgid "Collects copied text and PNG/JPEG images. Images: up to 8 MiB each, 32 MiB total, 8192 pixels per side and 16 megapixels."
+msgstr "복사한 텍스트와 PNG/JPEG 이미지를 기록합니다. 이미지 제한: 개당 8 MiB, 총 32 MiB, 한 변 8192픽셀, 1600만 화소."
+
 msgid "Copied to clipboard. Use your application’s paste shortcut."
 msgstr "클립보드에 복사했습니다. 앱의 붙여넣기 단축키를 사용하세요."
 
-msgid "Copy some text to start your history."
-msgstr "텍스트를 복사하면 기록이 시작됩니다."
+msgid "Copy text or an image to start your history."
+msgstr "텍스트나 이미지를 복사하면 기록이 시작됩니다."
 
 msgid "Could not initialize the extension. Disable and re-enable it."
 msgstr "확장 기능을 초기화할 수 없습니다. 비활성화한 후 다시 활성화하세요."
+
+msgid "Could not open the screenshot tool. Try Print Screen."
+msgstr "스크린샷 도구를 열 수 없습니다. Print Screen 키를 눌러 보세요."
 
 msgid "Could not read that GIF. Re-add it in Settings or choose another file."
 msgstr "GIF를 읽을 수 없습니다. 설정에서 다시 추가하거나 다른 파일을 선택하세요."
@@ -116,7 +125,6 @@ msgstr "저장된 모든 항목 삭제"
 msgid "Excluded apps (comma-separated)"
 msgstr "제외할 앱(쉼표로 구분)"
 
-#, javascript-format
 msgid "Files skipped: %d. Invalid, too large, or favorites full."
 msgstr "건너뛴 파일: %d개. 유효하지 않거나 너무 크거나 즐겨찾기가 가득 찼습니다."
 
@@ -147,8 +155,17 @@ msgstr "기록이 저장 용량 제한을 초과합니다."
 msgid "History is paused. Enable it in Settings."
 msgstr "기록 수집이 일시 중지되었습니다. 설정에서 활성화하세요."
 
-msgid "History stays on this computer. It may contain private text. Pausing capture does not erase existing entries."
-msgstr "기록은 이 컴퓨터에 저장되며 개인 정보가 포함될 수 있습니다. 수집을 일시 중지해도 기존 항목은 삭제되지 않습니다."
+msgid "History stays on this computer. It may contain private text and images. Pausing capture does not erase existing entries."
+msgstr "기록은 이 컴퓨터에만 저장되며 개인적인 텍스트와 이미지가 포함될 수 있습니다. 수집을 일시 중지해도 기존 항목은 삭제되지 않습니다."
+
+msgid "History, pinned items and emoji recents stay in memory only. Also clears on restart or logout. Existing saved history is removed."
+msgstr "기록, 고정 항목, 최근 이모지는 메모리에만 보관됩니다. 다시 시작하거나 로그아웃할 때도 지워집니다. 기존에 저장된 기록은 삭제됩니다."
+
+msgid "Image"
+msgstr "이미지"
+
+msgid "Image · %d × %d"
+msgstr "이미지 · %d × %d"
 
 msgid "Invalid stored history was removed."
 msgstr "유효하지 않은 저장 기록을 삭제했습니다."
@@ -219,11 +236,9 @@ msgstr "고정된 항목은 유지됩니다."
 msgid "Pinned entries have a separate maximum of 100. Total text is limited to 2 MiB."
 msgstr "고정된 항목은 별도로 최대 100개까지 저장할 수 있습니다. 전체 텍스트 용량은 2 MiB로 제한됩니다."
 
-#, javascript-format
 msgid "Pinned: %s"
 msgstr "고정됨: %s"
 
-#, javascript-format
 msgid "Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access."
 msgstr "평문 기록: %s. 디렉터리 권한 0700, 파일 권한 0600. 비밀번호 관리자 MIME 힌트와 활성 앱 제외 기능은 완벽하지 않을 수 있습니다. 원격 측정이나 실행 중 네트워크 접근은 없습니다."
 
@@ -250,6 +265,12 @@ msgstr "클립보드 복원"
 
 msgid "Sad"
 msgstr "슬픔"
+
+msgid "Screenshot"
+msgstr "스크린샷"
+
+msgid "Screenshot shortcut (GTK accelerator syntax)"
+msgstr "스크린샷 단축키 (GTK 형식)"
 
 msgid "Search"
 msgstr "검색"
@@ -278,12 +299,14 @@ msgstr "단축키(GTK 액셀러레이터 문법)"
 msgid "Shortcuts: ctrl-v, ctrl-shift-v, shift-insert, manual."
 msgstr "단축키: ctrl-v, ctrl-shift-v, shift-insert, manual."
 
-#, javascript-format
 msgid "Show more (%d)"
 msgstr "더 보기(%d)"
 
 msgid "Smileys & Emotion"
 msgstr "얼굴과 감정"
+
+msgid "Some saved images could not be read and were removed."
+msgstr "읽을 수 없는 일부 저장된 이미지를 삭제했습니다."
 
 msgid "Stored history could not be read. It has been removed."
 msgstr "저장된 기록을 읽을 수 없어 삭제했습니다."
@@ -300,10 +323,6 @@ msgstr "놀람"
 msgid "Symbols"
 msgstr "기호"
 
-msgid "Text copied after enabling the extension is collected."
-msgstr "확장 기능을 활성화한 후 복사한 텍스트를 수집합니다."
-
-#, javascript-format
 msgid "Tone: %s"
 msgstr "피부색: %s"
 
@@ -313,14 +332,17 @@ msgstr "여행과 장소"
 msgid "Turn off to copy selections without sending a paste shortcut."
 msgstr "끄면 붙여넣기 단축키를 보내지 않고 선택한 항목만 복사합니다."
 
-msgid "Turning this off removes the saved file; current memory is retained."
-msgstr "끄면 저장된 파일이 삭제되지만 현재 메모리의 기록은 유지됩니다."
+msgid "Turning this off removes saved text and images; current memory is retained. Clear history on shutdown takes priority."
+msgstr "끄면 저장된 텍스트와 이미지를 삭제하고 현재 메모리의 기록은 유지합니다. 종료 시 기록 지우기 설정이 우선합니다."
 
 msgid "Units"
 msgstr "단위"
 
 msgid "Unpin entry"
 msgstr "항목 고정 해제"
+
+msgid "Use a shortcut such as <Super><Shift>s, or leave empty to disable."
+msgstr "<Super><Shift>s 같은 단축키를 사용하거나 비워 두어 비활성화하세요."
 
 msgid "Use a shortcut such as <Super>v or <Control><Alt>v."
 msgstr "<Super>v 또는 <Control><Alt>v 같은 단축키를 사용하세요."

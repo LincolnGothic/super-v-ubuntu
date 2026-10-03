@@ -2,16 +2,18 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
+v0.1.6은 PNG/JPEG 이미지 기록, 미리보기, 고정 및 붙여넣기를 지원합니다. 카메라 버튼이나 Super+Shift+S로 GNOME의 영역·창·전체 화면 캡처 도구를 엽니다. 설정에서 단축키를 변경하거나 끌 수 있습니다. «종료 시 기록 지우기»를 켜면 텍스트, 이미지, 고정 항목 및 최근 이모지를 메모리에만 보관하며 종료, 다시 시작, 로그아웃 또는 확장 기능을 다시 불러올 때 지워집니다. 기존에 저장된 기록도 삭제하지만 GNOME의 스크린샷 파일은 삭제하지 않습니다.
+
 Ubuntu GNOME에서 사용하는 Windows 스타일 Super+V 선택기입니다. 클립보드 기록, 이모지, 카오모지, 기호, 즐겨찾는 로컬 GIF를 제공합니다. 모든 데이터는 이 컴퓨터에 저장되며 원격 측정이나 실행 중 네트워크 접근은 없습니다.
 
 Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
 
 ## 설치 및 업데이트
 
-[v0.1.5 패키지](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.5)를 다운로드 폴더에 저장하세요.
+[v0.1.6 패키지](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6)를 다운로드 폴더에 저장하세요.
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.5_all.deb"
+sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
 ```
 
 설치 후 로그아웃하고 다시 로그인하세요. 다음 명령은 일반 사용자로 실행합니다(sudo 사용 안 함). 첫 번째 명령은 알림 단축키를 Super+M으로 설정하여 Super+V를 사용할 수 있게 합니다. 기존 사용자 지정 알림 단축키는 변경됩니다.
@@ -22,7 +24,7 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-업데이트 후에도 로그아웃하고 다시 로그인하세요. 제목에 **Super V 0.1.5**가 표시되어야 합니다. 이전 버전이 표시되면 info에 나온 경로를 확인하세요. 같은 UUID의 사용자용 확장 기능이 시스템 패키지보다 우선합니다.
+업데이트 후에도 로그아웃하고 다시 로그인하세요. 제목에 **Super V 0.1.6**가 표시되어야 합니다. 이전 버전이 표시되면 info에 나온 경로를 확인하세요. 같은 UUID의 사용자용 확장 기능이 시스템 패키지보다 우선합니다.
 
 ## 사용 방법 및 언어
 
