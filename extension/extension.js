@@ -16,6 +16,7 @@ import {PasteBackend} from './paste.js';
 import {SuperVPopup} from './popup.js';
 import {GifLibrary} from './gifs.js';
 import {ImageLibrary} from './images.js';
+import {EditorBridge} from './editor-bridge.js';
 
 export default class SuperVExtension extends Extension {
     enable() {
@@ -142,6 +143,20 @@ export default class SuperVExtension extends Extension {
                     // Invalid or oversized image data is ignored without logs.
                 }
             });
+        this.editor = new EditorBridge(this.dir, bytes => {
+            if (!this._active || Main.sessionMode.isLocked || Main.sessionMode.isGreeter)
+                return;
+            this.pendingRestore = null;
+            this.clipboard.writeImage(bytes, 'image/png');
+            if (this.settings.get_boolean('history-enabled')) {
+                const image = this.images.add(bytes, 'image/png');
+                this.history.addImage(image);
+                this.changed();
+            }
+        }, () => {
+            if (this._active)
+                Main.notify('Super V', _('Could not open or communicate with the screenshot editor.'));
+        });
         this.pasteBackend = new PasteBackend(this.settings,
             window => this.identifiers(window), () => {
                 if (this._active)
@@ -155,6 +170,8 @@ export default class SuperVExtension extends Extension {
                 this.popup?.close();
                 this.pasteBackend?.cancel();
                 this.pendingRestore = null;
+                this.editor?.close();
+                this._cancelScreenshot();
             }
         });
         Main.wm.addKeybinding('open-popup', this.settings, Meta.KeyBindingFlags.NONE,
@@ -223,6 +240,8 @@ export default class SuperVExtension extends Extension {
     }
 
     clear(includePinned) {
+        this.editor?.close();
+        this._cancelScreenshot();
         this._stateRevision++;
         this.clipboard?.invalidate();
         this.history.clear(includePinned);
@@ -240,6 +259,8 @@ export default class SuperVExtension extends Extension {
     }
 
     deleteEntry(id) {
+        if (this._editorEntryId === id)
+            this.editor?.close();
         this.history.delete(id);
         this.changed();
     }
@@ -317,6 +338,38 @@ export default class SuperVExtension extends Extension {
         }
     }
 
+    editImage(entry) {
+        const image = this.images?.get(entry);
+        if (image && this.history.entries.includes(entry))
+            this._openEditor(image.bytes, entry.mime, entry.id);
+    }
+
+    _openEditor(bytes, mime, id = null) {
+        if (!this._active || !this._ready || Main.sessionMode.isLocked || Main.sessionMode.isGreeter)
+            return;
+        this._selectionEpoch++;
+        this.popup.close();
+        this.pasteBackend.cancel();
+        this.pendingRestore = null;
+        this._editorEntryId = id;
+        try { this.editor.open(bytes, mime); }
+        catch { Main.notify('Super V', _('Could not open or communicate with the screenshot editor.')); }
+    }
+
+    _clearScreenshotSignals() {
+        for (const id of this._captureSignals ?? [])
+            Main.screenshotUI.disconnect(id);
+        this._captureSignals = [];
+    }
+
+    _cancelScreenshot() {
+        this._captureSerial = (this._captureSerial ?? 0) + 1;
+        this._clearScreenshotSignals();
+        if (this._screenshotSource)
+            GLib.source_remove(this._screenshotSource);
+        this._screenshotSource = 0;
+    }
+
     takeScreenshot() {
         if (!this._active || !this._ready || Main.sessionMode.isLocked || Main.sessionMode.isGreeter)
             return;
@@ -324,6 +377,9 @@ export default class SuperVExtension extends Extension {
         this.popup.close();
         this.pasteBackend.cancel();
         this.pendingRestore = null;
+        this._clearScreenshotSignals();
+        const serial = this._captureSerial = (this._captureSerial ?? 0) + 1;
+        const epoch = this._epoch;
         if (this._screenshotSource)
             GLib.source_remove(this._screenshotSource);
         // Release the picker modal grab and let it disappear before GNOME
@@ -331,7 +387,28 @@ export default class SuperVExtension extends Extension {
         this._screenshotSource = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
             this._screenshotSource = 0;
             if (this._active && !Main.sessionMode.isLocked && !Main.sessionMode.isGreeter) {
+                let captured = false;
+                this._captureSignals = [
+                    Main.screenshotUI.connect('screenshot-taken', () => { captured = true; }),
+                    Main.screenshotUI.connect('closed', () => {
+                        this._clearScreenshotSignals();
+                        if (!captured || !this.settings?.get_boolean('edit-after-screenshot'))
+                            return;
+                        // Let Mutter publish the screenshot clipboard owner before
+                        // starting the same bounded transfer used by image history.
+                        this._screenshotSource = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                            this._screenshotSource = 0;
+                            this.clipboard.readImage().then(image => {
+                                if (image && this._active && epoch === this._epoch && serial === this._captureSerial &&
+                                    this.settings.get_boolean('edit-after-screenshot'))
+                                    this._openEditor(image.bytes, image.mime);
+                            }).catch(() => {});
+                            return GLib.SOURCE_REMOVE;
+                        });
+                    }),
+                ];
                 Main.screenshotUI.open().catch(() => {
+                    this._clearScreenshotSignals();
                     if (this._active)
                         Main.notify('Super V', _('Could not open the screenshot tool. Try Print Screen.'));
                 });
@@ -381,6 +458,8 @@ export default class SuperVExtension extends Extension {
     disable() {
         this._active = false;
         this._epoch++;
+        this.editor?.close();
+        this._clearScreenshotSignals();
         this._stateCancellable?.cancel();
         if (this._binding)
             Main.wm.removeKeybinding('open-popup');
@@ -405,6 +484,7 @@ export default class SuperVExtension extends Extension {
         this.popup = this.clipboard = this.pasteBackend = this.settings = null;
         this.history = this.emoji = this.store = this.pendingRestore = this._target = this.gifs = null;
         this.images = null;
+        this.editor = null;
         this._stateCancellable = null;
         this._emojiRecords = null;
     }

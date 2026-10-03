@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 msgid ""
-msgstr "Project-Id-Version: super-v-ubuntu 0.1.6\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-03 12:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: fr\nLanguage: fr\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n > 1);\n"
+msgstr "Project-Id-Version: super-v-ubuntu 0.1.7\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-03 12:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: fr\nLanguage: fr\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Activities"
 msgstr "Activités"
@@ -842,3 +842,72 @@ msgstr "↑↓ Sélectionner · Entrée Coller · Échap Fermer · Ctrl+Tab Chan
 msgid "↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close"
 msgstr "↑↓←→ Sélectionner · Entrée Coller · Ctrl+F Rechercher · Échap Fermer"
 
+
+msgid "Annotation limit reached. Undo a mark before adding another."
+msgstr "Limite d’annotations atteinte. Annulez une marque avant d’en ajouter une."
+
+msgid "Arrow"
+msgstr "Flèche"
+
+msgid "Color"
+msgstr "Couleur"
+
+msgid "Could not export the image. Crop it to reduce its size."
+msgstr "Impossible d’exporter l’image. Recadrez-la pour réduire sa taille."
+
+msgid "Could not open or communicate with the screenshot editor."
+msgstr "Impossible d’ouvrir l’éditeur de captures ou de communiquer avec lui."
+
+msgid "Could not save the image."
+msgstr "Impossible d’enregistrer l’image."
+
+msgid "Cover sensitive area"
+msgstr "Masquer une zone sensible"
+
+msgid "Crop"
+msgstr "Recadrer"
+
+msgid "Edit after taking a screenshot"
+msgstr "Modifier après la capture"
+
+msgid "Edit image"
+msgstr "Modifier l’image"
+
+msgid "Edited image copied. Paste it into your application."
+msgstr "Image modifiée copiée. Collez-la dans votre application."
+
+msgid "Highlight"
+msgstr "Surligner"
+
+msgid "Image saved."
+msgstr "Image enregistrée."
+
+msgid "Move image"
+msgstr "Déplacer l’image"
+
+msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
+msgstr "Ouvre l’éditeur après une capture avec Super V. Les images de l’historique restent modifiables."
+
+msgid "Pen"
+msgstr "Crayon"
+
+msgid "Rectangle"
+msgstr "Rectangle"
+
+msgid "Save image"
+msgstr "Enregistrer l’image"
+
+msgid "Screenshot editor"
+msgstr "Éditeur de captures"
+
+msgid "Stroke width / text size"
+msgstr "Épaisseur / taille du texte"
+
+msgid "Text"
+msgstr "Texte"
+
+msgid "Text to add"
+msgstr "Texte à ajouter"
+
+msgid "Zoom (%)"
+msgstr "Zoom (%)"

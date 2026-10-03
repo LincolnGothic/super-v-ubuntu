@@ -5,16 +5,16 @@ emoji generation, ESLint, Node logic/adapter tests, and GJS/Gio filesystem
 integration. Mock adapter tests exercise the actual asynchronous controller
 and clipboard modules, but do not prove Mutter clipboard, shell rendering or
 input delivery works on a real desktop. CI builds the `.deb` and checks it
-without an interactive shell. See `verification-v0.1.6.md` for current executed results.
+without an interactive shell. See `verification-v0.1.7.md` for current executed results.
 
 ## Package checks
 
 ```sh
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.6_all.deb
-dpkg-deb --info ../super-v-ubuntu_0.1.6_all.deb
-dpkg-deb --contents ../super-v-ubuntu_0.1.6_all.deb
-python3 scripts/audit-package.py ../super-v-ubuntu_0.1.6_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.7_all.deb
+dpkg-deb --info ../super-v-ubuntu_0.1.7_all.deb
+dpkg-deb --contents ../super-v-ubuntu_0.1.7_all.deb
+python3 scripts/audit-package.py ../super-v-ubuntu_0.1.7_all.deb
 ```
 
 The archive must contain runtime files and compiled schemas only beneath
@@ -33,7 +33,7 @@ a backup if it contains local changes.
 ```sh
 gnome-shell --version
 printf '%s\n' "$XDG_SESSION_TYPE"
-sudo apt install ./super-v-ubuntu_0.1.6_all.deb
+sudo apt install ./super-v-ubuntu_0.1.7_all.deb
 ```
 
 Log out/in, then enable and inspect it as your desktop user:
@@ -98,7 +98,7 @@ Record any custom notification bindings first; the command replaces them.
     entries or cause shell exceptions. Test light/dark themes, 100%/200% scale,
     multiple monitors, long previews, scrolling beyond 60 results and keyboard
     navigation through incrementally rendered results.
-11. Confirm the header reads Super V 0.1.6. With pointer placement selected,
+11. Confirm the header reads Super V 0.1.7. With pointer placement selected,
     open next to an input and near each screen edge. Check work-area bounds,
     different monitor origins and 200% scale. Choose centered placement and
     verify the panel centers on the focused monitor. Outside clicks on the
@@ -129,6 +129,15 @@ Record any custom notification bindings first; the command replaces them.
     remain in memory. Copy more items and verify no files return. Restart or
     log out/in: history, pins and recents must be empty. Turning the option off
     must respect Remember after logout. GNOME’s own screenshot files stay.
+
+17. Capture through Super V and verify the editor opens automatically. Turn off
+    Edit after taking a screenshot and repeat. Open a history image with its
+    pencil button and Ctrl+E. Exercise all tools, multilingual text, fractional
+    black-cover edges, repeated/nested crops, undo/redo, zoom/pan and PNG export.
+    Paste after closing the editor; test paused history, cancelled save, file
+    overwrite confirmation, lock/clear/delete/disable cleanup, HiDPI and narrow
+    editor windows. Inspect the exported pixels and confirm originals are kept
+    separate. No image scratch files should appear.
 
 Check permissions and shell logs after the matrix:
 

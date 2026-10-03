@@ -2,7 +2,7 @@
   "root": true,
   "env": {"es6": true, "node": true},
   "parserOptions": {"ecmaVersion": 2022, "sourceType": "module"},
-  "globals": {"global": "readonly", "TextEncoder": "readonly", "TextDecoder": "readonly", "print": "readonly", "printerr": "readonly"},
+  "globals": {"global": "readonly", "TextEncoder": "readonly", "TextDecoder": "readonly", "print": "readonly", "printerr": "readonly", "ARGV": "readonly"},
   "rules": {
     "no-undef": "error", "no-unused-vars": ["error", {"args": "none", "caughtErrors": "none"}],
     "no-unreachable": "error", "no-eval": "error", "no-implied-eval": "error", "eqeqeq": "error"
