@@ -1,0 +1,809 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Super V Ubuntu interface and character names.
+msgid ""
+msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: fr\nLanguage: fr\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n > 1);\n"
+
+msgid "Activities"
+msgstr "Activités"
+
+msgid "Add / manage GIFs"
+msgstr "Ajouter / gérer les GIF"
+
+msgid "Add GIF favorites"
+msgstr "Ajouter des GIF favoris"
+
+msgid "Add GIF files"
+msgstr "Ajouter des fichiers GIF"
+
+msgid "Add GIF files in Settings. GIF insertion requires an app that accepts images."
+msgstr "Ajoutez des fichiers GIF dans les paramètres. L’insertion de GIF nécessite une application acceptant les images."
+
+msgid "Add local GIF files (up to 40, 8 MiB each, 2048 × 2048 pixels). The picker shows the first frame and copies the GIF image. Pasting requires an app that accepts images; animation support depends on the app. Files stay in their original location. No online search."
+msgstr "Ajoutez des fichiers GIF locaux (40 maximum, chacun limité à 8 MiB et 2048 × 2048 pixels). Le sélecteur affiche la première image et copie le GIF. L’application de destination doit accepter les images ; la prise en charge des animations dépend de l’application. Les fichiers restent à leur emplacement d’origine. Aucune recherche en ligne."
+
+msgid "All"
+msgstr "Tout"
+
+msgid "Also removes pinned entries and emoji recents."
+msgstr "Supprime aussi les éléments épinglés et les émojis récents."
+
+msgid "Animals"
+msgstr "Animaux"
+
+msgid "Animals & Nature"
+msgstr "Animaux et nature"
+
+msgid "Apps using Ctrl+Shift+V (comma-separated)"
+msgstr "Applications utilisant Ctrl+Shift+V (séparées par des virgules)"
+
+msgid "Arrows"
+msgstr "Flèches"
+
+msgid "Capture clipboard history"
+msgstr "Enregistrer l’historique du presse-papiers"
+
+#, javascript-format
+msgid "Category: %s"
+msgstr "Catégorie : %s"
+
+msgid "Center of screen"
+msgstr "Centre de l’écran"
+
+msgid "Choose files"
+msgstr "Choisir des fichiers"
+
+msgid "Classic"
+msgstr "Classiques"
+
+msgid "Clear"
+msgstr "Effacer"
+
+msgid "Clear requested; applied when the extension is active."
+msgstr "Effacement demandé ; il sera appliqué lorsque l’extension sera active."
+
+msgid "Clear unpinned"
+msgstr "Effacer les éléments non épinglés"
+
+msgid "Clear unpinned history"
+msgstr "Effacer l’historique non épinglé"
+
+msgid "Clipboard"
+msgstr "Presse-papiers"
+
+msgid "Clipboard changed; the newer clipboard was preserved."
+msgstr "Le presse-papiers a changé ; son contenu le plus récent a été conservé."
+
+msgid "Clipboard history"
+msgstr "Historique du presse-papiers"
+
+msgid "Copied to clipboard. Use your application’s paste shortcut."
+msgstr "Copié dans le presse-papiers. Utilisez le raccourci de collage de votre application."
+
+msgid "Copy some text to start your history."
+msgstr "Copiez du texte pour commencer votre historique."
+
+msgid "Could not initialize the extension. Disable and re-enable it."
+msgstr "Impossible d’initialiser l’extension. Désactivez-la puis réactivez-la."
+
+msgid "Could not read that GIF. Re-add it in Settings or choose another file."
+msgstr "Impossible de lire ce GIF. Ajoutez-le à nouveau dans les paramètres ou choisissez un autre fichier."
+
+msgid "Could not update local history storage. Check directory permissions."
+msgstr "Impossible de mettre à jour l’historique local. Vérifiez les permissions du dossier."
+
+msgid "Currency"
+msgstr "Devises"
+
+msgid "Dark"
+msgstr "Foncé"
+
+msgid "Default"
+msgstr "Par défaut"
+
+msgid "Delete entry"
+msgstr "Supprimer l’élément"
+
+msgid "Desktop integration"
+msgstr "Intégration au bureau"
+
+msgid "Emoji"
+msgstr "Émojis"
+
+msgid "Erase all saved items"
+msgstr "Effacer tous les éléments enregistrés"
+
+msgid "Excluded apps (comma-separated)"
+msgstr "Applications exclues (séparées par des virgules)"
+
+#, javascript-format
+msgid "Files skipped: %d. Invalid, too large, or favorites full."
+msgstr "Fichiers ignorés : %d. Invalides, trop volumineux ou favoris complets."
+
+msgid "Flags"
+msgstr "Drapeaux"
+
+msgid "Food & Drink"
+msgstr "Nourriture et boissons"
+
+msgid "GIF favorites"
+msgstr "GIF favoris"
+
+msgid "GIF images"
+msgstr "Images GIF"
+
+msgid "Greek"
+msgstr "Lettres grecques"
+
+msgid "Happy"
+msgstr "Joie"
+
+msgid "History exceeds the storage limit."
+msgstr "L’historique dépasse la limite de stockage."
+
+msgid "History is paused. Enable it in Settings."
+msgstr "L’historique est en pause. Activez-le dans les paramètres."
+
+msgid "History stays on this computer. It may contain private text. Pausing capture does not erase existing entries."
+msgstr "L’historique reste sur cet ordinateur et peut contenir du texte privé. Suspendre l’enregistrement n’efface pas les éléments existants."
+
+msgid "Invalid stored history was removed."
+msgstr "L’historique enregistré invalide a été supprimé."
+
+msgid "Kaomoji and text emoticons"
+msgstr "Kaomoji et émoticônes textuelles"
+
+msgid "Light"
+msgstr "Clair"
+
+msgid "Local storage"
+msgstr "Stockage local"
+
+msgid "Love"
+msgstr "Amour"
+
+msgid "Math"
+msgstr "Mathématiques"
+
+msgid "Maximum unpinned entries"
+msgstr "Maximum d’éléments non épinglés"
+
+msgid "Medium"
+msgstr "Moyen"
+
+msgid "Medium dark"
+msgstr "Moyen foncé"
+
+msgid "Medium light"
+msgstr "Moyen clair"
+
+msgid "Near mouse pointer"
+msgstr "Près du pointeur"
+
+msgid "No items in this filter."
+msgstr "Aucun élément pour ce filtre."
+
+msgid "No matching items."
+msgstr "Aucun élément correspondant."
+
+msgid "Objects"
+msgstr "Objets"
+
+msgid "Paste automatically"
+msgstr "Coller automatiquement"
+
+msgid "Paste overrides (JSON)"
+msgstr "Raccourcis de collage personnalisés (JSON)"
+
+msgid "People & Body"
+msgstr "Personnes et corps"
+
+msgid "Picker position"
+msgstr "Position du sélecteur"
+
+msgid "Pin entry"
+msgstr "Épingler l’élément"
+
+msgid "Pinned entries are kept."
+msgstr "Les éléments épinglés sont conservés."
+
+msgid "Pinned entries have a separate maximum of 100. Total text is limited to 2 MiB."
+msgstr "Les éléments épinglés ont une limite distincte de 100. Le texte total est limité à 2 MiB."
+
+#, javascript-format
+msgid "Pinned: %s"
+msgstr "Épinglé : %s"
+
+#, javascript-format
+msgid "Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access."
+msgstr "Historique en texte clair : %s. Dossier 0700 ; fichier 0600. Les indices MIME des gestionnaires de mots de passe et les exclusions d’applications actives ne sont pas infaillibles. Aucune télémétrie ni accès réseau à l’exécution."
+
+msgid "Playful"
+msgstr "Espiègles"
+
+msgid "Punctuation"
+msgstr "Ponctuation"
+
+msgid "Recent"
+msgstr "Récents"
+
+msgid "Remember after logout"
+msgstr "Conserver après la déconnexion"
+
+msgid "Remove favorite (keep file)"
+msgstr "Retirer des favoris (garder le fichier)"
+
+msgid "Restore clipboard"
+msgstr "Restaurer le presse-papiers"
+
+msgid "Sad"
+msgstr "Tristesse"
+
+msgid "Search"
+msgstr "Rechercher"
+
+msgid "Search GIF filenames"
+msgstr "Rechercher des noms de fichiers GIF"
+
+msgid "Search clipboard"
+msgstr "Rechercher dans le presse-papiers"
+
+msgid "Search emoji"
+msgstr "Rechercher des émojis"
+
+msgid "Search kaomoji"
+msgstr "Rechercher des kaomoji"
+
+msgid "Search symbols"
+msgstr "Rechercher des symboles"
+
+msgid "Settings"
+msgstr "Paramètres"
+
+msgid "Shortcut (GTK accelerator syntax)"
+msgstr "Raccourci (syntaxe des accélérateurs GTK)"
+
+msgid "Shortcuts: ctrl-v, ctrl-shift-v, shift-insert, manual."
+msgstr "Raccourcis : ctrl-v, ctrl-shift-v, shift-insert, manual."
+
+#, javascript-format
+msgid "Show more (%d)"
+msgstr "Afficher plus (%d)"
+
+msgid "Smileys & Emotion"
+msgstr "Visages et émotions"
+
+msgid "Stored history could not be read. It has been removed."
+msgstr "L’historique enregistré n’a pas pu être lu et a été supprimé."
+
+msgid "Super V"
+msgstr "Super V"
+
+msgid "Super+V opens near the mouse pointer, or in the center of the focused screen."
+msgstr "Super+V ouvre le sélecteur près du pointeur ou au centre de l’écran actif."
+
+msgid "Surprised"
+msgstr "Surprise"
+
+msgid "Symbols"
+msgstr "Symboles"
+
+msgid "Text copied after enabling the extension is collected."
+msgstr "Le texte copié après l’activation de l’extension est enregistré."
+
+#, javascript-format
+msgid "Tone: %s"
+msgstr "Teint : %s"
+
+msgid "Travel & Places"
+msgstr "Voyages et lieux"
+
+msgid "Turn off to copy selections without sending a paste shortcut."
+msgstr "Désactivez cette option pour copier les sélections sans envoyer de raccourci de collage."
+
+msgid "Turning this off removes the saved file; current memory is retained."
+msgstr "La désactivation supprime le fichier enregistré ; l’historique en mémoire est conservé."
+
+msgid "Units"
+msgstr "Unités"
+
+msgid "Unpin entry"
+msgstr "Désépingler l’élément"
+
+msgid "Use a shortcut such as <Super>v or <Control><Alt>v."
+msgstr "Utilisez un raccourci tel que <Super>v ou <Control><Alt>v."
+
+msgid "Use exact desktop application IDs (including .desktop where present) or WM classes. Clipboard origin cannot always be identified."
+msgstr "Utilisez les identifiants exacts des applications (avec .desktop le cas échéant) ou les classes WM. L’origine du presse-papiers ne peut pas toujours être identifiée."
+
+msgid "You can pin up to 100 entries."
+msgstr "Vous pouvez épingler jusqu’à 100 éléments."
+
+msgid "Your recently used emoji will appear here."
+msgstr "Vos émojis récents apparaîtront ici."
+
+msgid "adoration"
+msgstr "adoration"
+
+msgid "affection"
+msgstr "affection"
+
+msgid "alpha"
+msgstr "alpha"
+
+msgid "angstrom"
+msgstr "ångström"
+
+msgid "angstrom sign"
+msgstr "symbole ångström"
+
+msgid "approximately equal"
+msgstr "approximativement égal"
+
+msgid "astonished"
+msgstr "étonné"
+
+msgid "bear"
+msgstr "ours"
+
+msgid "beta"
+msgstr "bêta"
+
+msgid "bird"
+msgstr "oiseau"
+
+msgid "bitcoin"
+msgstr "bitcoin"
+
+msgid "bullet"
+msgstr "puce"
+
+msgid "capital delta"
+msgstr "delta majuscule"
+
+msgid "capital gamma"
+msgstr "gamma majuscule"
+
+msgid "capital lambda"
+msgstr "lambda majuscule"
+
+msgid "capital omega"
+msgstr "oméga majuscule"
+
+msgid "capital phi"
+msgstr "phi majuscule"
+
+msgid "capital pi"
+msgstr "pi majuscule"
+
+msgid "capital sigma"
+msgstr "sigma majuscule"
+
+msgid "capital theta"
+msgstr "thêta majuscule"
+
+msgid "cat"
+msgstr "chat"
+
+msgid "cat eyes"
+msgstr "yeux de chat"
+
+msgid "celebrate"
+msgstr "célébrer"
+
+msgid "celebration sparkles"
+msgstr "étincelles de fête"
+
+msgid "cent"
+msgstr "centime"
+
+msgid "chi"
+msgstr "khi"
+
+msgid "confused"
+msgstr "confus"
+
+msgid "copyright"
+msgstr "droit d’auteur"
+
+msgid "cry"
+msgstr "pleurer"
+
+msgid "crying"
+msgstr "en pleurs"
+
+msgid "cubed"
+msgstr "au cube"
+
+msgid "cute smile"
+msgstr "sourire mignon"
+
+msgid "dagger"
+msgstr "dague"
+
+msgid "degree"
+msgstr "degré"
+
+msgid "degrees Celsius"
+msgstr "degrés Celsius"
+
+msgid "degrees Fahrenheit"
+msgstr "degrés Fahrenheit"
+
+msgid "delighted"
+msgstr "ravi"
+
+msgid "delta"
+msgstr "delta"
+
+msgid "determined"
+msgstr "déterminé"
+
+msgid "divide"
+msgstr "division"
+
+msgid "dog"
+msgstr "chien"
+
+msgid "dollar"
+msgstr "dollar"
+
+msgid "double dagger"
+msgstr "double dague"
+
+msgid "down arrow"
+msgstr "flèche vers le bas"
+
+msgid "element of"
+msgstr "appartient à"
+
+msgid "ellipsis"
+msgstr "points de suspension"
+
+msgid "em dash"
+msgstr "tiret cadratin"
+
+msgid "empty set"
+msgstr "ensemble vide"
+
+msgid "en dash"
+msgstr "tiret demi-cadratin"
+
+msgid "epsilon"
+msgstr "epsilon"
+
+msgid "equilibrium reversible reaction"
+msgstr "équilibre réaction réversible"
+
+msgid "equivalent"
+msgstr "équivalent"
+
+msgid "eta"
+msgstr "êta"
+
+msgid "euro"
+msgstr "euro"
+
+msgid "flower smile"
+msgstr "sourire fleuri"
+
+msgid "full width percent"
+msgstr "pourcentage pleine chasse"
+
+msgid "gamma"
+msgstr "gamma"
+
+msgid "gradient"
+msgstr "gradient"
+
+msgid "greater than or equal"
+msgstr "supérieur ou égal"
+
+msgid "happy"
+msgstr "heureux"
+
+msgid "heart"
+msgstr "cœur"
+
+msgid "heart eyes"
+msgstr "yeux en cœur"
+
+msgid "hug"
+msgstr "câlin"
+
+msgid "identical"
+msgstr "identique"
+
+msgid "implies"
+msgstr "implique"
+
+msgid "infinity"
+msgstr "infini"
+
+msgid "integral"
+msgstr "intégrale"
+
+msgid "intersection"
+msgstr "intersection"
+
+msgid "iota"
+msgstr "iota"
+
+msgid "joy"
+msgstr "joie"
+
+msgid "kappa"
+msgstr "kappa"
+
+msgid "kiss"
+msgstr "bisou"
+
+msgid "lambda"
+msgstr "lambda"
+
+msgid "laugh"
+msgstr "rire"
+
+msgid "left arrow"
+msgstr "flèche gauche"
+
+msgid "left double arrow"
+msgstr "flèche double gauche"
+
+msgid "left guillemet"
+msgstr "guillemet ouvrant"
+
+msgid "left quotation mark"
+msgstr "guillemet double ouvrant"
+
+msgid "left right arrow"
+msgstr "flèche gauche droite"
+
+msgid "left single quote"
+msgstr "guillemet simple ouvrant"
+
+msgid "less than or equal"
+msgstr "inférieur ou égal"
+
+msgid "litre"
+msgstr "litre"
+
+msgid "long right arrow"
+msgstr "flèche longue droite"
+
+msgid "love"
+msgstr "amour"
+
+msgid "maps to"
+msgstr "envoie sur"
+
+msgid "micro"
+msgstr "micro"
+
+msgid "middle dot"
+msgstr "point médian"
+
+msgid "minus"
+msgstr "moins"
+
+msgid "mu micro"
+msgstr "mu micro"
+
+msgid "multiply"
+msgstr "multiplication"
+
+msgid "nervous"
+msgstr "nerveux"
+
+msgid "north east arrow"
+msgstr "flèche nord-est"
+
+msgid "north west arrow"
+msgstr "flèche nord-ouest"
+
+msgid "not element of"
+msgstr "n’appartient pas à"
+
+msgid "not equal"
+msgstr "différent de"
+
+msgid "nu"
+msgstr "nu"
+
+msgid "omega"
+msgstr "oméga"
+
+msgid "paragraph"
+msgstr "paragraphe"
+
+msgid "partial derivative"
+msgstr "dérivée partielle"
+
+msgid "per mille"
+msgstr "pour mille"
+
+msgid "phi"
+msgstr "phi"
+
+msgid "pi"
+msgstr "pi"
+
+msgid "plus minus"
+msgstr "plus ou moins"
+
+msgid "point left"
+msgstr "pointer à gauche"
+
+msgid "point right"
+msgstr "pointer à droite"
+
+msgid "pound"
+msgstr "livre sterling"
+
+msgid "product"
+msgstr "produit"
+
+msgid "proportional"
+msgstr "proportionnel"
+
+msgid "psi"
+msgstr "psi"
+
+msgid "rabbit"
+msgstr "lapin"
+
+msgid "reduced Planck constant"
+msgstr "constante de Planck réduite"
+
+msgid "registered"
+msgstr "marque déposée"
+
+msgid "restore table"
+msgstr "remettre la table"
+
+msgid "rho"
+msgstr "rhô"
+
+msgid "right arrow"
+msgstr "flèche droite"
+
+msgid "right guillemet"
+msgstr "guillemet fermant"
+
+msgid "right quotation mark"
+msgstr "guillemet double fermant"
+
+msgid "right single quote"
+msgstr "guillemet simple fermant"
+
+msgid "ruble"
+msgstr "rouble"
+
+msgid "rupee"
+msgstr "roupie"
+
+msgid "sad"
+msgstr "triste"
+
+msgid "section"
+msgstr "section"
+
+msgid "shocked"
+msgstr "choqué"
+
+msgid "shrug"
+msgstr "hausser les épaules"
+
+msgid "sigma"
+msgstr "sigma"
+
+msgid "sleep"
+msgstr "dormir"
+
+msgid "smile"
+msgstr "sourire"
+
+msgid "smiling"
+msgstr "souriant"
+
+msgid "smirk"
+msgstr "sourire en coin"
+
+msgid "south east arrow"
+msgstr "flèche sud-est"
+
+msgid "south west arrow"
+msgstr "flèche sud-ouest"
+
+msgid "square root"
+msgstr "racine carrée"
+
+msgid "squared"
+msgstr "au carré"
+
+msgid "subscript one"
+msgstr "un en indice"
+
+msgid "subscript three"
+msgstr "trois en indice"
+
+msgid "subscript two"
+msgstr "deux en indice"
+
+msgid "subscript zero"
+msgstr "zéro en indice"
+
+msgid "sum"
+msgstr "somme"
+
+msgid "superscript minus"
+msgstr "moins en exposant"
+
+msgid "superscript plus"
+msgstr "plus en exposant"
+
+msgid "surprise"
+msgstr "surprise"
+
+msgid "surprised"
+msgstr "surpris"
+
+msgid "table flip"
+msgstr "renverser la table"
+
+msgid "tau"
+msgstr "tau"
+
+msgid "tears"
+msgstr "larmes"
+
+msgid "theta"
+msgstr "thêta"
+
+msgid "tongue"
+msgstr "langue"
+
+msgid "trademark"
+msgstr "marque commerciale"
+
+msgid "unhappy"
+msgstr "malheureux"
+
+msgid "union"
+msgstr "union"
+
+msgid "unsure"
+msgstr "incertain"
+
+msgid "up arrow"
+msgstr "flèche vers le haut"
+
+msgid "up down arrow"
+msgstr "flèche haut bas"
+
+msgid "weeping"
+msgstr "pleurs"
+
+msgid "wide eyes"
+msgstr "yeux écarquillés"
+
+msgid "wink"
+msgstr "clin d’œil"
+
+msgid "won"
+msgstr "won"
+
+msgid "xi"
+msgstr "ksi"
+
+msgid "yen yuan"
+msgstr "yen yuan"
+
+msgid "zeta"
+msgstr "zêta"
+
+msgid "↑↓ Select · Enter Paste · Esc Close · Ctrl+Tab Switch"
+msgstr "↑↓ Sélectionner · Entrée Coller · Échap Fermer · Ctrl+Tab Changer"
+
+msgid "↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close"
+msgstr "↑↓←→ Sélectionner · Entrée Coller · Ctrl+F Rechercher · Échap Fermer"
+

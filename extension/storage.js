@@ -1,4 +1,5 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+import {N_} from './core/localization.js';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import {MAX_STATE_BYTES} from './core/settings.js';
@@ -76,7 +77,7 @@ export class StateStore {
         } catch (error) {
             if (isMissing(error) || error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
                 return null;
-            this.onError('Stored history could not be read. It has been removed.');
+            this.onError(N_('Stored history could not be read. It has been removed.'));
             await this.erase();
             return null;
         } finally {
@@ -89,7 +90,7 @@ export class StateStore {
         if (!this.persist)
             return this.erase();
         if (new TextEncoder().encode(raw).length > MAX_STATE_BYTES) {
-            this.onError('History exceeds the storage limit.');
+            this.onError(N_('History exceeds the storage limit.'));
             return Promise.resolve();
         }
         this._desired = raw;
@@ -131,7 +132,7 @@ export class StateStore {
                         });
                     }
                 } catch {
-                    this.onError('Could not update local history storage. Check directory permissions.');
+                    this.onError(N_('Could not update local history storage. Check directory permissions.'));
                 }
             }
         })().finally(() => { this._running = null; });

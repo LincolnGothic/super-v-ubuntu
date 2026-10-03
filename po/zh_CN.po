@@ -1,0 +1,809 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Super V Ubuntu interface and character names.
+msgid ""
+msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: zh_CN\nLanguage: zh_CN\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Activities"
+msgstr "活动"
+
+msgid "Add / manage GIFs"
+msgstr "添加／管理 GIF"
+
+msgid "Add GIF favorites"
+msgstr "添加 GIF 收藏"
+
+msgid "Add GIF files"
+msgstr "添加 GIF 文件"
+
+msgid "Add GIF files in Settings. GIF insertion requires an app that accepts images."
+msgstr "请在设置中添加 GIF 文件。插入 GIF 需要使用支持图像的应用。"
+
+msgid "Add local GIF files (up to 40, 8 MiB each, 2048 × 2048 pixels). The picker shows the first frame and copies the GIF image. Pasting requires an app that accepts images; animation support depends on the app. Files stay in their original location. No online search."
+msgstr "添加本地 GIF 文件（最多 40 个，每个不超过 8 MiB，尺寸不超过 2048 × 2048 像素）。选择器显示第一帧并复制 GIF 图像。粘贴需要使用支持图像的应用；动画支持取决于应用。文件保留在原位置。不提供在线搜索。"
+
+msgid "All"
+msgstr "全部"
+
+msgid "Also removes pinned entries and emoji recents."
+msgstr "同时删除固定条目和最近使用的表情符号。"
+
+msgid "Animals"
+msgstr "动物"
+
+msgid "Animals & Nature"
+msgstr "动物与自然"
+
+msgid "Apps using Ctrl+Shift+V (comma-separated)"
+msgstr "使用 Ctrl+Shift+V 的应用（用逗号分隔）"
+
+msgid "Arrows"
+msgstr "箭头"
+
+msgid "Capture clipboard history"
+msgstr "记录剪贴板历史"
+
+#, javascript-format
+msgid "Category: %s"
+msgstr "类别：%s"
+
+msgid "Center of screen"
+msgstr "屏幕中央"
+
+msgid "Choose files"
+msgstr "选择文件"
+
+msgid "Classic"
+msgstr "经典"
+
+msgid "Clear"
+msgstr "清除"
+
+msgid "Clear requested; applied when the extension is active."
+msgstr "已请求清除；扩展启用时生效。"
+
+msgid "Clear unpinned"
+msgstr "清除未固定条目"
+
+msgid "Clear unpinned history"
+msgstr "清除未固定的历史"
+
+msgid "Clipboard"
+msgstr "剪贴板"
+
+msgid "Clipboard changed; the newer clipboard was preserved."
+msgstr "剪贴板已更改；已保留较新的内容。"
+
+msgid "Clipboard history"
+msgstr "剪贴板历史"
+
+msgid "Copied to clipboard. Use your application’s paste shortcut."
+msgstr "已复制到剪贴板。请使用应用的粘贴快捷键。"
+
+msgid "Copy some text to start your history."
+msgstr "复制一些文字以开始记录历史。"
+
+msgid "Could not initialize the extension. Disable and re-enable it."
+msgstr "无法初始化扩展。请禁用后重新启用。"
+
+msgid "Could not read that GIF. Re-add it in Settings or choose another file."
+msgstr "无法读取该 GIF。请在设置中重新添加或选择其他文件。"
+
+msgid "Could not update local history storage. Check directory permissions."
+msgstr "无法更新本地历史存储。请检查目录权限。"
+
+msgid "Currency"
+msgstr "货币"
+
+msgid "Dark"
+msgstr "深色"
+
+msgid "Default"
+msgstr "默认"
+
+msgid "Delete entry"
+msgstr "删除条目"
+
+msgid "Desktop integration"
+msgstr "桌面集成"
+
+msgid "Emoji"
+msgstr "表情符号"
+
+msgid "Erase all saved items"
+msgstr "删除所有保存的项目"
+
+msgid "Excluded apps (comma-separated)"
+msgstr "排除的应用（用逗号分隔）"
+
+#, javascript-format
+msgid "Files skipped: %d. Invalid, too large, or favorites full."
+msgstr "已跳过 %d 个文件：文件无效、过大或收藏已满。"
+
+msgid "Flags"
+msgstr "旗帜"
+
+msgid "Food & Drink"
+msgstr "食物与饮料"
+
+msgid "GIF favorites"
+msgstr "GIF 收藏"
+
+msgid "GIF images"
+msgstr "GIF 图像"
+
+msgid "Greek"
+msgstr "希腊字母"
+
+msgid "Happy"
+msgstr "开心"
+
+msgid "History exceeds the storage limit."
+msgstr "历史记录超出存储限制。"
+
+msgid "History is paused. Enable it in Settings."
+msgstr "历史记录已暂停。请在设置中启用。"
+
+msgid "History stays on this computer. It may contain private text. Pausing capture does not erase existing entries."
+msgstr "历史记录保留在此计算机上，可能包含私人文字。暂停记录不会清除现有条目。"
+
+msgid "Invalid stored history was removed."
+msgstr "已删除无效的历史记录。"
+
+msgid "Kaomoji and text emoticons"
+msgstr "颜文字与文字表情"
+
+msgid "Light"
+msgstr "浅色"
+
+msgid "Local storage"
+msgstr "本地存储"
+
+msgid "Love"
+msgstr "爱意"
+
+msgid "Math"
+msgstr "数学"
+
+msgid "Maximum unpinned entries"
+msgstr "未固定条目上限"
+
+msgid "Medium"
+msgstr "中等"
+
+msgid "Medium dark"
+msgstr "中深色"
+
+msgid "Medium light"
+msgstr "中浅色"
+
+msgid "Near mouse pointer"
+msgstr "鼠标指针附近"
+
+msgid "No items in this filter."
+msgstr "此筛选条件下没有项目。"
+
+msgid "No matching items."
+msgstr "没有匹配的项目。"
+
+msgid "Objects"
+msgstr "物品"
+
+msgid "Paste automatically"
+msgstr "自动粘贴"
+
+msgid "Paste overrides (JSON)"
+msgstr "粘贴快捷键覆盖（JSON）"
+
+msgid "People & Body"
+msgstr "人物与身体"
+
+msgid "Picker position"
+msgstr "选择器位置"
+
+msgid "Pin entry"
+msgstr "固定条目"
+
+msgid "Pinned entries are kept."
+msgstr "保留固定条目。"
+
+msgid "Pinned entries have a separate maximum of 100. Total text is limited to 2 MiB."
+msgstr "固定条目的独立上限为 100 个。文字总量限制为 2 MiB。"
+
+#, javascript-format
+msgid "Pinned: %s"
+msgstr "已固定：%s"
+
+#, javascript-format
+msgid "Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access."
+msgstr "明文历史记录：%s。目录权限 0700；文件权限 0600。密码管理器 MIME 提示和当前应用排除仅尽力处理。不收集遥测数据，运行时不访问网络。"
+
+msgid "Playful"
+msgstr "俏皮"
+
+msgid "Punctuation"
+msgstr "标点"
+
+msgid "Recent"
+msgstr "最近使用"
+
+msgid "Remember after logout"
+msgstr "注销后保留"
+
+msgid "Remove favorite (keep file)"
+msgstr "移除收藏（保留文件）"
+
+msgid "Restore clipboard"
+msgstr "恢复剪贴板"
+
+msgid "Sad"
+msgstr "悲伤"
+
+msgid "Search"
+msgstr "搜索"
+
+msgid "Search GIF filenames"
+msgstr "搜索 GIF 文件名"
+
+msgid "Search clipboard"
+msgstr "搜索剪贴板"
+
+msgid "Search emoji"
+msgstr "搜索表情符号"
+
+msgid "Search kaomoji"
+msgstr "搜索颜文字"
+
+msgid "Search symbols"
+msgstr "搜索符号"
+
+msgid "Settings"
+msgstr "设置"
+
+msgid "Shortcut (GTK accelerator syntax)"
+msgstr "快捷键（GTK 加速键语法）"
+
+msgid "Shortcuts: ctrl-v, ctrl-shift-v, shift-insert, manual."
+msgstr "快捷键：ctrl-v、ctrl-shift-v、shift-insert、manual。"
+
+#, javascript-format
+msgid "Show more (%d)"
+msgstr "显示更多（%d）"
+
+msgid "Smileys & Emotion"
+msgstr "笑脸与情感"
+
+msgid "Stored history could not be read. It has been removed."
+msgstr "无法读取保存的历史记录，已将其删除。"
+
+msgid "Super V"
+msgstr "Super V"
+
+msgid "Super+V opens near the mouse pointer, or in the center of the focused screen."
+msgstr "Super+V 在鼠标指针附近或当前屏幕中央打开。"
+
+msgid "Surprised"
+msgstr "惊讶"
+
+msgid "Symbols"
+msgstr "符号"
+
+msgid "Text copied after enabling the extension is collected."
+msgstr "启用扩展后复制的文字会被记录。"
+
+#, javascript-format
+msgid "Tone: %s"
+msgstr "肤色：%s"
+
+msgid "Travel & Places"
+msgstr "旅行与地点"
+
+msgid "Turn off to copy selections without sending a paste shortcut."
+msgstr "关闭后仅复制所选内容，不发送粘贴快捷键。"
+
+msgid "Turning this off removes the saved file; current memory is retained."
+msgstr "关闭后删除保存的文件；保留当前内存中的记录。"
+
+msgid "Units"
+msgstr "单位"
+
+msgid "Unpin entry"
+msgstr "取消固定条目"
+
+msgid "Use a shortcut such as <Super>v or <Control><Alt>v."
+msgstr "请使用 <Super>v 或 <Control><Alt>v 等快捷键。"
+
+msgid "Use exact desktop application IDs (including .desktop where present) or WM classes. Clipboard origin cannot always be identified."
+msgstr "请使用准确的桌面应用 ID（如含有 .desktop，请保留）或 WM 类。剪贴板内容来源并非总能识别。"
+
+msgid "You can pin up to 100 entries."
+msgstr "最多可固定 100 个条目。"
+
+msgid "Your recently used emoji will appear here."
+msgstr "最近使用的表情符号将显示在这里。"
+
+msgid "adoration"
+msgstr "爱慕"
+
+msgid "affection"
+msgstr "喜爱"
+
+msgid "alpha"
+msgstr "阿尔法"
+
+msgid "angstrom"
+msgstr "埃"
+
+msgid "angstrom sign"
+msgstr "埃符号"
+
+msgid "approximately equal"
+msgstr "约等于"
+
+msgid "astonished"
+msgstr "震惊"
+
+msgid "bear"
+msgstr "熊"
+
+msgid "beta"
+msgstr "贝塔"
+
+msgid "bird"
+msgstr "鸟"
+
+msgid "bitcoin"
+msgstr "比特币"
+
+msgid "bullet"
+msgstr "项目符号"
+
+msgid "capital delta"
+msgstr "大写德尔塔"
+
+msgid "capital gamma"
+msgstr "大写伽马"
+
+msgid "capital lambda"
+msgstr "大写拉姆达"
+
+msgid "capital omega"
+msgstr "大写欧米伽"
+
+msgid "capital phi"
+msgstr "大写斐"
+
+msgid "capital pi"
+msgstr "大写派"
+
+msgid "capital sigma"
+msgstr "大写西格马"
+
+msgid "capital theta"
+msgstr "大写西塔"
+
+msgid "cat"
+msgstr "猫"
+
+msgid "cat eyes"
+msgstr "猫眼"
+
+msgid "celebrate"
+msgstr "庆祝"
+
+msgid "celebration sparkles"
+msgstr "庆祝闪光"
+
+msgid "cent"
+msgstr "分币"
+
+msgid "chi"
+msgstr "卡伊"
+
+msgid "confused"
+msgstr "困惑"
+
+msgid "copyright"
+msgstr "版权"
+
+msgid "cry"
+msgstr "哭泣"
+
+msgid "crying"
+msgstr "哭泣中"
+
+msgid "cubed"
+msgstr "立方"
+
+msgid "cute smile"
+msgstr "可爱微笑"
+
+msgid "dagger"
+msgstr "剑号"
+
+msgid "degree"
+msgstr "度"
+
+msgid "degrees Celsius"
+msgstr "摄氏度"
+
+msgid "degrees Fahrenheit"
+msgstr "华氏度"
+
+msgid "delighted"
+msgstr "欣喜"
+
+msgid "delta"
+msgstr "德尔塔"
+
+msgid "determined"
+msgstr "坚定"
+
+msgid "divide"
+msgstr "除"
+
+msgid "dog"
+msgstr "狗"
+
+msgid "dollar"
+msgstr "美元"
+
+msgid "double dagger"
+msgstr "双剑号"
+
+msgid "down arrow"
+msgstr "向下箭头"
+
+msgid "element of"
+msgstr "属于"
+
+msgid "ellipsis"
+msgstr "省略号"
+
+msgid "em dash"
+msgstr "长破折号"
+
+msgid "empty set"
+msgstr "空集"
+
+msgid "en dash"
+msgstr "短破折号"
+
+msgid "epsilon"
+msgstr "艾普西龙"
+
+msgid "equilibrium reversible reaction"
+msgstr "平衡可逆反应"
+
+msgid "equivalent"
+msgstr "等价"
+
+msgid "eta"
+msgstr "伊塔"
+
+msgid "euro"
+msgstr "欧元"
+
+msgid "flower smile"
+msgstr "花朵微笑"
+
+msgid "full width percent"
+msgstr "全角百分号"
+
+msgid "gamma"
+msgstr "伽马"
+
+msgid "gradient"
+msgstr "梯度"
+
+msgid "greater than or equal"
+msgstr "大于等于"
+
+msgid "happy"
+msgstr "开心"
+
+msgid "heart"
+msgstr "心"
+
+msgid "heart eyes"
+msgstr "爱心眼"
+
+msgid "hug"
+msgstr "拥抱"
+
+msgid "identical"
+msgstr "恒等"
+
+msgid "implies"
+msgstr "蕴含"
+
+msgid "infinity"
+msgstr "无穷"
+
+msgid "integral"
+msgstr "积分"
+
+msgid "intersection"
+msgstr "交集"
+
+msgid "iota"
+msgstr "约塔"
+
+msgid "joy"
+msgstr "喜悦"
+
+msgid "kappa"
+msgstr "卡帕"
+
+msgid "kiss"
+msgstr "亲吻"
+
+msgid "lambda"
+msgstr "拉姆达"
+
+msgid "laugh"
+msgstr "大笑"
+
+msgid "left arrow"
+msgstr "向左箭头"
+
+msgid "left double arrow"
+msgstr "向左双箭头"
+
+msgid "left guillemet"
+msgstr "左尖引号"
+
+msgid "left quotation mark"
+msgstr "左双引号"
+
+msgid "left right arrow"
+msgstr "左右箭头"
+
+msgid "left single quote"
+msgstr "左单引号"
+
+msgid "less than or equal"
+msgstr "小于等于"
+
+msgid "litre"
+msgstr "升"
+
+msgid "long right arrow"
+msgstr "向右长箭头"
+
+msgid "love"
+msgstr "爱"
+
+msgid "maps to"
+msgstr "映射到"
+
+msgid "micro"
+msgstr "微"
+
+msgid "middle dot"
+msgstr "间隔号"
+
+msgid "minus"
+msgstr "减"
+
+msgid "mu micro"
+msgstr "缪 微"
+
+msgid "multiply"
+msgstr "乘"
+
+msgid "nervous"
+msgstr "紧张"
+
+msgid "north east arrow"
+msgstr "右上箭头"
+
+msgid "north west arrow"
+msgstr "左上箭头"
+
+msgid "not element of"
+msgstr "不属于"
+
+msgid "not equal"
+msgstr "不等于"
+
+msgid "nu"
+msgstr "纽"
+
+msgid "omega"
+msgstr "欧米伽"
+
+msgid "paragraph"
+msgstr "段落号"
+
+msgid "partial derivative"
+msgstr "偏导数"
+
+msgid "per mille"
+msgstr "千分号"
+
+msgid "phi"
+msgstr "斐"
+
+msgid "pi"
+msgstr "派"
+
+msgid "plus minus"
+msgstr "正负"
+
+msgid "point left"
+msgstr "指向左"
+
+msgid "point right"
+msgstr "指向右"
+
+msgid "pound"
+msgstr "英镑"
+
+msgid "product"
+msgstr "连乘"
+
+msgid "proportional"
+msgstr "成比例"
+
+msgid "psi"
+msgstr "普西"
+
+msgid "rabbit"
+msgstr "兔子"
+
+msgid "reduced Planck constant"
+msgstr "约化普朗克常数"
+
+msgid "registered"
+msgstr "注册商标"
+
+msgid "restore table"
+msgstr "放回桌子"
+
+msgid "rho"
+msgstr "柔"
+
+msgid "right arrow"
+msgstr "向右箭头"
+
+msgid "right guillemet"
+msgstr "右尖引号"
+
+msgid "right quotation mark"
+msgstr "右双引号"
+
+msgid "right single quote"
+msgstr "右单引号"
+
+msgid "ruble"
+msgstr "卢布"
+
+msgid "rupee"
+msgstr "卢比"
+
+msgid "sad"
+msgstr "悲伤"
+
+msgid "section"
+msgstr "节号"
+
+msgid "shocked"
+msgstr "震惊"
+
+msgid "shrug"
+msgstr "耸肩"
+
+msgid "sigma"
+msgstr "西格马"
+
+msgid "sleep"
+msgstr "睡觉"
+
+msgid "smile"
+msgstr "微笑"
+
+msgid "smiling"
+msgstr "微笑中"
+
+msgid "smirk"
+msgstr "得意笑"
+
+msgid "south east arrow"
+msgstr "右下箭头"
+
+msgid "south west arrow"
+msgstr "左下箭头"
+
+msgid "square root"
+msgstr "平方根"
+
+msgid "squared"
+msgstr "平方"
+
+msgid "subscript one"
+msgstr "下标一"
+
+msgid "subscript three"
+msgstr "下标三"
+
+msgid "subscript two"
+msgstr "下标二"
+
+msgid "subscript zero"
+msgstr "下标零"
+
+msgid "sum"
+msgstr "求和"
+
+msgid "superscript minus"
+msgstr "上标减号"
+
+msgid "superscript plus"
+msgstr "上标加号"
+
+msgid "surprise"
+msgstr "惊喜"
+
+msgid "surprised"
+msgstr "惊讶"
+
+msgid "table flip"
+msgstr "掀桌"
+
+msgid "tau"
+msgstr "陶"
+
+msgid "tears"
+msgstr "眼泪"
+
+msgid "theta"
+msgstr "西塔"
+
+msgid "tongue"
+msgstr "吐舌"
+
+msgid "trademark"
+msgstr "商标"
+
+msgid "unhappy"
+msgstr "不开心"
+
+msgid "union"
+msgstr "并集"
+
+msgid "unsure"
+msgstr "不确定"
+
+msgid "up arrow"
+msgstr "向上箭头"
+
+msgid "up down arrow"
+msgstr "上下箭头"
+
+msgid "weeping"
+msgstr "流泪"
+
+msgid "wide eyes"
+msgstr "睁大眼睛"
+
+msgid "wink"
+msgstr "眨眼"
+
+msgid "won"
+msgstr "韩元"
+
+msgid "xi"
+msgstr "克西"
+
+msgid "yen yuan"
+msgstr "日元 人民币"
+
+msgid "zeta"
+msgstr "泽塔"
+
+msgid "↑↓ Select · Enter Paste · Esc Close · Ctrl+Tab Switch"
+msgstr "↑↓ 选择 · Enter 粘贴 · Esc 关闭 · Ctrl+Tab 切换"
+
+msgid "↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close"
+msgstr "↑↓←→ 选择 · Enter 粘贴 · Ctrl+F 搜索 · Esc 关闭"
+

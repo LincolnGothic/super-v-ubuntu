@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.1.4 — 2026-10-02
+
+- Follow the desktop language: English, Simplified Chinese, Traditional Chinese,
+  Japanese, Spanish, French or Korean; use English when no translation is available.
+- Translate popup controls, settings, notifications, accessible labels, kaomoji
+  and symbol names. Keep category IDs, history and recents stable across languages.
+- Search emoji using bundled CLDR 48 names and keywords in the selected language;
+  English aliases remain searchable. No runtime downloads.
+- Add six translated quick-start guides and a gettext contribution workflow.
+- Compile and audit translation catalogs and localized data in both installation
+  methods; check actual GJS lookups and isolated Shell layouts in seven languages.
+
 ## 0.1.3 — 2026-10-02
 
 Open the picker near the mouse pointer by default, with a centered option in

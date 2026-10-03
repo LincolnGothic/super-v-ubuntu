@@ -18,3 +18,6 @@ Include tests for behavioral changes, update relevant documentation and
 CHANGELOG, and use meaningful commit messages. Source contributions are
 GPL-3.0-or-later; generated Unicode data retains its upstream license.
 Do not upload real clipboard histories, credentials or personal desktop logs.
+
+For translations, see [docs/translations.md](docs/translations.md). The `.po`
+files are the canonical UI translation sources; do not edit compiled `.mo` files.

@@ -1,10 +1,13 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+import GLib from 'gi://GLib';
+import {emojiLocale} from './core/localization.js';
 import Gio from 'gi://Gio';
 import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
+import {gettext as _} from './translations.js';
 import {History} from './core/history.js';
 import {EmojiIndex} from './core/emoji.js';
 import {StateStore} from './storage.js';
@@ -28,7 +31,7 @@ export default class SuperVExtension extends Extension {
         this._stateCancellable = new Gio.Cancellable();
         this.store = new StateStore(undefined, message => {
             if (this._active)
-                Main.notify('Super V', message);
+                Main.notify('Super V', _(message));
         });
         this.store.persist = this.settings.get_boolean('remember-history');
         this._settingsHandler = this.settings.connect('changed', (_settings, key) => this._settingsChanged(key));
@@ -36,7 +39,7 @@ export default class SuperVExtension extends Extension {
         this._start(epoch).catch(() => {
             if (this._active && epoch === this._epoch) {
                 this.disable();
-                Main.notify('Super V', 'Could not initialize the extension. Disable and re-enable it.');
+                Main.notify('Super V', _('Could not initialize the extension. Disable and re-enable it.'));
             }
         });
     }
@@ -52,7 +55,24 @@ export default class SuperVExtension extends Extension {
         if (!this._active || epoch !== this._epoch)
             return;
         const data = JSON.parse(new TextDecoder().decode(contents));
-        this.emoji = new EmojiIndex(data.emoji);
+        let annotations = {};
+        const locale = emojiLocale(GLib.get_language_names());
+        if (locale !== 'en') {
+            try {
+                const file = this.dir.get_child('data').get_child('emoji-locales').get_child(`${locale}.json`);
+                const bytes = await new Promise((resolve, reject) => {
+                    file.load_contents_async(this._stateCancellable, (source, result) => {
+                        try { resolve(source.load_contents_finish(result)[1]); } catch (error) { reject(error); }
+                    });
+                });
+                annotations = JSON.parse(new TextDecoder().decode(bytes)).annotations;
+            } catch {
+                // An absent catalog falls back to the bundled English data.
+            }
+        }
+        if (!this._active || epoch !== this._epoch)
+            return;
+        this.emoji = new EmojiIndex(data.emoji, [], annotations);
         const store = this.store;
         const raw = store.persist ? await store.load(this._stateCancellable) : null;
         if (!this._active || epoch !== this._epoch)
@@ -64,7 +84,7 @@ export default class SuperVExtension extends Extension {
             this.emoji.setRecent(loaded.recent);
             if (loaded.recovered) {
                 await store.erase();
-                Main.notify('Super V', 'Invalid stored history was removed.');
+                Main.notify('Super V', _('Invalid stored history was removed.'));
             }
         } else if (!store.persist) {
             await store.erase();
@@ -85,7 +105,7 @@ export default class SuperVExtension extends Extension {
         this.pasteBackend = new PasteBackend(this.settings,
             window => this.identifiers(window), () => {
                 if (this._active)
-                    Main.notify('Super V', 'Copied to clipboard. Use your application’s paste shortcut.');
+                    Main.notify('Super V', _('Copied to clipboard. Use your application’s paste shortcut.'));
             });
         this.popup = new SuperVPopup(this);
         this._sessionHandler = Main.sessionMode.connect('updated', () => {
@@ -140,7 +160,7 @@ export default class SuperVExtension extends Extension {
 
     pin(id) {
         if (!this.history.togglePin(id))
-            Main.notify('Super V', 'You can pin up to 100 entries.');
+            Main.notify('Super V', _('You can pin up to 100 entries.'));
         this.changed();
     }
 
@@ -186,7 +206,7 @@ export default class SuperVExtension extends Extension {
         if (generation === this.clipboard.generation && current === restore.emoji)
             this.clipboard.write(restore.previous);
         else
-            Main.notify('Super V', 'Clipboard changed; the newer clipboard was preserved.');
+            Main.notify('Super V', _('Clipboard changed; the newer clipboard was preserved.'));
         this.pendingRestore = null;
         this.popup.refresh();
     }
@@ -207,7 +227,7 @@ export default class SuperVExtension extends Extension {
             this.pasteBackend.paste(target);
         } catch {
             if (this._active && epoch === this._epoch)
-                Main.notify('Super V', 'Could not read that GIF. Re-add it in Settings or choose another file.');
+                Main.notify('Super V', _('Could not read that GIF. Re-add it in Settings or choose another file.'));
         }
     }
 

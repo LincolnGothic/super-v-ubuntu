@@ -1,4 +1,6 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
+import {gettext as _} from './translations.js';
+import {format, groupLabels, toneLabels} from './core/localization.js';
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
@@ -15,6 +17,10 @@ import {placeNearPointer, pointInRect} from './core/placement.js';
 function button(label, action, style = 'button') {
     const actor = new St.Button({label, style_class: style,
         can_focus: true, reactive: true, accessible_name: label});
+    const text = actor.get_child().clutter_text ?? actor.get_child();
+    text.line_wrap = true;
+    text.line_wrap_mode = Pango.WrapMode.WORD_CHAR;
+    text.ellipsize = Pango.EllipsizeMode.NONE;
     actor.connect('clicked', action);
     return actor;
 }
@@ -36,24 +42,24 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this.pageSize = 60;
         this._emojiColumns = 6;
         this._visibleCount = this.pageSize;
-        this.catalogs = {kaomoji: new CatalogIndex(kaomoji), symbols: new CatalogIndex(symbols)};
+        this.catalogs = {kaomoji: new CatalogIndex(kaomoji, _), symbols: new CatalogIndex(symbols, _)};
         const horizontal = horizontalBoxProperties(St.BoxLayout, Clutter);
         const header = new St.BoxLayout({...horizontal, style_class: 'super-v-header', x_expand: true});
         this._title = new St.Label({text: `Super V ${controller.metadata?.['version-name'] ?? ''}`.trim(),
             style_class: 'super-v-title',
             x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         header.add_child(this._title);
-        header.add_child(button('Settings', () => {
+        header.add_child(button(_('Settings'), () => {
             this.close();
             controller.openPreferences();
         }));
         this.contentLayout.add_child(header);
         const tabs = new St.BoxLayout({...horizontal, style_class: 'super-v-tabs'});
-        this._clipboardTab = button('Clipboard', () => this._setTab('clipboard'));
-        this._emojiTab = button('Emoji', () => this._setTab('emoji'));
+        this._clipboardTab = button(_('Clipboard'), () => this._setTab('clipboard'));
+        this._emojiTab = button(_('Emoji'), () => this._setTab('emoji'));
         this._tabs = new Map([['clipboard', this._clipboardTab], ['emoji', this._emojiTab]]);
-        for (const [name, label, accessible] of [['kaomoji', ';-)', 'Kaomoji and text emoticons'],
-            ['symbols', 'Ω', 'Symbols'], ['gifs', 'GIF', 'GIF favorites']]) {
+        for (const [name, label, accessible] of [['kaomoji', ';-)', _('Kaomoji and text emoticons')],
+            ['symbols', 'Ω', _('Symbols')], ['gifs', 'GIF', _('GIF favorites')]]) {
             const actor = button(label, () => this._setTab(name));
             actor.accessible_name = accessible;
             this._tabs.set(name, actor);
@@ -61,8 +67,8 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         for (const actor of this._tabs.values())
             tabs.add_child(actor);
         this.contentLayout.add_child(tabs);
-        this.search = new St.Entry({hint_text: 'Search clipboard', can_focus: true,
-            x_expand: true, style_class: 'search-entry', accessible_name: 'Search'});
+        this.search = new St.Entry({hint_text: _('Search clipboard'), can_focus: true,
+            x_expand: true, style_class: 'search-entry', accessible_name: _('Search')});
         this.search.clutter_text.connect('text-changed', () => {
             this.selected = 0;
             this._visibleCount = this.pageSize;
@@ -71,7 +77,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this.contentLayout.add_child(this.search);
         const vertical = verticalBoxProperties(St.BoxLayout, Clutter);
         this._emojiControls = new St.BoxLayout({...vertical, style_class: 'super-v-tabs'});
-        this._groupButton = button('Category: All', () => {
+        this._groupButton = button(format(_('Category: %s'), _('All')), () => {
             const groups = this.tab === 'emoji' ? ['All', 'Recent', ...controller.emoji.groups]
                 : ['All', ...this.catalogs[this.tab].groups];
             this.group = groups[(groups.indexOf(this.group) + 1) % groups.length];
@@ -79,7 +85,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
             this._visibleCount = this.pageSize;
             this.refresh();
         });
-        this._toneButton = button('Tone: All', () => {
+        this._toneButton = button(format(_('Tone: %s'), _('All')), () => {
             const tones = ['all', 'default', 'light', 'medium-light', 'medium', 'medium-dark', 'dark'];
             this.tone = tones[(tones.indexOf(this.tone) + 1) % tones.length];
             this.selected = 0;
@@ -100,17 +106,17 @@ class SuperVPopup extends ModalDialog.ModalDialog {
             'notify::page-size', () => this._scrollToSelection(), this);
         this.contentLayout.add_child(this.scroll);
         const footer = new St.BoxLayout({...horizontal, style_class: 'super-v-footer'});
-        this._clear = button('Clear unpinned', () => controller.clear(false));
-        this._restore = button('Restore clipboard', () => controller.restoreClipboard());
+        this._clear = button(_('Clear unpinned'), () => controller.clear(false));
+        this._restore = button(_('Restore clipboard'), () => controller.restoreClipboard());
         footer.add_child(this._clear);
         footer.add_child(this._restore);
-        this._manageGifs = button('Add / manage GIFs', () => {
+        this._manageGifs = button(_('Add / manage GIFs'), () => {
             this.close();
             controller.openPreferences();
         });
         footer.add_child(this._manageGifs);
         this.contentLayout.add_child(footer);
-        this._hint = new St.Label({text: '↑↓ Select · Enter Paste · Esc Close · Ctrl+Tab Switch',
+        this._hint = new St.Label({text: _('↑↓ Select · Enter Paste · Esc Close · Ctrl+Tab Switch'),
             style_class: 'super-v-hint'});
         this._hint.clutter_text.line_wrap = true;
         this.contentLayout.add_child(this._hint);
@@ -214,12 +220,12 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this._clear.visible = clipboard;
         this._manageGifs.visible = gif;
         this._restore.visible = Boolean(this.controller.pendingRestore);
-        this._groupButton.label = `Category: ${this.group}`;
-        this._toneButton.label = `Tone: ${this.tone}`;
-        this.search.hint_text = clipboard ? 'Search clipboard' : gif ? 'Search GIF filenames'
-            : emoji ? 'Search emoji' : this.tab === 'kaomoji' ? 'Search kaomoji' : 'Search symbols';
-        this._hint.text = clipboard ? '↑↓ Select · Enter Paste · Esc Close · Ctrl+Tab Switch'
-            : '↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close';
+        this._groupButton.label = format(_('Category: %s'), _(groupLabels[this.group] ?? this.group));
+        this._toneButton.label = format(_('Tone: %s'), _(toneLabels[this.tone]));
+        this.search.hint_text = clipboard ? _('Search clipboard') : gif ? _('Search GIF filenames')
+            : emoji ? _('Search emoji') : this.tab === 'kaomoji' ? _('Search kaomoji') : _('Search symbols');
+        this._hint.text = clipboard ? _('↑↓ Select · Enter Paste · Esc Close · Ctrl+Tab Switch')
+            : _('↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close');
         for (const [name, actor] of this._tabs) {
             const active = name === this.tab;
             if (active)
@@ -235,11 +241,11 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this.selected = Math.max(0, Math.min(this.selected, this.results.length - 1));
         this._rows = [];
         if (!this.results.length) {
-            const message = query ? 'No matching items.' : clipboard
+            const message = query ? _('No matching items.') : clipboard
                 ? this.controller.settings.get_boolean('history-enabled')
-                    ? 'Copy some text to start your history.' : 'History is paused. Enable it in Settings.'
-                : gif ? 'Add GIF files in Settings. GIF insertion requires an app that accepts images.'
-                    : this.group === 'Recent' ? 'Your recently used emoji will appear here.' : 'No items in this filter.';
+                    ? _('Copy some text to start your history.') : _('History is paused. Enable it in Settings.')
+                : gif ? _('Add GIF files in Settings. GIF insertion requires an app that accepts images.')
+                    : this.group === 'Recent' ? _('Your recently used emoji will appear here.') : _('No items in this filter.');
             const label = new St.Label({text: message, style_class: 'super-v-empty'});
             label.clutter_text.line_wrap = true;
             this.list.add_child(label);
@@ -264,7 +270,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
                     : this.tab === 'kaomoji' ? 'button super-v-kaomoji' : 'button super-v-emoji');
             select.x_expand = true;
             const text = entry.text ?? '';
-            select.accessible_name = clipboard ? `${entry.pinned ? 'Pinned: ' : ''}${text.slice(0, 500)}` : entry.name;
+            select.accessible_name = clipboard ? (entry.pinned ? format(_('Pinned: %s'), text.slice(0, 500)) : text.slice(0, 500)) : entry.name;
             const preview = Array.from(text).slice(0, 240).join('')
                 .replace(/[\r\n]+/gu, ' ↵ ').replace(/[\x01-\x1f\x7f]/gu, ' ');
             const label = gif ? new St.Icon({gicon: Gio.FileIcon.new(Gio.File.new_for_path(entry.path)),
@@ -284,9 +290,9 @@ class SuperVPopup extends ModalDialog.ModalDialog {
                     this.controller.pin(entry.id);
                 }, 'button super-v-icon'));
                 const pin = row.get_last_child();
-                pin.accessible_name = entry.pinned ? 'Unpin entry' : 'Pin entry';
+                pin.accessible_name = entry.pinned ? _('Unpin entry') : _('Pin entry');
                 row.add_child(button('×', () => this.controller.deleteEntry(entry.id), 'button super-v-icon'));
-                row.get_last_child().accessible_name = 'Delete entry';
+                row.get_last_child().accessible_name = _('Delete entry');
             }
             this._rows.push(select);
         }
@@ -296,7 +302,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
                 row.add_child(new St.Widget({x_expand: true}));
         }
         if (this.results.length > this._visibleCount) {
-            this.list.add_child(button(`Show more (${this.results.length - this._visibleCount})`, () => {
+            this.list.add_child(button(format(_('Show more (%d)'), this.results.length - this._visibleCount), () => {
                 this._visibleCount += this.pageSize;
                 this.refresh();
             }));

@@ -3,7 +3,11 @@
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import Shell from 'gi://Shell';
 import St from 'gi://St';
+import {bindtextdomain} from 'gettext';
+import {gettext as _} from '../extension/translations.js';
+import {emojiLocale} from '../extension/core/localization.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 import * as Scripting from 'resource:///org/gnome/shell/ui/scripting.js';
@@ -31,6 +35,10 @@ export async function run() {
     Main.overview.hide();
     // Shell changes its working directory at startup; resolve from this module.
     const base = Gio.File.new_for_uri(import.meta.url).get_parent().get_parent().get_path();
+    bindtextdomain('super-v-ubuntu', `${base}/extension/locale`);
+    const locale = emojiLocale(GLib.get_language_names());
+    const annotations = locale === 'en' ? {} : JSON.parse(new TextDecoder().decode(
+        Gio.File.new_for_path(`${base}/extension/data/emoji-locales/${locale}.json`).load_contents(null)[1])).annotations;
     const read = path => new TextDecoder().decode(Gio.File.new_for_path(`${base}/${path}`).load_contents(null)[1]);
     const schemaSource = Gio.SettingsSchemaSource.new_from_directory(`${base}/extension/schemas`,
         Gio.SettingsSchemaSource.get_default(), false);
@@ -41,9 +49,24 @@ export async function run() {
     theme.load_stylesheet(stylesheet);
     const calls = [];
     const controller = {settings, metadata: JSON.parse(read('extension/metadata.json')),
-        history: new History(), emoji: new EmojiIndex(JSON.parse(read('extension/data/emoji.json')).emoji),
+        history: new History(), emoji: new EmojiIndex(JSON.parse(read('extension/data/emoji.json')).emoji, [], annotations),
         gifs: new GifLibrary(settings), select: entry => calls.push(entry.text),
         selectGif() {}, pin() {}, deleteEntry() {}, clear() {}, restoreClipboard() {}, openPreferences() {}};
+    // Exercise actual GTK/libadwaita preferences in this private Wayland session.
+    const launcher = new Gio.SubprocessLauncher({
+        flags: Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE});
+    launcher.setenv('GI_TYPELIB_PATH', `/usr/lib/gnome-shell/girepository-1.0:/usr/lib/gnome-shell:${GLib.getenv('GI_TYPELIB_PATH') ?? ''}`, true);
+    launcher.setenv('LD_LIBRARY_PATH', `/usr/lib/gnome-shell:${GLib.getenv('LD_LIBRARY_PATH') ?? ''}`, true);
+    const preferences = launcher.spawnv(['gjs', '-m', `${base}/tests/prefs-gjs.js`]);
+    const output = await new Promise((resolve, reject) => {
+        preferences.communicate_utf8_async(null, null, (process, result) => {
+            try { resolve(process.communicate_utf8_finish(result)); } catch (error) { reject(error); }
+        });
+    });
+    print(output[1]);
+    if (!preferences.get_successful())
+        throw new Error(`Preferences check failed: ${output[2]}`);
+    check('actual localized GTK preferences render', output[1].includes('PREFS CHECKS COMPLETE'));
     const pointer = getDefaultSeat(global.stage, Clutter).create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
     pointer.notify_absolute_motion(GLib.get_monotonic_time(), 900, 650);
     await Scripting.sleep(100);
@@ -52,7 +75,7 @@ export async function run() {
         check('popup opens', popup.showPanel());
         popup._setTab('emoji');
         await Scripting.sleep(300);
-        check('loaded version is visible', popup._title.text === 'Super V 0.1.3');
+        check('loaded version is visible', popup._title.text === 'Super V 0.1.4');
         check('six equally sized emoji per row', popup._rows.length === 60 &&
             popup.list.get_first_child().get_n_children() === 6);
         const cells = popup._rows.slice(0, 7).map(rectangle);
@@ -60,6 +83,12 @@ export async function run() {
         check('real St layout places six glyphs horizontally', cells.slice(0, 6).every(cell =>
             Math.abs(cell.y - cells[0].y) < 1 && Math.abs(cell.width - cells[0].width) <= 1.01) &&
             cells[5].x > cells[0].x && cells[6].y > cells[0].y);
+        check('localized settings button uses the gettext catalog',
+            popup.contentLayout.get_first_child().get_last_child().label === {
+                en: 'Settings', zh: '设置', zh_Hant: '設定', ja: '設定',
+                es: 'Ajustes', fr: 'Paramètres', ko: '설정',
+            }[locale]);
+        check('localized emoji names reach accessible labels', popup._rows[0].accessible_name === controller.emoji.records[0].name);
         check('emoji labels contain only glyphs', popup._rows.every((row, index) =>
             row.get_child().text === popup.results[index].text));
         const area = Main.layoutManager.getWorkAreaForMonitor(popup._monitor.index);
@@ -69,6 +98,22 @@ export async function run() {
             translation: [popup._panel.translation_x, popup._panel.translation_y]})}`);
         check('near-pointer panel stays within its work area', rect.x >= area.x && rect.y >= area.y &&
             rect.x + rect.width <= area.x + area.width + 1 && rect.y + rect.height <= area.y + area.height + 1);
+        // Exercise a long translated category and both visible clipboard footer buttons.
+        popup.group = 'Animals & Nature';
+        popup.refresh();
+        await Scripting.sleep(100);
+        check('category translation keeps the Unicode filter ID', popup.group === 'Animals & Nature' &&
+            popup._groupButton.label.includes(_('Animals & Nature')));
+        controller.pendingRestore = {previous: 'sample', emoji: '😀'};
+        popup._setTab('clipboard');
+        await Scripting.sleep(100);
+        const clipboardPanel = rectangle(popup._panel);
+        for (const control of [popup._clear, popup._restore]) {
+            const bounds = rectangle(control);
+            check('translated footer stays inside panel', bounds.x >= clipboardPanel.x &&
+                bounds.x + bounds.width <= clipboardPanel.x + clipboardPanel.width + 1);
+        }
+        controller.pendingRestore = null;
         popup._setTab('kaomoji');
         await Scripting.sleep(100);
         check('kaomoji has three columns', popup.list.get_first_child().get_n_children() === 3);
@@ -99,6 +144,18 @@ export async function run() {
         pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
         await Scripting.sleep(150);
         check('actual outside mouse click closes the modal', popup.state === ModalDialog.State.CLOSED);
+        const screenshot = GLib.getenv('SUPER_V_SCREENSHOT');
+        if (screenshot) {
+            popup.showPanel();
+            popup._setTab('emoji');
+            await Scripting.sleep(200);
+            const frame = rectangle(popup._panel);
+            const output = Gio.File.new_for_path(screenshot).replace(null, false,
+                Gio.FileCreateFlags.PRIVATE, null);
+            await new Shell.Screenshot().screenshot_area(Math.floor(frame.x), Math.floor(frame.y),
+                Math.ceil(frame.width), Math.ceil(frame.height), output);
+            output.close(null);
+        }
         print('SHELL CHECKS COMPLETE');
     } finally {
         popup.destroy();

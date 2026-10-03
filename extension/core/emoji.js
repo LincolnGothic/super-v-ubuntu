@@ -1,11 +1,12 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import {searchKey} from './history.js';
+import {localizeEmoji} from './localization.js';
 
 export class EmojiIndex {
-    constructor(records, recent = []) {
-        this.records = records;
-        this.byText = new Map(records.map(x => [x.text, x]));
-        this.keys = new Map(records.map(x => [x.text,
+    constructor(records, recent = [], annotations = {}) {
+        this.records = localizeEmoji(records, annotations);
+        this.byText = new Map(this.records.map(x => [x.text, x]));
+        this.keys = new Map(this.records.map(x => [x.text,
             searchKey([x.name, x.group, x.subgroup, ...x.keywords].join(' '))]));
         this.groups = [...new Set(records.map(x => x.group))];
         this.setRecent(recent);

@@ -1,0 +1,809 @@
+# SPDX-License-Identifier: GPL-3.0-or-later
+# Super V Ubuntu interface and character names.
+msgid ""
+msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: ja\nLanguage: ja\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+
+msgid "Activities"
+msgstr "アクティビティ"
+
+msgid "Add / manage GIFs"
+msgstr "GIF の追加／管理"
+
+msgid "Add GIF favorites"
+msgstr "お気に入りの GIF を追加"
+
+msgid "Add GIF files"
+msgstr "GIF ファイルを追加"
+
+msgid "Add GIF files in Settings. GIF insertion requires an app that accepts images."
+msgstr "設定で GIF ファイルを追加してください。GIF の挿入には画像を受け付けるアプリが必要です。"
+
+msgid "Add local GIF files (up to 40, 8 MiB each, 2048 × 2048 pixels). The picker shows the first frame and copies the GIF image. Pasting requires an app that accepts images; animation support depends on the app. Files stay in their original location. No online search."
+msgstr "ローカルの GIF ファイルを追加します（最大 40 件、各 8 MiB 以下、2048 × 2048 ピクセル以下）。最初のフレームを表示し、GIF 画像をコピーします。貼り付け先は画像に対応している必要があり、アニメーションの対応はアプリによって異なります。ファイルは元の場所に残ります。オンライン検索はありません。"
+
+msgid "All"
+msgstr "すべて"
+
+msgid "Also removes pinned entries and emoji recents."
+msgstr "固定した項目と絵文字の履歴も削除します。"
+
+msgid "Animals"
+msgstr "動物"
+
+msgid "Animals & Nature"
+msgstr "動物と自然"
+
+msgid "Apps using Ctrl+Shift+V (comma-separated)"
+msgstr "Ctrl+Shift+V を使うアプリ（カンマ区切り）"
+
+msgid "Arrows"
+msgstr "矢印"
+
+msgid "Capture clipboard history"
+msgstr "クリップボード履歴を記録"
+
+#, javascript-format
+msgid "Category: %s"
+msgstr "カテゴリ：%s"
+
+msgid "Center of screen"
+msgstr "画面中央"
+
+msgid "Choose files"
+msgstr "ファイルを選択"
+
+msgid "Classic"
+msgstr "定番"
+
+msgid "Clear"
+msgstr "消去"
+
+msgid "Clear requested; applied when the extension is active."
+msgstr "消去を要求しました。拡張機能の有効時に適用されます。"
+
+msgid "Clear unpinned"
+msgstr "未固定の項目を消去"
+
+msgid "Clear unpinned history"
+msgstr "未固定の履歴を消去"
+
+msgid "Clipboard"
+msgstr "クリップボード"
+
+msgid "Clipboard changed; the newer clipboard was preserved."
+msgstr "クリップボードが変更されたため、新しい内容を保持しました。"
+
+msgid "Clipboard history"
+msgstr "クリップボード履歴"
+
+msgid "Copied to clipboard. Use your application’s paste shortcut."
+msgstr "クリップボードにコピーしました。アプリの貼り付けショートカットを使用してください。"
+
+msgid "Copy some text to start your history."
+msgstr "テキストをコピーすると履歴が記録されます。"
+
+msgid "Could not initialize the extension. Disable and re-enable it."
+msgstr "拡張機能を初期化できませんでした。無効にしてから再度有効にしてください。"
+
+msgid "Could not read that GIF. Re-add it in Settings or choose another file."
+msgstr "GIF を読み込めませんでした。設定で追加し直すか、別のファイルを選択してください。"
+
+msgid "Could not update local history storage. Check directory permissions."
+msgstr "ローカルの履歴を更新できませんでした。ディレクトリの権限を確認してください。"
+
+msgid "Currency"
+msgstr "通貨"
+
+msgid "Dark"
+msgstr "濃い"
+
+msgid "Default"
+msgstr "標準"
+
+msgid "Delete entry"
+msgstr "項目を削除"
+
+msgid "Desktop integration"
+msgstr "デスクトップ連携"
+
+msgid "Emoji"
+msgstr "絵文字"
+
+msgid "Erase all saved items"
+msgstr "保存した項目をすべて削除"
+
+msgid "Excluded apps (comma-separated)"
+msgstr "除外するアプリ（カンマ区切り）"
+
+#, javascript-format
+msgid "Files skipped: %d. Invalid, too large, or favorites full."
+msgstr "%d 件のファイルをスキップしました。無効、サイズ超過、またはお気に入りが上限に達しています。"
+
+msgid "Flags"
+msgstr "旗"
+
+msgid "Food & Drink"
+msgstr "食べ物と飲み物"
+
+msgid "GIF favorites"
+msgstr "お気に入りの GIF"
+
+msgid "GIF images"
+msgstr "GIF 画像"
+
+msgid "Greek"
+msgstr "ギリシャ文字"
+
+msgid "Happy"
+msgstr "喜び"
+
+msgid "History exceeds the storage limit."
+msgstr "履歴が保存容量の上限を超えています。"
+
+msgid "History is paused. Enable it in Settings."
+msgstr "履歴の記録は一時停止中です。設定で有効にしてください。"
+
+msgid "History stays on this computer. It may contain private text. Pausing capture does not erase existing entries."
+msgstr "履歴はこのコンピューターに保存され、個人情報を含む場合があります。記録を一時停止しても既存の項目は消去されません。"
+
+msgid "Invalid stored history was removed."
+msgstr "無効な保存履歴を削除しました。"
+
+msgid "Kaomoji and text emoticons"
+msgstr "顔文字とテキストの表情"
+
+msgid "Light"
+msgstr "明るい"
+
+msgid "Local storage"
+msgstr "ローカル保存"
+
+msgid "Love"
+msgstr "愛情"
+
+msgid "Math"
+msgstr "数学"
+
+msgid "Maximum unpinned entries"
+msgstr "未固定の項目の上限"
+
+msgid "Medium"
+msgstr "中間"
+
+msgid "Medium dark"
+msgstr "やや濃い"
+
+msgid "Medium light"
+msgstr "やや明るい"
+
+msgid "Near mouse pointer"
+msgstr "マウスポインターの近く"
+
+msgid "No items in this filter."
+msgstr "この絞り込み条件に該当する項目はありません。"
+
+msgid "No matching items."
+msgstr "一致する項目はありません。"
+
+msgid "Objects"
+msgstr "物"
+
+msgid "Paste automatically"
+msgstr "自動で貼り付け"
+
+msgid "Paste overrides (JSON)"
+msgstr "貼り付けショートカットの個別設定（JSON）"
+
+msgid "People & Body"
+msgstr "人と身体"
+
+msgid "Picker position"
+msgstr "選択パネルの位置"
+
+msgid "Pin entry"
+msgstr "項目を固定"
+
+msgid "Pinned entries are kept."
+msgstr "固定した項目は保持されます。"
+
+msgid "Pinned entries have a separate maximum of 100. Total text is limited to 2 MiB."
+msgstr "固定した項目の上限は別枠で 100 件です。テキストの合計容量は 2 MiB に制限されます。"
+
+#, javascript-format
+msgid "Pinned: %s"
+msgstr "固定済み：%s"
+
+#, javascript-format
+msgid "Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access."
+msgstr "平文の履歴：%s。ディレクトリ権限 0700、ファイル権限 0600。パスワード管理アプリの MIME ヒントと使用中のアプリの除外は完全ではありません。テレメトリーや実行時のネットワークアクセスはありません。"
+
+msgid "Playful"
+msgstr "おちゃめ"
+
+msgid "Punctuation"
+msgstr "句読点"
+
+msgid "Recent"
+msgstr "最近使った絵文字"
+
+msgid "Remember after logout"
+msgstr "ログアウト後も保持"
+
+msgid "Remove favorite (keep file)"
+msgstr "お気に入りから削除（ファイルは保持）"
+
+msgid "Restore clipboard"
+msgstr "クリップボードを復元"
+
+msgid "Sad"
+msgstr "悲しみ"
+
+msgid "Search"
+msgstr "検索"
+
+msgid "Search GIF filenames"
+msgstr "GIF ファイル名を検索"
+
+msgid "Search clipboard"
+msgstr "クリップボードを検索"
+
+msgid "Search emoji"
+msgstr "絵文字を検索"
+
+msgid "Search kaomoji"
+msgstr "顔文字を検索"
+
+msgid "Search symbols"
+msgstr "記号を検索"
+
+msgid "Settings"
+msgstr "設定"
+
+msgid "Shortcut (GTK accelerator syntax)"
+msgstr "ショートカット（GTK アクセラレーター構文）"
+
+msgid "Shortcuts: ctrl-v, ctrl-shift-v, shift-insert, manual."
+msgstr "ショートカット：ctrl-v、ctrl-shift-v、shift-insert、manual。"
+
+#, javascript-format
+msgid "Show more (%d)"
+msgstr "さらに表示（%d）"
+
+msgid "Smileys & Emotion"
+msgstr "顔と感情"
+
+msgid "Stored history could not be read. It has been removed."
+msgstr "保存した履歴を読み込めなかったため、削除しました。"
+
+msgid "Super V"
+msgstr "Super V"
+
+msgid "Super+V opens near the mouse pointer, or in the center of the focused screen."
+msgstr "Super+V でマウスポインターの近く、または使用中の画面の中央に開きます。"
+
+msgid "Surprised"
+msgstr "驚き"
+
+msgid "Symbols"
+msgstr "記号"
+
+msgid "Text copied after enabling the extension is collected."
+msgstr "拡張機能を有効にした後にコピーしたテキストを記録します。"
+
+#, javascript-format
+msgid "Tone: %s"
+msgstr "肌の色：%s"
+
+msgid "Travel & Places"
+msgstr "旅行と場所"
+
+msgid "Turn off to copy selections without sending a paste shortcut."
+msgstr "無効にすると、選択した内容のコピーのみを行い、貼り付けショートカットは送信しません。"
+
+msgid "Turning this off removes the saved file; current memory is retained."
+msgstr "無効にすると保存ファイルを削除します。現在のメモリー内の履歴は保持されます。"
+
+msgid "Units"
+msgstr "単位"
+
+msgid "Unpin entry"
+msgstr "項目の固定を解除"
+
+msgid "Use a shortcut such as <Super>v or <Control><Alt>v."
+msgstr "<Super>v や <Control><Alt>v などのショートカットを使用してください。"
+
+msgid "Use exact desktop application IDs (including .desktop where present) or WM classes. Clipboard origin cannot always be identified."
+msgstr "正確なデスクトップアプリ ID（該当する場合は .desktop を含む）または WM クラスを使用してください。クリップボードの取得元は常に識別できるとは限りません。"
+
+msgid "You can pin up to 100 entries."
+msgstr "固定できる項目は最大 100 件です。"
+
+msgid "Your recently used emoji will appear here."
+msgstr "最近使った絵文字がここに表示されます。"
+
+msgid "adoration"
+msgstr "愛おしい"
+
+msgid "affection"
+msgstr "好意"
+
+msgid "alpha"
+msgstr "アルファ"
+
+msgid "angstrom"
+msgstr "オングストローム"
+
+msgid "angstrom sign"
+msgstr "オングストローム記号"
+
+msgid "approximately equal"
+msgstr "ほぼ等しい"
+
+msgid "astonished"
+msgstr "びっくり"
+
+msgid "bear"
+msgstr "クマ"
+
+msgid "beta"
+msgstr "ベータ"
+
+msgid "bird"
+msgstr "鳥"
+
+msgid "bitcoin"
+msgstr "ビットコイン"
+
+msgid "bullet"
+msgstr "箇条書き記号"
+
+msgid "capital delta"
+msgstr "大文字デルタ"
+
+msgid "capital gamma"
+msgstr "大文字ガンマ"
+
+msgid "capital lambda"
+msgstr "大文字ラムダ"
+
+msgid "capital omega"
+msgstr "大文字オメガ"
+
+msgid "capital phi"
+msgstr "大文字ファイ"
+
+msgid "capital pi"
+msgstr "大文字パイ"
+
+msgid "capital sigma"
+msgstr "大文字シグマ"
+
+msgid "capital theta"
+msgstr "大文字シータ"
+
+msgid "cat"
+msgstr "猫"
+
+msgid "cat eyes"
+msgstr "猫の目"
+
+msgid "celebrate"
+msgstr "お祝い"
+
+msgid "celebration sparkles"
+msgstr "お祝いのきらめき"
+
+msgid "cent"
+msgstr "セント"
+
+msgid "chi"
+msgstr "カイ"
+
+msgid "confused"
+msgstr "困惑"
+
+msgid "copyright"
+msgstr "著作権"
+
+msgid "cry"
+msgstr "泣く"
+
+msgid "crying"
+msgstr "泣いている"
+
+msgid "cubed"
+msgstr "3 乗"
+
+msgid "cute smile"
+msgstr "かわいい笑顔"
+
+msgid "dagger"
+msgstr "短剣符"
+
+msgid "degree"
+msgstr "度"
+
+msgid "degrees Celsius"
+msgstr "摂氏"
+
+msgid "degrees Fahrenheit"
+msgstr "華氏"
+
+msgid "delighted"
+msgstr "大喜び"
+
+msgid "delta"
+msgstr "デルタ"
+
+msgid "determined"
+msgstr "決意"
+
+msgid "divide"
+msgstr "除算"
+
+msgid "dog"
+msgstr "犬"
+
+msgid "dollar"
+msgstr "ドル"
+
+msgid "double dagger"
+msgstr "二重短剣符"
+
+msgid "down arrow"
+msgstr "下矢印"
+
+msgid "element of"
+msgstr "属する"
+
+msgid "ellipsis"
+msgstr "省略記号"
+
+msgid "em dash"
+msgstr "全角ダッシュ"
+
+msgid "empty set"
+msgstr "空集合"
+
+msgid "en dash"
+msgstr "半角ダッシュ"
+
+msgid "epsilon"
+msgstr "イプシロン"
+
+msgid "equilibrium reversible reaction"
+msgstr "平衡・可逆反応"
+
+msgid "equivalent"
+msgstr "同値"
+
+msgid "eta"
+msgstr "イータ"
+
+msgid "euro"
+msgstr "ユーロ"
+
+msgid "flower smile"
+msgstr "花の笑顔"
+
+msgid "full width percent"
+msgstr "全角パーセント"
+
+msgid "gamma"
+msgstr "ガンマ"
+
+msgid "gradient"
+msgstr "勾配"
+
+msgid "greater than or equal"
+msgstr "以上"
+
+msgid "happy"
+msgstr "うれしい"
+
+msgid "heart"
+msgstr "ハート"
+
+msgid "heart eyes"
+msgstr "ハートの目"
+
+msgid "hug"
+msgstr "ハグ"
+
+msgid "identical"
+msgstr "恒等"
+
+msgid "implies"
+msgstr "ならば"
+
+msgid "infinity"
+msgstr "無限大"
+
+msgid "integral"
+msgstr "積分"
+
+msgid "intersection"
+msgstr "共通部分"
+
+msgid "iota"
+msgstr "イオタ"
+
+msgid "joy"
+msgstr "喜び"
+
+msgid "kappa"
+msgstr "カッパ"
+
+msgid "kiss"
+msgstr "キス"
+
+msgid "lambda"
+msgstr "ラムダ"
+
+msgid "laugh"
+msgstr "笑う"
+
+msgid "left arrow"
+msgstr "左矢印"
+
+msgid "left double arrow"
+msgstr "左二重矢印"
+
+msgid "left guillemet"
+msgstr "左山括弧引用符"
+
+msgid "left quotation mark"
+msgstr "左二重引用符"
+
+msgid "left right arrow"
+msgstr "左右矢印"
+
+msgid "left single quote"
+msgstr "左単引用符"
+
+msgid "less than or equal"
+msgstr "以下"
+
+msgid "litre"
+msgstr "リットル"
+
+msgid "long right arrow"
+msgstr "長い右矢印"
+
+msgid "love"
+msgstr "愛"
+
+msgid "maps to"
+msgstr "写像"
+
+msgid "micro"
+msgstr "マイクロ"
+
+msgid "middle dot"
+msgstr "中点"
+
+msgid "minus"
+msgstr "マイナス"
+
+msgid "mu micro"
+msgstr "ミュー・マイクロ"
+
+msgid "multiply"
+msgstr "乗算"
+
+msgid "nervous"
+msgstr "緊張"
+
+msgid "north east arrow"
+msgstr "右上矢印"
+
+msgid "north west arrow"
+msgstr "左上矢印"
+
+msgid "not element of"
+msgstr "属さない"
+
+msgid "not equal"
+msgstr "等しくない"
+
+msgid "nu"
+msgstr "ニュー"
+
+msgid "omega"
+msgstr "オメガ"
+
+msgid "paragraph"
+msgstr "段落記号"
+
+msgid "partial derivative"
+msgstr "偏微分"
+
+msgid "per mille"
+msgstr "パーミル"
+
+msgid "phi"
+msgstr "ファイ"
+
+msgid "pi"
+msgstr "パイ"
+
+msgid "plus minus"
+msgstr "プラスマイナス"
+
+msgid "point left"
+msgstr "左を指す"
+
+msgid "point right"
+msgstr "右を指す"
+
+msgid "pound"
+msgstr "ポンド"
+
+msgid "product"
+msgstr "総乗"
+
+msgid "proportional"
+msgstr "比例"
+
+msgid "psi"
+msgstr "プサイ"
+
+msgid "rabbit"
+msgstr "ウサギ"
+
+msgid "reduced Planck constant"
+msgstr "換算プランク定数"
+
+msgid "registered"
+msgstr "登録商標"
+
+msgid "restore table"
+msgstr "机を戻す"
+
+msgid "rho"
+msgstr "ロー"
+
+msgid "right arrow"
+msgstr "右矢印"
+
+msgid "right guillemet"
+msgstr "右山括弧引用符"
+
+msgid "right quotation mark"
+msgstr "右二重引用符"
+
+msgid "right single quote"
+msgstr "右単引用符"
+
+msgid "ruble"
+msgstr "ルーブル"
+
+msgid "rupee"
+msgstr "ルピー"
+
+msgid "sad"
+msgstr "悲しい"
+
+msgid "section"
+msgstr "節記号"
+
+msgid "shocked"
+msgstr "ショック"
+
+msgid "shrug"
+msgstr "肩をすくめる"
+
+msgid "sigma"
+msgstr "シグマ"
+
+msgid "sleep"
+msgstr "眠る"
+
+msgid "smile"
+msgstr "笑顔"
+
+msgid "smiling"
+msgstr "にっこり"
+
+msgid "smirk"
+msgstr "にやり"
+
+msgid "south east arrow"
+msgstr "右下矢印"
+
+msgid "south west arrow"
+msgstr "左下矢印"
+
+msgid "square root"
+msgstr "平方根"
+
+msgid "squared"
+msgstr "2 乗"
+
+msgid "subscript one"
+msgstr "下付き 1"
+
+msgid "subscript three"
+msgstr "下付き 3"
+
+msgid "subscript two"
+msgstr "下付き 2"
+
+msgid "subscript zero"
+msgstr "下付き 0"
+
+msgid "sum"
+msgstr "総和"
+
+msgid "superscript minus"
+msgstr "上付きマイナス"
+
+msgid "superscript plus"
+msgstr "上付きプラス"
+
+msgid "surprise"
+msgstr "驚き"
+
+msgid "surprised"
+msgstr "驚いた"
+
+msgid "table flip"
+msgstr "ちゃぶ台返し"
+
+msgid "tau"
+msgstr "タウ"
+
+msgid "tears"
+msgstr "涙"
+
+msgid "theta"
+msgstr "シータ"
+
+msgid "tongue"
+msgstr "舌を出す"
+
+msgid "trademark"
+msgstr "商標"
+
+msgid "unhappy"
+msgstr "不機嫌"
+
+msgid "union"
+msgstr "和集合"
+
+msgid "unsure"
+msgstr "迷い"
+
+msgid "up arrow"
+msgstr "上矢印"
+
+msgid "up down arrow"
+msgstr "上下矢印"
+
+msgid "weeping"
+msgstr "涙を流す"
+
+msgid "wide eyes"
+msgstr "目を見開く"
+
+msgid "wink"
+msgstr "ウインク"
+
+msgid "won"
+msgstr "ウォン"
+
+msgid "xi"
+msgstr "クシー"
+
+msgid "yen yuan"
+msgstr "円・人民元"
+
+msgid "zeta"
+msgstr "ゼータ"
+
+msgid "↑↓ Select · Enter Paste · Esc Close · Ctrl+Tab Switch"
+msgstr "↑↓ 選択 · Enter 貼り付け · Esc 閉じる · Ctrl+Tab 切替"
+
+msgid "↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close"
+msgstr "↑↓←→ 選択 · Enter 貼り付け · Ctrl+F 検索 · Esc 閉じる"
+
