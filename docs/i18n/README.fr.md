@@ -8,15 +8,15 @@ Un sélecteur Super+V inspiré de Windows pour Ubuntu GNOME : historique du pres
 
 Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
 
-## Installation et mise à jour
+## Première installation
 
-Enregistrez le [paquet v0.1.6](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6) dans votre dossier de téléchargements :
+Téléchargez le [paquet v0.1.6](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb) et ouvrez un terminal dans le dossier contenant le fichier :
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
+sudo apt install ./super-v-ubuntu_0.1.6_all.deb
 ```
 
-Après l’installation, déconnectez-vous puis reconnectez-vous. Exécutez ces commandes avec votre compte habituel, sans sudo. La première réserve Super+M aux notifications et libère Super+V ; elle remplace tout raccourci de notification personnalisé.
+Après l’installation, **enregistrez votre travail, déconnectez-vous puis reconnectez-vous**. Exécutez ces commandes avec votre compte habituel, sans sudo. La première réserve Super+M aux notifications et libère Super+V ; elle remplace tout raccourci de notification personnalisé.
 
 ```sh
 gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>m']"
@@ -24,7 +24,33 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-Après une mise à jour, déconnectez-vous puis reconnectez-vous. Le titre doit afficher **Super V 0.1.6**. Si une ancienne version apparaît, vérifiez le chemin indiqué par info : une copie utilisateur portant le même UUID prend priorité sur le paquet système.
+Appuyez sur **Super+V** ; le titre doit afficher **Super V 0.1.6**.
+
+## Mise à jour vers v0.1.6
+
+Téléchargez le paquet ci-dessus et exécutez la même commande apt dans son dossier. Il remplace l’ancienne version, sans désinstallation préalable. Ensuite, **enregistrez votre travail, déconnectez-vous puis reconnectez-vous**, et vérifiez **Super V 0.1.6** dans le titre de **Super+V**. La langue et les raccourcis sont conservés ; l’historique de texte enregistré, les éléments épinglés et les emojis récents sont migrés. L’historique configuré pour être effacé à la déconnexion est supprimé selon ce réglage.
+
+Vérifiez le paquet installé et l’extension chargée par GNOME avec votre compte habituel :
+
+```sh
+dpkg-query -W super-v-ubuntu
+gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
+```
+
+Les deux versions doivent indiquer **0.1.6** (le numéro interne de l’extension est 7). Si seul le paquet est à jour, déconnectez-vous puis reconnectez-vous. Pour le paquet système, Path doit être `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`. Si le chemin pointe vers votre dossier personnel, sauvegardez ce dossier UUID et déplacez-le hors du répertoire des extensions, puis reconnectez-vous. Si Super+V ne répond pas, utilisez la commande enable ci-dessus ; s’il ouvre les notifications, vérifiez la commande de raccourci de la première installation. Pour ouvrir directement les paramètres, exécutez `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`.
+
+## Guide des paramètres de v0.1.6
+
+Ouvrez Super+V et cliquez sur l’engrenage dans l’en-tête pour ouvrir les paramètres.
+
+| Fonction | Utilisation ou emplacement |
+| --- | --- |
+| Capture d’écran | Bouton de caméra ou **Super+Shift+S**. Rouvrez Super+V pour voir l’image. La collecte de l’historique doit être activée. |
+| Modifier le raccourci de capture | **Paramètres → Intégration au bureau → Raccourci de capture (syntaxe GTK)**. Par exemple, `<Super><Shift>s` ; appliquez la modification ou laissez le champ vide pour désactiver le raccourci. |
+| Effacer à l’arrêt | **Paramètres → Historique du presse-papiers → Effacer l’historique à l’arrêt**. Désactivé par défaut ; efface aussi au redémarrage, à la déconnexion ou au rechargement de l’extension. |
+| Choisir la langue | **Paramètres → Apparence → Langue**. Le changement est immédiat. |
+
+Activer l’effacement à l’arrêt supprime l’historique enregistré et conserve les éléments actuels uniquement en mémoire. Les captures enregistrées séparément par GNOME dans Pictures/Screenshots sont conservées.
 
 ## Utilisation et langues
 

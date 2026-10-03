@@ -8,15 +8,15 @@ v0.1.6 支持 PNG/JPEG 图片历史、缩略图、固定和粘贴。点击标题
 
 Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
 
-## 安装与升级
+## 首次安装
 
-下载 [v0.1.6 安装包](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6)，保存到“下载”目录：
+下载 [v0.1.6 安装包](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb)，在安装包所在文件夹中打开终端：
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
+sudo apt install ./super-v-ubuntu_0.1.6_all.deb
 ```
 
-安装后注销并重新登录，再以普通用户运行以下命令（不使用 sudo）。第一个命令将通知快捷键设为 Super+M，为本应用释放 Super+V；它会替换自定义通知快捷键。
+安装后**保存工作、注销并重新登录**，再以普通用户运行以下命令（不使用 sudo）。第一个命令将通知快捷键设为 Super+M，为本应用释放 Super+V；它会替换自定义通知快捷键。
 
 ```sh
 gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>m']"
@@ -24,7 +24,33 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-升级后再次注销并登录，标题应为 **Super V 0.1.6**。如果仍显示旧版，请检查上面 info 命令输出的路径；用户目录中的同 UUID 扩展会覆盖系统安装。
+按 **Super+V**，标题应为 **Super V 0.1.6**。
+
+## 升级到 v0.1.6
+
+下载上面的安装包，在安装包所在文件夹中运行同一个 apt 命令，即可覆盖升级，无须先卸载。随后**保存工作、注销并重新登录**，再按 **Super+V** 检查标题是否为 **Super V 0.1.6**。语言和快捷键设置会保留，已保存的文本历史、固定项目和最近使用的表情会迁移；设置为注销时清空的历史会按设置清空。
+
+以普通用户检查安装包和 GNOME 当前加载的版本：
+
+```sh
+dpkg-query -W super-v-ubuntu
+gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
+```
+
+两个版本都应为 **0.1.6**（扩展内部编号为 7）。若安装包为新版而 GNOME 仍加载旧版，请先注销并重新登录。系统安装的 Path 应为 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`；若指向用户目录，请备份并将该 UUID 文件夹移到扩展目录之外，再注销登录。若 Super+V 没有反应，可运行上面的 enable 命令；若打开的是通知，检查首次安装中的通知快捷键命令。设置打不开时，可运行 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`。
+
+## v0.1.6 设置速查
+
+按 Super+V，点击标题栏的齿轮按钮打开“设置”。
+
+| 功能 | 操作或设置位置 |
+| --- | --- |
+| 截图 | 相机按钮或 **Super+Shift+S**；截图后重新打开 Super+V 查看图片历史。需启用剪贴板历史收集。 |
+| 修改截图快捷键 | **设置 → 桌面集成 → 截图快捷键（GTK 格式）**；例如 `<Super><Shift>s`，应用修改，留空可禁用。 |
+| 关机清空历史 | **设置 → 剪贴板历史 → 关机时清空历史记录**。默认关闭，也会在重启、注销或重新加载扩展时清空。 |
+| 切换语言 | **设置 → 外观 → 语言**；立即生效。 |
+
+启用关机清空后，已有磁盘历史会删除，当前项目只保留在内存中；GNOME 在 Pictures/Screenshots 中另存的截图文件不会删除。
 
 ## 使用与语言
 

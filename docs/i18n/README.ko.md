@@ -8,15 +8,15 @@ Ubuntu GNOME에서 사용하는 Windows 스타일 Super+V 선택기입니다. �
 
 Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
 
-## 설치 및 업데이트
+## 처음 설치
 
-[v0.1.6 패키지](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6)를 다운로드 폴더에 저장하세요.
+[v0.1.6 패키지](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb)를 다운로드하고 파일이 있는 폴더에서 터미널을 여세요.
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
+sudo apt install ./super-v-ubuntu_0.1.6_all.deb
 ```
 
-설치 후 로그아웃하고 다시 로그인하세요. 다음 명령은 일반 사용자로 실행합니다(sudo 사용 안 함). 첫 번째 명령은 알림 단축키를 Super+M으로 설정하여 Super+V를 사용할 수 있게 합니다. 기존 사용자 지정 알림 단축키는 변경됩니다.
+설치 후 **작업을 저장하고 로그아웃한 다음 다시 로그인**하세요. 다음 명령은 일반 사용자로 실행합니다(sudo 사용 안 함). 첫 번째 명령은 알림 단축키를 Super+M으로 설정하여 Super+V를 사용할 수 있게 합니다. 기존 사용자 지정 알림 단축키는 변경됩니다.
 
 ```sh
 gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>m']"
@@ -24,7 +24,33 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-업데이트 후에도 로그아웃하고 다시 로그인하세요. 제목에 **Super V 0.1.6**가 표시되어야 합니다. 이전 버전이 표시되면 info에 나온 경로를 확인하세요. 같은 UUID의 사용자용 확장 기능이 시스템 패키지보다 우선합니다.
+**Super+V**를 누르면 제목에 **Super V 0.1.6**이 표시되어야 합니다.
+
+## v0.1.6으로 업데이트
+
+위 패키지를 다운로드하고 해당 폴더에서 같은 apt 명령을 실행하세요. 이전 패키지를 덮어써서 업데이트하므로 먼저 제거할 필요가 없습니다. **작업을 저장하고 로그아웃한 다음 다시 로그인**한 뒤, **Super+V** 제목이 **Super V 0.1.6**인지 확인하세요. 언어와 단축키 설정은 유지되며 저장된 텍스트 기록, 고정 항목 및 최근 이모지가 이전됩니다. 로그아웃 시 삭제하도록 설정한 기록은 해당 설정에 따라 삭제됩니다.
+
+일반 사용자로 설치된 패키지와 GNOME이 불러온 확장 기능의 버전을 확인하세요.
+
+```sh
+dpkg-query -W super-v-ubuntu
+gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
+```
+
+두 버전 모두 **0.1.6**이어야 합니다(확장 기능 내부 번호는 7). 패키지만 새 버전이면 먼저 로그아웃하고 다시 로그인하세요. 시스템 패키지의 Path는 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`입니다. 홈 폴더를 가리키면 해당 UUID 폴더를 백업하고 확장 기능 디렉터리 밖으로 옮긴 후 다시 로그인하세요. Super+V가 반응하지 않으면 위의 enable 명령을 실행하고, 알림을 열면 처음 설치의 알림 단축키 명령을 확인하세요. 설정을 직접 열려면 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`을 실행하세요.
+
+## v0.1.6 설정 안내
+
+Super+V를 열고 제목 옆의 톱니바퀴 버튼을 눌러 설정을 여세요.
+
+| 기능 | 사용 방법 또는 위치 |
+| --- | --- |
+| 스크린샷 | 카메라 버튼 또는 **Super+Shift+S**. 촬영 후 Super+V를 다시 열어 이미지 기록을 확인하세요. 기록 수집이 켜져 있어야 합니다. |
+| 스크린샷 단축키 변경 | **설정 → 데스크톱 통합 → 스크린샷 단축키 (GTK 형식)**. 예: `<Super><Shift>s`. 변경을 적용하거나 빈칸으로 두어 단축키를 끌 수 있습니다. |
+| 종료 시 기록 삭제 | **설정 → 클립보드 기록 → 종료 시 기록 지우기**. 기본값은 꺼짐이며 다시 시작, 로그아웃 또는 확장 기능을 다시 불러올 때도 삭제됩니다. |
+| 언어 선택 | **설정 → 외관 → 언어**. 즉시 적용됩니다. |
+
+종료 시 삭제를 켜면 저장된 기록이 삭제되고 현재 항목은 메모리에만 보관됩니다. GNOME이 Pictures/Screenshots에 별도로 저장한 스크린샷 파일은 삭제되지 않습니다.
 
 ## 사용 방법 및 언어
 

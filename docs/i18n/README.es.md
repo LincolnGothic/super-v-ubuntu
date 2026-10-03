@@ -8,15 +8,15 @@ Un selector al estilo de Windows con Super+V para Ubuntu GNOME: historial del po
 
 Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
 
-## Instalación y actualización
+## Primera instalación
 
-Guarda el [paquete v0.1.6](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6) en tu carpeta de descargas:
+Descarga el [paquete v0.1.6](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb) y abre un terminal en la carpeta que contiene el archivo:
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
+sudo apt install ./super-v-ubuntu_0.1.6_all.deb
 ```
 
-Después de instalar, cierra la sesión y vuelve a entrar. Ejecuta estos comandos como usuario normal, sin sudo. El primero asigna Super+M a las notificaciones para dejar Super+V disponible; reemplaza cualquier atajo de notificaciones personalizado.
+Después de instalar, **guarda tu trabajo, cierra la sesión y vuelve a entrar**. Ejecuta estos comandos como usuario normal, sin sudo. El primero asigna Super+M a las notificaciones para dejar Super+V disponible; reemplaza cualquier atajo de notificaciones personalizado.
 
 ```sh
 gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>m']"
@@ -24,7 +24,33 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-Tras actualizar, vuelve a cerrar y abrir la sesión. El título debe mostrar **Super V 0.1.6**. Si aparece una versión antigua, comprueba la ruta indicada por info: una copia de usuario con el mismo UUID tiene prioridad sobre el paquete del sistema.
+Pulsa **Super+V**; el título debe mostrar **Super V 0.1.6**.
+
+## Actualizar a v0.1.6
+
+Descarga el paquete anterior y ejecuta el mismo comando apt desde su carpeta. Se instala sobre la versión anterior; no hace falta desinstalarla. Después, **guarda tu trabajo, cierra la sesión y vuelve a entrar**, y comprueba **Super V 0.1.6** en el título de **Super+V**. Se conservan el idioma y los atajos, y se migra el historial de texto guardado, los elementos fijados y los emojis recientes. El historial configurado para borrarse al cerrar sesión se elimina según esa preferencia.
+
+Comprueba el paquete instalado y la extensión cargada por GNOME como usuario normal:
+
+```sh
+dpkg-query -W super-v-ubuntu
+gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
+```
+
+Ambos deben indicar **0.1.6** (el número interno de la extensión es 7). Si solo el paquete es nuevo, cierra y vuelve a abrir la sesión. Para el paquete del sistema, Path debe ser `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`. Si apunta a tu carpeta personal, guarda una copia de esa carpeta UUID y muévela fuera del directorio de extensiones; después vuelve a iniciar sesión. Si Super+V no responde, ejecuta el comando enable anterior; si abre notificaciones, revisa el comando de atajos de la primera instalación. Para abrir Ajustes directamente, usa `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`.
+
+## Guía de ajustes de v0.1.6
+
+Abre Super+V y pulsa el botón de engranaje de la cabecera para abrir Ajustes.
+
+| Función | Uso o ubicación |
+| --- | --- |
+| Captura de pantalla | Botón de cámara o **Super+Shift+S**. Vuelve a abrir Super+V para ver la imagen. La captura del historial debe estar activada. |
+| Cambiar el atajo de captura | **Ajustes → Integración con el escritorio → Atajo de captura (sintaxis GTK)**. Por ejemplo, `<Super><Shift>s`; aplica el cambio o deja el campo vacío para desactivar el atajo. |
+| Borrar al apagar | **Ajustes → Historial del portapapeles → Borrar el historial al apagar**. Desactivado por defecto; también borra al reiniciar, cerrar sesión o recargar la extensión. |
+| Elegir idioma | **Ajustes → Apariencia → Idioma**. El cambio es inmediato. |
+
+Al activar el borrado al apagar, se elimina el historial guardado y los elementos actuales permanecen solo en memoria. No se eliminan las capturas que GNOME guarda aparte en Pictures/Screenshots.
 
 ## Uso e idiomas
 

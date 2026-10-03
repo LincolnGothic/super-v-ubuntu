@@ -10,6 +10,11 @@ GPL-3.0-or-later; Unicode data uses Unicode-3.0.
 [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) ·
 [한국어](docs/i18n/README.ko.md)
 
+**Current release: [v0.1.6](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6)** ·
+[Download installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb) ·
+[First installation](#install-the-debian-package) · [Upgrade](#upgrade-from-an-older-version) ·
+[Feature guide](#use-v016) · [Troubleshooting](#troubleshooting)
+
 **Release status:** automated logic, package, and isolated GNOME Wayland checks
 are available. Image capture, native screenshot capture, and GTK image paste
 are covered by the isolated tests. Full application and desktop acceptance is
@@ -25,6 +30,25 @@ Neither target has completed real desktop acceptance testing.
 No `xdotool`, Electron, or background daemon is
 used. GNOME extensions run inside the shell; use the desktop test procedure
 before relying on this implementation.
+
+## Use v0.1.6
+
+Open **Super+V**, then click the gear button in the header to open Settings.
+
+| Task | How to do it |
+| --- | --- |
+| Paste text or an image from history | Copy text or PNG/JPEG image pixels, open Super+V, and choose an entry. The receiving app must support the selected content. |
+| Take a screenshot | Click the camera button or press **Super+Shift+S**, then select an area, window, or screen. Reopen Super+V to find the captured image. |
+| Change the screenshot shortcut | **Settings → Desktop integration → Screenshot shortcut (GTK accelerator syntax)**. Enter a shortcut such as `<Super><Shift>s` and apply it; an empty field disables the shortcut. |
+| Clear history when the computer shuts down | Turn on **Settings → Clipboard history → Clear history on shutdown**. It is off by default and also clears on restart, logout, or extension reload. |
+| Choose a language | **Settings → Appearance → Language**. All seven languages are included in the same installer and apply immediately. |
+| Pick an emoji or character | Use the emoji, kaomoji, or symbols tab, choose a category in the horizontal bar, and click an item in the grid. |
+
+Screenshot capture enters history when **Capture clipboard history** is enabled.
+The shutdown option removes existing saved history and keeps the current session's
+text, images, pins, and emoji recents only in memory. GNOME's separately saved
+files in Pictures/Screenshots remain. See the [screenshot](#take-a-screenshot)
+and [shutdown](#clear-history-on-shutdown) instructions for details.
 
 ## Screenshots
 
@@ -54,16 +78,18 @@ clipboard items and bundled emoji. Full desktop acceptance is tracked in
 
 ## Install the Debian package
 
+Already using Super V? Follow [Upgrade from an older version](#upgrade-from-an-older-version).
+
 Download [`super-v-ubuntu_0.1.6_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb)
 from [release v0.1.6](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6),
-save it to Downloads, then run on your Ubuntu desktop:
+then open a terminal in the folder containing the downloaded file and run:
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
+sudo apt install ./super-v-ubuntu_0.1.6_all.deb
 ```
 
-Log out and back in so GNOME discovers the system extension. Then, as your
-ordinary user, without sudo:
+**Save your work, log out, and log back in** so GNOME discovers the system
+extension. Then run these commands as your ordinary user, without sudo:
 
 ```sh
 gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>m']"
@@ -78,17 +104,48 @@ It replaces any custom notification shortcut. To restore GNOME's defaults,
 run `gsettings reset org.gnome.shell.keybindings toggle-message-tray` after
 disabling this extension.
 
-Press Super+V. Capture begins after extension initialization, with a default
+Press **Super+V**; the header should show **Super V 0.1.6**. Capture begins after
+extension initialization, with a default
 100-entry limit and persistent history. Change preferences to pause capture,
 disable persistence or automatic paste, and choose another shortcut.
-Enabling this extension grants it access to clipboard text and images; read `SECURITY.md`.
+Enabling this extension grants it access to clipboard text and images; read
+[the privacy notes](SECURITY.md).
 
-The header must show **Super V 0.1.6** after upgrading. GNOME can keep old code
-loaded until logout/login. A user-local installation of the same UUID also
-overrides the system package: inspect the **Path** shown by `gnome-extensions
-info` above. If it points into your home directory, back up and move that UUID
-directory out of `~/.local/share/gnome-shell/extensions`, then log out/in to
-load the package from `/usr/share/gnome-shell/extensions`.
+## Upgrade from an older version
+
+1. Download the [v0.1.6 installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb).
+2. Open a terminal in the download's folder and run the command below. Installing
+   it over the previous package upgrades Super V; no uninstall is needed.
+
+   ```sh
+   sudo apt install ./super-v-ubuntu_0.1.6_all.deb
+   ```
+
+3. **Save your work, log out, and log back in.** On Wayland, GNOME keeps the
+   extension's previous code loaded until you start a new session.
+4. Press **Super+V** and check that the header shows **Super V 0.1.6**. Your
+   language and shortcut settings remain. Saved text history, pins, and emoji
+   recents migrate; history configured to clear at logout is erased as requested.
+
+To check both the installed package and the extension loaded by GNOME, run
+these commands as your ordinary user:
+
+```sh
+dpkg-query -W super-v-ubuntu
+gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
+```
+
+The package should report **0.1.6**; the extension's **Version** should also
+report **0.1.6** (the internal extension number is 7). If the package is new but
+GNOME still reports an old version, log out/in before reinstalling.
+
+The extension's **Path** should be
+`/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local` for the
+Debian package. A user-local copy of the same UUID overrides this system copy.
+If Path points into your home directory, back up and move only that UUID's
+directory outside `${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell/extensions`,
+then log out/in to load the system package. If Super+V does not open afterward,
+follow [Troubleshooting](#troubleshooting).
 
 ## Languages
 
@@ -255,7 +312,7 @@ On Ubuntu 24.04:
 
 ```sh
 sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 gettext locales eslint gjs \
-    gir1.2-gtk-4.0 gir1.2-adw-1 lintian git gh
+    gir1.2-gtk-4.0 gir1.2-adw-1 gir1.2-gdkpixbuf-2.0 lintian git gh
 make test
 make package
 lintian --fail-on error,warning ../super-v-ubuntu_0.1.6_all.deb
@@ -270,6 +327,19 @@ takes precedence over a system copy, so remove it when testing the `.deb`.
 See `docs/development.md`, `docs/architecture.md` and `CONTRIBUTING.md`.
 
 ## Troubleshooting
+
+**Super+V does not open:** check `gnome-extensions info` below. If the extension
+is disabled, run `gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local`
+without sudo. If Super+V opens notifications, run the notification-shortcut
+command in [First installation](#install-the-debian-package); Super+M will still
+open notifications.
+
+**An old version or missing new settings:** follow the package, loaded-version,
+and Path checks in [Upgrade](#upgrade-from-an-older-version). Save your work and
+log out/in after an installation or upgrade.
+
+**Cannot open Settings from the picker:** run
+`gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local` without sudo.
 
 First inspect version, session and extension state:
 
