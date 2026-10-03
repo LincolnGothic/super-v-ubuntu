@@ -24,13 +24,13 @@ with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
     assert not any('history.json' in name or 'node_modules' in name for name in files)
     metadata = json.load(tar.extractfile(prefix + 'metadata.json'))
     assert metadata['shell-version'] == ['46', '48', '50'], 'Incorrect Shell compatibility'
-    assert metadata['version-name'] == '0.1.8' and metadata['version'] == 9
+    assert metadata['version-name'] == '0.1.9' and metadata['version'] == 10
     assert metadata['gettext-domain'] == 'super-v-ubuntu'
     for locale in ['zh_CN', 'zh_TW', 'ja', 'es', 'fr', 'ko']:
         name = prefix + f'locale/{locale}/messages.json'
         assert name in files, f'Missing explicit-language messages for {locale}'
         messages = json.load(tar.extractfile(name))
-        assert len(messages) >= 341 and messages['Language'] and messages['Follow system']
+        assert len(messages) >= 346 and messages['Language'] and messages['Follow system']
         assert messages['Screenshot'] and messages['Clear history on shutdown']
         assert messages['Pin to screen'] and messages['Copy text from image'] and messages['Numbered marker']
         assert messages['Screenshot editor'] and messages['Edit after taking a screenshot']
@@ -46,7 +46,7 @@ with tarfile.open(fileobj=io.BytesIO(archive)) as tar:
         assert entry.uid == 0 and entry.gid == 0, 'Incorrect package ownership'
         assert not entry.mode & 0o022, 'Group/world writable file'
 control = subprocess.check_output(['dpkg-deb', '-f', str(deb), 'Architecture', 'Version'], text=True)
-assert 'all' in control and '0.1.8' in control
+assert 'all' in control and '0.1.9' in control
 dependencies = subprocess.check_output(['dpkg-deb', '-f', str(deb), 'Depends'], text=True)
 target = sys.argv[2] if len(sys.argv) > 2 else 'universal'
 ranges = {'ubuntu24.04': ('46', '47'), 'debian13': ('48', '49'), 'ubuntu26.04': ('50', '51')}

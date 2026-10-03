@@ -6,6 +6,53 @@ import Pango from 'gi://Pango';
 import PangoCairo from 'gi://PangoCairo';
 import {imageInfo} from './core/image.js';
 
+const grayscaleImages = new WeakMap();
+
+function grayscale(pixbuf) {
+    let result = grayscaleImages.get(pixbuf);
+    if (!result) {
+        result = pixbuf.copy();
+        pixbuf.saturate_and_pixelate(result, 0, false);
+        grayscaleImages.set(pixbuf, result);
+    }
+    return result;
+}
+
+function drawMosaic(cr, a) {
+    // A small repeating tile keeps work bounded even for large diagonal strokes.
+    // Every painted pixel is opaque; the original image does not supply its colors.
+    const block = a.block ?? 12;
+    const tile = new Cairo.ImageSurface(Cairo.Format.RGB24, block * 4, block * 4);
+    const brush = new Cairo.Context(tile);
+    try {
+        for (let y = 0; y < 4; y++) {
+            for (let x = 0; x < 4; x++) {
+                const shade = [1, 0.96, 0.92, 0.88][(x * 3 + y * 5 + x * y) % 4];
+                brush.setSourceRGB(shade, shade, shade);
+                brush.rectangle(x * block, y * block, block, block);
+                brush.fill();
+            }
+        }
+        const pattern = new Cairo.SurfacePattern(tile);
+        pattern.setExtend(Cairo.Extend.REPEAT);
+        pattern.setFilter(Cairo.Filter.NEAREST);
+        cr.setSource(pattern);
+        cr.setAntialias(Cairo.Antialias.NONE);
+        if (a.x === a.x2 && a.y === a.y2 && !a.points.some(p => p[0] !== a.x || p[1] !== a.y)) {
+            cr.arc(a.x, a.y, a.width / 2, 0, Math.PI * 2);
+            cr.fill();
+        } else {
+            cr.moveTo(a.x, a.y);
+            for (const point of a.points) cr.lineTo(...point);
+            cr.lineTo(a.x2, a.y2);
+            cr.stroke();
+        }
+    } finally {
+        brush.$dispose();
+        tile.finish();
+    }
+}
+
 export function decodeImage(bytes, mime) {
     const info = imageInfo(bytes, mime);
     const loader = GdkPixbuf.PixbufLoader.new_with_mime_type(mime);
@@ -31,7 +78,9 @@ export function drawAnnotation(cr, a) {
     cr.setLineJoin(Cairo.LineJoin.ROUND);
     const x = Math.min(a.x, a.x2), y = Math.min(a.y, a.y2);
     const width = Math.abs(a.x2 - a.x), height = Math.abs(a.y2 - a.y);
-    if (a.type === 'text') {
+    if (a.type === 'mosaic') {
+        drawMosaic(cr, a);
+    } else if (a.type === 'text') {
         const layout = PangoCairo.create_layout(cr);
         const font = Pango.FontDescription.from_string('Sans');
         font.set_absolute_size(a.width * Pango.SCALE);
@@ -94,7 +143,7 @@ export function drawDocument(cr, pixbuf, state, preview = null) {
     cr.rectangle(0, 0, c.width, c.height);
     cr.clip();
     cr.translate(-c.x, -c.y);
-    Gdk.cairo_set_source_pixbuf(cr, pixbuf, 0, 0);
+    Gdk.cairo_set_source_pixbuf(cr, state.grayscale ? grayscale(pixbuf) : pixbuf, 0, 0);
     cr.paint();
     for (const annotation of state.annotations) {
         if (!preview?.id || preview.id !== annotation.id)

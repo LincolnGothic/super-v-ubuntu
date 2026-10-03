@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import {MAX_IMAGE_DIMENSION, MAX_IMAGE_PIXELS} from './image.js';
 
-export const tools = ['move', 'select', 'crop', 'arrow', 'rectangle', 'text', 'highlight', 'pen', 'redact', 'number'];
+export const tools = ['move', 'select', 'crop', 'arrow', 'rectangle', 'text', 'highlight', 'pen', 'redact', 'mosaic', 'number'];
 const clone = value => JSON.parse(JSON.stringify(value));
 const clamp = (value, low, high) => Math.max(low, Math.min(high, value));
 
@@ -10,7 +10,7 @@ export class EditorDocument {
         if (![width, height].every(value => Number.isInteger(value) && value > 0 && value <= MAX_IMAGE_DIMENSION) ||
             width * height > MAX_IMAGE_PIXELS)
             throw new Error('Invalid image dimensions');
-        this.state = {crop: {x: 0, y: 0, width, height}, annotations: []};
+        this.state = {crop: {x: 0, y: 0, width, height}, annotations: [], grayscale: false};
         this.past = [];
         this.future = [];
         this.nextId = 1;
@@ -47,7 +47,7 @@ export class EditorDocument {
     _annotation(annotation) {
         if (!tools.includes(annotation.type) || ['move', 'select', 'crop'].includes(annotation.type) ||
             !/^#[a-f\d]{6}$/iu.test(annotation.color) || !Number.isFinite(annotation.width) ||
-            annotation.width < 1 || annotation.width > 72)
+            annotation.width < 1 || annotation.width > (annotation.type === 'mosaic' ? 256 : 72))
             throw new Error('Invalid annotation');
         const [x, y] = this.point(annotation.x, annotation.y);
         const [x2, y2] = this.point(annotation.x2, annotation.y2);
@@ -58,8 +58,11 @@ export class EditorDocument {
         const number = annotation.type === 'number' ? annotation.number : 0;
         if (annotation.type === 'number' && (!Number.isInteger(number) || number < 1 || number > 999))
             throw new Error('Invalid marker number');
+        const block = annotation.type === 'mosaic' ? annotation.block ?? 12 : 12;
+        if (!Number.isInteger(block) || block < 4 || block > 64)
+            throw new Error('Invalid mosaic tile size');
         return {id: annotation.id, type: annotation.type, x, y, x2, y2, color: annotation.color,
-            width: annotation.width, text, points, number};
+            width: annotation.width, text, points, number, block};
     }
 
     _marks(annotations) {
@@ -92,6 +95,10 @@ export class EditorDocument {
         if (annotations.length === this.state.annotations.length) return false;
         this._marks(annotations);
         return true;
+    }
+
+    toggleGrayscale() {
+        this._commit({...clone(this.state), grayscale: !this.state.grayscale});
     }
 
     hit(x, y, tolerance = 4) {
@@ -155,8 +162,10 @@ export function annotationBounds(a) {
         height: Math.max(8, lines.length * a.width * 1.5)};
     }
     const xs = [a.x, a.x2, ...a.points.map(p => p[0])], ys = [a.y, a.y2, ...a.points.map(p => p[1])];
-    return {x: Math.min(...xs), y: Math.min(...ys), width: Math.max(2, Math.max(...xs) - Math.min(...xs)),
-        height: Math.max(2, Math.max(...ys) - Math.min(...ys))};
+    const radius = ['pen', 'mosaic'].includes(a.type) ? a.width / 2 : 0;
+    return {x: Math.min(...xs) - radius, y: Math.min(...ys) - radius,
+        width: Math.max(2, Math.max(...xs) - Math.min(...xs) + radius * 2),
+        height: Math.max(2, Math.max(...ys) - Math.min(...ys) + radius * 2)};
 }
 
 export function imageTransform(crop, width, height, zoom = 1, pan = [0, 0]) {

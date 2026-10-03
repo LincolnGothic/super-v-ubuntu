@@ -32,14 +32,23 @@ msgstr "動物"
 msgid "Animals & Nature"
 msgstr "動物與自然"
 
+msgid "Annotation limit reached. Undo a mark before adding another."
+msgstr "已達標註上限。請復原一個標註後再新增。"
+
 msgid "Appearance"
 msgstr "外觀"
 
 msgid "Apps using Ctrl+Shift+V (comma-separated)"
 msgstr "使用 Ctrl+Shift+V 的應用程式（以逗號分隔）"
 
+msgid "Arrow"
+msgstr "箭頭"
+
 msgid "Arrows"
 msgstr "箭頭"
+
+msgid "Black and white"
+msgstr "黑白濾鏡"
 
 msgid "Capture clipboard history"
 msgstr "記錄剪貼簿歷史"
@@ -50,8 +59,14 @@ msgstr "螢幕中央"
 msgid "Changes Super V immediately. Language names stay in their native form."
 msgstr "立即變更 Super V 的語言。語言名稱始終以原文顯示。"
 
+msgid "Choose a folder, or use the last saved location."
+msgstr "選擇資料夾，或使用上次儲存的位置。"
+
 msgid "Choose files"
 msgstr "選擇檔案"
+
+msgid "Choose folder"
+msgstr "選擇資料夾"
 
 msgid "Classic"
 msgstr "經典"
@@ -71,6 +86,9 @@ msgstr "清除未釘選項目"
 msgid "Clear unpinned history"
 msgstr "清除未釘選的歷史"
 
+msgid "Click the image to move the text box. Press Enter to finish."
+msgstr "點擊圖片可移動文字框。按 Enter 完成。"
+
 msgid "Clipboard"
 msgstr "剪貼簿"
 
@@ -80,26 +98,65 @@ msgstr "剪貼簿已變更；已保留較新的內容。"
 msgid "Clipboard history"
 msgstr "剪貼簿歷史"
 
+msgid "Close pinned image"
+msgstr "關閉貼圖"
+
 msgid "Collects copied text and PNG/JPEG images. Images: up to 8 MiB each, 32 MiB total, 8192 pixels per side and 16 megapixels."
 msgstr "收集複製的文字和 PNG/JPEG 圖片。圖片限制：每張 8 MiB、總計 32 MiB、每邊 8192 像素、總像素 1600 萬。"
+
+msgid "Color"
+msgstr "顏色"
 
 msgid "Copied to clipboard. Use your application’s paste shortcut."
 msgstr "已複製到剪貼簿。請使用應用程式的貼上快捷鍵。"
 
+msgid "Copy image"
+msgstr "複製影像"
+
+msgid "Copy text"
+msgstr "複製文字"
+
+msgid "Copy text from image"
+msgstr "從影像複製文字"
+
 msgid "Copy text or an image to start your history."
 msgstr "複製文字或圖片即可開始記錄。"
+
+msgid "Could not copy the text."
+msgstr "無法複製文字。"
+
+msgid "Could not export the image. Crop it to reduce its size."
+msgstr "無法匯出圖片。請裁切以縮小大小。"
 
 msgid "Could not initialize the extension. Disable and re-enable it."
 msgstr "無法初始化擴充功能。請停用後重新啟用。"
 
+msgid "Could not load OCR language packs."
+msgstr "無法載入 OCR 語言套件。"
+
+msgid "Could not open or communicate with the screenshot editor."
+msgstr "無法開啟截圖編輯器或與其通訊。"
+
 msgid "Could not open the screenshot tool. Try Print Screen."
 msgstr "無法開啟截圖工具，請嘗試按 Print Screen。"
+
+msgid "Could not pin this image."
+msgstr "無法將此影像貼到螢幕。"
+
+msgid "Could not pin this image. Close a pinned image or use a smaller image."
+msgstr "無法貼圖。請關閉一張貼圖或使用較小的影像。"
 
 msgid "Could not read that GIF. Re-add it in Settings or choose another file."
 msgstr "無法讀取該 GIF。請在設定中重新新增或選擇其他檔案。"
 
+msgid "Could not save the image."
+msgstr "無法儲存圖片。"
+
 msgid "Could not update local history storage. Check directory permissions."
 msgstr "無法更新本機歷史儲存。請檢查目錄權限。"
+
+msgid "Crop"
+msgstr "裁切"
 
 msgid "Currency"
 msgstr "貨幣"
@@ -110,11 +167,26 @@ msgstr "深色"
 msgid "Default"
 msgstr "預設"
 
+msgid "Default save folder"
+msgstr "預設儲存資料夾"
+
+msgid "Delete annotation"
+msgstr "刪除標註"
+
 msgid "Delete entry"
 msgstr "刪除項目"
 
 msgid "Desktop integration"
 msgstr "桌面整合"
+
+msgid "Edit after taking a screenshot"
+msgstr "截圖後編輯"
+
+msgid "Edit image"
+msgstr "編輯圖片"
+
+msgid "Edited image copied. Paste it into your application."
+msgstr "已複製編輯後的圖片。請貼上至應用程式。"
 
 msgid "Emoji"
 msgstr "表情符號"
@@ -125,6 +197,10 @@ msgstr "刪除所有儲存的項目"
 msgid "Excluded apps (comma-separated)"
 msgstr "排除的應用程式（以逗號分隔）"
 
+msgid "Filename pattern"
+msgstr "檔名格式"
+
+#, javascript-format
 msgid "Files skipped: %d. Invalid, too large, or favorites full."
 msgstr "已略過 %d 個檔案：檔案無效、過大或收藏已滿。"
 
@@ -149,6 +225,9 @@ msgstr "希臘字母"
 msgid "Happy"
 msgstr "開心"
 
+msgid "Highlight"
+msgstr "螢光標記"
+
 msgid "History exceeds the storage limit."
 msgstr "歷史記錄超出儲存限制。"
 
@@ -164,8 +243,15 @@ msgstr "歷史記錄、釘選項目和最近使用的表情僅保存在記憶體
 msgid "Image"
 msgstr "圖片"
 
+msgid "Image saved."
+msgstr "圖片已儲存。"
+
+#, javascript-format
 msgid "Image · %d × %d"
 msgstr "圖片 · %d × %d"
+
+msgid "Install Tesseract OCR to recognize text."
+msgstr "請安裝 Tesseract OCR 以辨識文字。"
 
 msgid "Invalid stored history was removed."
 msgstr "已刪除無效的歷史記錄。"
@@ -178,6 +264,12 @@ msgstr "語言"
 
 msgid "Light"
 msgstr "淺色"
+
+msgid "Light mosaic"
+msgstr "淺色馬賽克"
+
+msgid "Loading OCR languages…"
+msgstr "正在載入 OCR 語言…"
 
 msgid "Local storage"
 msgstr "本機儲存"
@@ -200,11 +292,23 @@ msgstr "中深色"
 msgid "Medium light"
 msgstr "中淺色"
 
+msgid "Mosaic brush thickness"
+msgstr "馬賽克畫筆粗細"
+
+msgid "Mosaic tile size"
+msgstr "馬賽克方塊大小"
+
+msgid "Move image"
+msgstr "移動圖片"
+
 msgid "Near mouse pointer"
 msgstr "滑鼠游標附近"
 
 msgid "Next categories"
 msgstr "後面的類別"
+
+msgid "No OCR language packs are installed."
+msgstr "尚未安裝 OCR 語言套件。"
 
 msgid "No items in this filter."
 msgstr "此篩選條件下沒有項目。"
@@ -212,14 +316,42 @@ msgstr "此篩選條件下沒有項目。"
 msgid "No matching items."
 msgstr "沒有符合的項目。"
 
+msgid "No text was recognized."
+msgstr "未辨識到文字。"
+
+msgid "Numbered marker"
+msgstr "編號標記"
+
+msgid "OCR failed. Check the language packs or crop a smaller area."
+msgstr "OCR 失敗。請檢查語言套件或裁切較小的區域。"
+
+msgid "OCR language"
+msgstr "OCR 語言"
+
+msgid "OCR runs locally. Install the corresponding Tesseract language packs."
+msgstr "OCR 在本機執行。請安裝對應的 Tesseract 語言套件。"
+
 msgid "Objects"
 msgstr "物品"
+
+msgid "Opacity"
+msgstr "不透明度"
+
+#, javascript-format
+msgid "Opacity: %d percent"
+msgstr "不透明度：百分之 %d"
+
+msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
+msgstr "透過 Super V 截圖後開啟編輯器。歷史中的圖片隨時可以編輯。"
 
 msgid "Paste automatically"
 msgstr "自動貼上"
 
 msgid "Paste overrides (JSON)"
 msgstr "貼上快捷鍵覆寫（JSON）"
+
+msgid "Pen"
+msgstr "畫筆"
 
 msgid "People & Body"
 msgstr "人物與身體"
@@ -230,15 +362,20 @@ msgstr "選擇器位置"
 msgid "Pin entry"
 msgstr "釘選項目"
 
+msgid "Pin to screen"
+msgstr "貼到螢幕"
+
 msgid "Pinned entries are kept."
 msgstr "保留釘選項目。"
 
 msgid "Pinned entries have a separate maximum of 100. Total text is limited to 2 MiB."
 msgstr "釘選項目的獨立上限為 100 個。文字總量限制為 2 MiB。"
 
+#, javascript-format
 msgid "Pinned: %s"
 msgstr "已釘選：%s"
 
+#, javascript-format
 msgid "Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access."
 msgstr "明文歷史記錄：%s。目錄權限 0700；檔案權限 0600。密碼管理器 MIME 提示和目前應用程式排除僅盡力處理。不收集遙測資料，執行時不存取網路。"
 
@@ -254,20 +391,53 @@ msgstr "標點"
 msgid "Recent"
 msgstr "最近使用"
 
+msgid "Recognize text"
+msgstr "辨識文字"
+
+msgid "Recognizing text…"
+msgstr "正在辨識文字…"
+
+msgid "Rectangle"
+msgstr "矩形"
+
+msgid "Redo"
+msgstr "重做"
+
 msgid "Remember after logout"
 msgstr "登出後保留"
 
 msgid "Remove favorite (keep file)"
 msgstr "移除收藏（保留檔案）"
 
+msgid "Reset"
+msgstr "重設"
+
+msgid "Reset export preferences"
+msgstr "重設匯出設定"
+
 msgid "Restore clipboard"
 msgstr "還原剪貼簿"
+
+msgid "Review the recognized text before copying."
+msgstr "複製前請檢查辨識出的文字。"
 
 msgid "Sad"
 msgstr "悲傷"
 
+msgid "Save image"
+msgstr "儲存圖片"
+
 msgid "Screenshot"
 msgstr "截圖"
+
+msgid "Screenshot editor"
+msgstr "截圖編輯器"
+
+msgid "Screenshot export and OCR"
+msgstr "螢幕截圖匯出與 OCR"
+
+msgid "Screenshot is too large. Select a smaller area."
+msgstr "截圖過大。請選擇較小的區域。"
 
 msgid "Screenshot shortcut (GTK accelerator syntax)"
 msgstr "截圖快捷鍵（GTK 格式）"
@@ -290,6 +460,9 @@ msgstr "搜尋顏文字"
 msgid "Search symbols"
 msgstr "搜尋符號"
 
+msgid "Select annotation"
+msgstr "選取標註"
+
 msgid "Settings"
 msgstr "設定"
 
@@ -299,6 +472,7 @@ msgstr "快捷鍵（GTK 加速鍵語法）"
 msgid "Shortcuts: ctrl-v, ctrl-shift-v, shift-insert, manual."
 msgstr "快捷鍵：ctrl-v、ctrl-shift-v、shift-insert、manual。"
 
+#, javascript-format
 msgid "Show more (%d)"
 msgstr "顯示更多（%d）"
 
@@ -310,6 +484,9 @@ msgstr "部分儲存的圖片無法讀取，已被移除。"
 
 msgid "Stored history could not be read. It has been removed."
 msgstr "無法讀取儲存的歷史記錄，已將其刪除。"
+
+msgid "Stroke width / text size"
+msgstr "線寬／文字大小"
 
 msgid "Super V"
 msgstr "Super V"
@@ -323,6 +500,19 @@ msgstr "驚訝"
 msgid "Symbols"
 msgstr "符號"
 
+msgid "Text"
+msgstr "文字"
+
+msgid "Text copied. Paste it into your application."
+msgstr "文字已複製。請貼到應用程式中。"
+
+msgid "Text is empty or exceeds the copy limit."
+msgstr "文字為空或超出複製限制。"
+
+msgid "Text to add"
+msgstr "要新增的文字"
+
+#, javascript-format
 msgid "Tone: %s"
 msgstr "膚色：%s"
 
@@ -334,6 +524,9 @@ msgstr "關閉後僅複製所選內容，不傳送貼上快捷鍵。"
 
 msgid "Turning this off removes saved text and images; current memory is retained. Clear history on shutdown takes priority."
 msgstr "關閉後會刪除儲存的文字和圖片，但保留目前的記憶體記錄。「關機時清空歷史記錄」優先。"
+
+msgid "Undo"
+msgstr "復原"
 
 msgid "Units"
 msgstr "單位"
@@ -350,11 +543,23 @@ msgstr "請使用 <Super>v 或 <Control><Alt>v 等快捷鍵。"
 msgid "Use exact desktop application IDs (including .desktop where present) or WM classes. Clipboard origin cannot always be identified."
 msgstr "請使用正確的桌面應用程式 ID（如含有 .desktop，請保留）或 WM 類別。剪貼簿內容來源並非總能識別。"
 
+msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
+msgstr "可使用 {date}、{time}、{width} 與 {height}；請勿使用斜線。"
+
 msgid "You can pin up to 100 entries."
 msgstr "最多可釘選 100 個項目。"
 
 msgid "Your recently used emoji will appear here."
 msgstr "最近使用的表情符號將顯示在這裡。"
+
+msgid "Zoom (%)"
+msgstr "縮放（%）"
+
+msgid "Zoom in"
+msgstr "放大"
+
+msgid "Zoom out"
+msgstr "縮小"
 
 msgid "adoration"
 msgstr "愛慕"
@@ -841,189 +1046,3 @@ msgstr "↑↓ 選擇 · Enter 貼上 · Esc 關閉 · Ctrl+Tab 切換"
 
 msgid "↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close"
 msgstr "↑↓←→ 選擇 · Enter 貼上 · Ctrl+F 搜尋 · Esc 關閉"
-
-
-msgid "Annotation limit reached. Undo a mark before adding another."
-msgstr "已達標註上限。請復原一個標註後再新增。"
-
-msgid "Arrow"
-msgstr "箭頭"
-
-msgid "Color"
-msgstr "顏色"
-
-msgid "Could not export the image. Crop it to reduce its size."
-msgstr "無法匯出圖片。請裁切以縮小大小。"
-
-msgid "Could not open or communicate with the screenshot editor."
-msgstr "無法開啟截圖編輯器或與其通訊。"
-
-msgid "Could not save the image."
-msgstr "無法儲存圖片。"
-
-msgid "Cover sensitive area"
-msgstr "遮蓋敏感區域"
-
-msgid "Crop"
-msgstr "裁切"
-
-msgid "Edit after taking a screenshot"
-msgstr "截圖後編輯"
-
-msgid "Edit image"
-msgstr "編輯圖片"
-
-msgid "Edited image copied. Paste it into your application."
-msgstr "已複製編輯後的圖片。請貼上至應用程式。"
-
-msgid "Highlight"
-msgstr "螢光標記"
-
-msgid "Image saved."
-msgstr "圖片已儲存。"
-
-msgid "Move image"
-msgstr "移動圖片"
-
-msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
-msgstr "透過 Super V 截圖後開啟編輯器。歷史中的圖片隨時可以編輯。"
-
-msgid "Pen"
-msgstr "畫筆"
-
-msgid "Rectangle"
-msgstr "矩形"
-
-msgid "Save image"
-msgstr "儲存圖片"
-
-msgid "Screenshot editor"
-msgstr "截圖編輯器"
-
-msgid "Stroke width / text size"
-msgstr "線寬／文字大小"
-
-msgid "Text"
-msgstr "文字"
-
-msgid "Text to add"
-msgstr "要新增的文字"
-
-msgid "Zoom (%)"
-msgstr "縮放（%）"
-
-msgid "Choose a folder, or use the last saved location."
-msgstr "選擇資料夾，或使用上次儲存的位置。"
-
-msgid "Choose folder"
-msgstr "選擇資料夾"
-
-msgid "Close pinned image"
-msgstr "關閉貼圖"
-
-msgid "Copy image"
-msgstr "複製影像"
-
-msgid "Copy text"
-msgstr "複製文字"
-
-msgid "Copy text from image"
-msgstr "從影像複製文字"
-
-msgid "Could not copy the text."
-msgstr "無法複製文字。"
-
-msgid "Could not load OCR language packs."
-msgstr "無法載入 OCR 語言套件。"
-
-msgid "Could not pin this image."
-msgstr "無法將此影像貼到螢幕。"
-
-msgid "Could not pin this image. Close a pinned image or use a smaller image."
-msgstr "無法貼圖。請關閉一張貼圖或使用較小的影像。"
-
-msgid "Default save folder"
-msgstr "預設儲存資料夾"
-
-msgid "Delete annotation"
-msgstr "刪除標註"
-
-msgid "Filename pattern"
-msgstr "檔名格式"
-
-msgid "Install Tesseract OCR to recognize text."
-msgstr "請安裝 Tesseract OCR 以辨識文字。"
-
-msgid "Loading OCR languages…"
-msgstr "正在載入 OCR 語言…"
-
-msgid "No OCR language packs are installed."
-msgstr "尚未安裝 OCR 語言套件。"
-
-msgid "No text was recognized."
-msgstr "未辨識到文字。"
-
-msgid "Numbered marker"
-msgstr "編號標記"
-
-msgid "OCR failed. Check the language packs or crop a smaller area."
-msgstr "OCR 失敗。請檢查語言套件或裁切較小的區域。"
-
-msgid "OCR language"
-msgstr "OCR 語言"
-
-msgid "OCR runs locally. Install the corresponding Tesseract language packs."
-msgstr "OCR 在本機執行。請安裝對應的 Tesseract 語言套件。"
-
-msgid "Opacity"
-msgstr "不透明度"
-
-#, javascript-format
-
-msgid "Opacity: %d percent"
-msgstr "不透明度：百分之 %d"
-
-msgid "Pin to screen"
-msgstr "貼到螢幕"
-
-msgid "Recognize text"
-msgstr "辨識文字"
-
-msgid "Recognizing text…"
-msgstr "正在辨識文字…"
-
-msgid "Redo"
-msgstr "重做"
-
-msgid "Reset"
-msgstr "重設"
-
-msgid "Reset export preferences"
-msgstr "重設匯出設定"
-
-msgid "Review the recognized text before copying."
-msgstr "複製前請檢查辨識出的文字。"
-
-msgid "Screenshot export and OCR"
-msgstr "螢幕截圖匯出與 OCR"
-
-msgid "Select annotation"
-msgstr "選取標註"
-
-msgid "Text copied. Paste it into your application."
-msgstr "文字已複製。請貼到應用程式中。"
-
-msgid "Text is empty or exceeds the copy limit."
-msgstr "文字為空或超出複製限制。"
-
-msgid "Undo"
-msgstr "復原"
-
-msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
-msgstr "可使用 {date}、{time}、{width} 與 {height}；請勿使用斜線。"
-
-msgid "Zoom in"
-msgstr "放大"
-
-msgid "Zoom out"
-msgstr "縮小"

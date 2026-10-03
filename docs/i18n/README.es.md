@@ -2,7 +2,9 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
-v0.1.8 añade imágenes fijadas en pantalla con movimiento, zoom y opacidad; marcadores numerados; anotaciones que puedes seleccionar, mover, redimensionar o eliminar; y OCR local. En el editor, usa «Fijar en pantalla» para referencias o «Copiar texto de la imagen» para elegir un idioma instalado, revisar y editar el resultado, y copiarlo. «Ajustes → Exportación de capturas y OCR» configura la carpeta, el nombre y el idioma OCR. El paquete incluye OCR en inglés; otros idiomas requieren los paquetes Tesseract correspondientes. Las imágenes fijadas en pantalla son distintas de los elementos fijados del historial y se cierran al bloquear, borrar o desactivar la extensión.
+v0.1.9 muestra un cuadro de texto con cursor sobre la imagen al elegir «Texto». Haz clic en otro lugar para moverlo y pulsa Intro para terminar. «Mosaico claro» permite dibujar libremente y ajustar el grosor del pincel y el tamaño de los bloques; cubre los píxeles con cuadros opacos blancos y gris claro. «Blanco y negro» es un filtro independiente que puedes deshacer. Super+Mayús+S y el botón de cámara muestran una nueva cruz sin el marco anterior: arrastra y suelta para capturar; Escape cancela. La imagen va al portapapeles y al historial opcional; «Guardar imagen» elige el archivo. Impr Pant mantiene los controles habituales de GNOME.
+
+v0.1.9 añade imágenes fijadas en pantalla con movimiento, zoom y opacidad; marcadores numerados; anotaciones que puedes seleccionar, mover, redimensionar o eliminar; y OCR local. En el editor, usa «Fijar en pantalla» para referencias o «Copiar texto de la imagen» para elegir un idioma instalado, revisar y editar el resultado, y copiarlo. «Ajustes → Exportación de capturas y OCR» configura la carpeta, el nombre y el idioma OCR. El paquete incluye OCR en inglés; otros idiomas requieren los paquetes Tesseract correspondientes. Las imágenes fijadas en pantalla son distintas de los elementos fijados del historial y se cierran al bloquear, borrar o desactivar la extensión.
 
 v0.1.6 guarda imágenes PNG/JPEG con miniaturas, fijación y pegado. El botón de cámara o Super+Shift+S abre las capturas de área, ventana o pantalla de GNOME. Puedes cambiar o desactivar el atajo en Ajustes. «Borrar el historial al apagar» mantiene el texto, las imágenes, los elementos fijados y los emojis recientes solo en memoria; también se borran al reiniciar, cerrar sesión o recargar la extensión. Al activarlo se elimina el historial guardado, pero no los archivos de captura de GNOME.
 
@@ -12,10 +14,10 @@ Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Debian 13 / GNOME 48 · Wa
 
 ## Primera instalación
 
-Descarga el [paquete v0.1.8](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.8/super-v-ubuntu_0.1.8_all.deb) y abre un terminal en la carpeta que contiene el archivo:
+Descarga el [paquete v0.1.9](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.9/super-v-ubuntu_0.1.9_all.deb) y abre un terminal en la carpeta que contiene el archivo:
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.8_all.deb
+sudo apt install ./super-v-ubuntu_0.1.9_all.deb
 ```
 
 Después de instalar, **guarda tu trabajo, cierra la sesión y vuelve a entrar**. Ejecuta estos comandos como usuario normal, sin sudo. El primero asigna Super+M a las notificaciones para dejar Super+V disponible; reemplaza cualquier atajo de notificaciones personalizado.
@@ -26,11 +28,11 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-Pulsa **Super+V**; el título debe mostrar **Super V 0.1.8**.
+Pulsa **Super+V**; el título debe mostrar **Super V 0.1.9**.
 
-## Actualizar a v0.1.8
+## Actualizar a v0.1.9
 
-Descarga el paquete anterior y ejecuta el mismo comando apt desde su carpeta. Se instala sobre la versión anterior; no hace falta desinstalarla. Después, **guarda tu trabajo, cierra la sesión y vuelve a entrar**, y comprueba **Super V 0.1.8** en el título de **Super+V**. Se conservan el idioma y los atajos, y se migra el historial de texto guardado, los elementos fijados y los emojis recientes. El historial configurado para borrarse al cerrar sesión se elimina según esa preferencia.
+Descarga el paquete anterior y ejecuta el mismo comando apt desde su carpeta. Se instala sobre la versión anterior; no hace falta desinstalarla. Después, **guarda tu trabajo, cierra la sesión y vuelve a entrar**, y comprueba **Super V 0.1.9** en el título de **Super+V**. Se conservan el idioma y los atajos, y se migra el historial de texto guardado, los elementos fijados y los emojis recientes. El historial configurado para borrarse al cerrar sesión se elimina según esa preferencia.
 
 Comprueba el paquete instalado y la extensión cargada por GNOME como usuario normal:
 
@@ -39,9 +41,9 @@ dpkg-query -W super-v-ubuntu
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-Ambos deben indicar **0.1.8** (el número interno de la extensión es 9). Si solo el paquete es nuevo, cierra y vuelve a abrir la sesión. Para el paquete del sistema, Path debe ser `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`. Si apunta a tu carpeta personal, guarda una copia de esa carpeta UUID y muévela fuera del directorio de extensiones; después vuelve a iniciar sesión. Si Super+V no responde, ejecuta el comando enable anterior; si abre notificaciones, revisa el comando de atajos de la primera instalación. Para abrir Ajustes directamente, usa `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`.
+Ambos deben indicar **0.1.9** (el número interno de la extensión es 10). Si solo el paquete es nuevo, cierra y vuelve a abrir la sesión. Para el paquete del sistema, Path debe ser `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`. Si apunta a tu carpeta personal, guarda una copia de esa carpeta UUID y muévela fuera del directorio de extensiones; después vuelve a iniciar sesión. Si Super+V no responde, ejecuta el comando enable anterior; si abre notificaciones, revisa el comando de atajos de la primera instalación. Para abrir Ajustes directamente, usa `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`.
 
-## Guía de ajustes de v0.1.8
+## Guía de ajustes de v0.1.9
 
 Abre Super+V y pulsa el botón de engranaje de la cabecera para abrir Ajustes.
 

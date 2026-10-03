@@ -12,48 +12,48 @@ GPL-3.0-or-later; Unicode data uses Unicode-3.0.
 [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) ·
 [한국어](docs/i18n/README.ko.md)
 
-**Current release: [v0.1.8](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.8)** ·
-[Download installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.8/super-v-ubuntu_0.1.8_all.deb) ·
+**Current release: [v0.1.9](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.9)** ·
+[Download installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.9/super-v-ubuntu_0.1.9_all.deb) ·
 [First installation](#install-the-debian-package) · [Upgrade](#upgrade-from-an-older-version) ·
 [Feature guide](#use-v018) · [Troubleshooting](#troubleshooting)
 
 **Release status:** automated logic, package, and isolated GNOME Wayland checks
 are available. Image capture, native screenshot capture, and GTK image paste
 are covered by the isolated tests. Full application and desktop acceptance is
-tracked in [testing](docs/testing.md). See [v0.1.8 validation](docs/verification-v0.1.8.md).
+tracked in [testing](docs/testing.md). See [v0.1.9 validation](docs/verification-v0.1.9.md).
 
 ## Platforms and downloads
 
 | Desktop / Wayland session | x86-64 and ARM64 installer |
 | --- | --- |
-| Ubuntu 24.04 LTS / GNOME 46 | [Ubuntu 24.04 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.8/super-v-ubuntu_0.1.8_ubuntu24.04_all.deb) |
-| Ubuntu 26.04 LTS / GNOME 50 | [Ubuntu 26.04 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.8/super-v-ubuntu_0.1.8_ubuntu26.04_all.deb) |
-| Debian 13 / GNOME 48 | [Debian 13 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.8/super-v-ubuntu_0.1.8_debian13_all.deb) |
+| Ubuntu 24.04 LTS / GNOME 46 | [Ubuntu 24.04 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.9/super-v-ubuntu_0.1.9_ubuntu24.04_all.deb) |
+| Ubuntu 26.04 LTS / GNOME 50 | [Ubuntu 26.04 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.9/super-v-ubuntu_0.1.9_ubuntu26.04_all.deb) |
+| Debian 13 / GNOME 48 | [Debian 13 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.9/super-v-ubuntu_0.1.9_debian13_all.deb) |
 
 Choose your distribution's package. Each installer is marked **Architecture: all**
 because the extension uses JavaScript, translations, and schemas; it has no compiled
 CPU-specific binary. The same installer works on **amd64 (x86-64)** and **arm64
 (AArch64)** and uses the distribution's native GJS, GTK, and Tesseract packages.
 CI builds and runs the native Wayland tests separately on all six distribution/CPU
-combinations. An [all-target installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.8/super-v-ubuntu_0.1.8_all.deb)
+combinations. An [all-target installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.9/super-v-ubuntu_0.1.9_all.deb)
 is also available; it allows GNOME 46, 48, or 50. Distribution installers restrict
 the GNOME dependency to their tested major version.
 
 Check `dpkg --print-architecture` and `gnome-shell --version` before installation.
 GNOME 47, 49, 51+, X11, and non-GNOME desktops are not supported. API inspection
 and isolated runtime results are recorded in [the API audit](docs/api-audit.md)
-and [v0.1.8 verification](docs/verification-v0.1.8.md). Interactive desktop acceptance
+and [v0.1.9 verification](docs/verification-v0.1.9.md). Interactive desktop acceptance
 remains distinct from these automated checks. No Electron, background daemon, or
 `xdotool` is needed.
 
-## Use v0.1.8
+## Use v0.1.9
 
 Open **Super+V**, then click the gear button in the header to open Settings.
 
 | Task | How to do it |
 | --- | --- |
 | Paste text or an image from history | Copy text or PNG/JPEG image pixels, open Super+V, and choose an entry. The receiving app must support the selected content. |
-| Take a screenshot | Click the camera button or press **Super+Shift+S**, then select an area, window, or screen. The editor opens automatically after capture. |
+| Take a screenshot | Click the camera button or press **Super+Shift+S**, then drag a fresh area with the crosshair. The editor opens automatically after capture. |
 | Edit an image | Use the pencil button beside an image in history, or select it and press **Ctrl+E**. |
 | Pin an image above your apps | Open its editor and click **Pin to screen**. Drag the image or header; use +/−, the wheel, opacity, or Close. |
 | Number steps in a screenshot | Choose **Numbered marker** and click the image; numbers advance automatically. |
@@ -74,17 +74,29 @@ and [shutdown](#clear-history-on-shutdown) instructions for details.
 
 ## Screenshots
 
-**Screenshot editor — v0.1.8**
+**Screenshot editor — v0.1.9**
 
-The editor adds annotation selection, numbered markers, local OCR, and screen pins.
+The editor includes inline text entry, light mosaic, a black-and-white filter, annotation selection, numbered markers, local OCR, and screen pins.
 This image comes from the isolated native Wayland test session.
 
-![Super V 0.1.8 native screenshot editor with annotation selection, numbered marker, OCR and pin controls](docs/screenshots/screenshot-editor-v0.1.8.png)
+![Super V 0.1.9 native screenshot editor with annotation selection, numbered marker, OCR and pin controls](docs/screenshots/screenshot-editor-v0.1.9.png)
+
+**Text entry — v0.1.9**
+
+The input appears directly on the image and retains its text/caret when moved.
+
+![Native text input with its caret](docs/screenshots/text-entry-v0.1.9.png)
+
+**Light mosaic brush — v0.1.9**
+
+This example uses the actual export renderer with two brush/tile sizes.
+
+![Opaque light gray-and-white freehand mosaic strokes](docs/screenshots/mosaic-brush-v0.1.9.png)
 
 **Text and image history — v0.1.6**
 
 Copied images share the clipboard list with text. The camera button opens
-GNOME’s screenshot controls.
+GNOME’s normal screenshot controls (Print Screen).
 
 ![Super V 0.1.6 text and image history with thumbnail previews, dimensions and a screenshot button](docs/screenshots/clipboard-images-v0.1.6.png)
 
@@ -109,12 +121,12 @@ clipboard items and bundled emoji. Full desktop acceptance is tracked in
 
 Already using Super V? Follow [Upgrade from an older version](#upgrade-from-an-older-version).
 
-Download [`super-v-ubuntu_0.1.8_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.8/super-v-ubuntu_0.1.8_all.deb)
-from [release v0.1.8](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.8),
+Download [`super-v-ubuntu_0.1.9_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.9/super-v-ubuntu_0.1.9_all.deb)
+from [release v0.1.9](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.9),
 then open a terminal in the folder containing the downloaded file and run:
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.8_all.deb
+sudo apt install ./super-v-ubuntu_0.1.9_all.deb
 ```
 
 **Save your work, log out, and log back in** so GNOME discovers the system
@@ -133,7 +145,7 @@ It replaces any custom notification shortcut. To restore GNOME's defaults,
 run `gsettings reset org.gnome.shell.keybindings toggle-message-tray` after
 disabling this extension.
 
-Press **Super+V**; the header should show **Super V 0.1.8**. Capture begins after
+Press **Super+V**; the header should show **Super V 0.1.9**. Capture begins after
 extension initialization, with a default
 100-entry limit and persistent history. Change preferences to pause capture,
 disable persistence or automatic paste, and choose another shortcut.
@@ -142,17 +154,17 @@ Enabling this extension grants it access to clipboard text and images; read
 
 ## Upgrade from an older version
 
-1. Download the [v0.1.8 installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.8/super-v-ubuntu_0.1.8_all.deb).
+1. Download the [v0.1.9 installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.9/super-v-ubuntu_0.1.9_all.deb).
 2. Open a terminal in the download's folder and run the command below. Installing
    it over the previous package upgrades Super V; no uninstall is needed.
 
    ```sh
-   sudo apt install ./super-v-ubuntu_0.1.8_all.deb
+   sudo apt install ./super-v-ubuntu_0.1.9_all.deb
    ```
 
 3. **Save your work, log out, and log back in.** On Wayland, GNOME keeps the
    extension's previous code loaded until you start a new session.
-4. Press **Super+V** and check that the header shows **Super V 0.1.8**. Your
+4. Press **Super+V** and check that the header shows **Super V 0.1.9**. Your
    language and shortcut settings remain. Saved text history, pins, and emoji
    recents migrate; history configured to clear at logout is erased as requested.
 
@@ -164,8 +176,8 @@ dpkg-query -W super-v-ubuntu
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-The package should report **0.1.8**; the extension's **Version** should also
-report **0.1.8** (the internal extension number is 9). If the package is new but
+The package should report **0.1.9**; the extension's **Version** should also
+report **0.1.9** (the internal extension number is 10). If the package is new but
 GNOME still reports an old version, log out/in before reinstalling.
 
 The extension's **Path** should be
@@ -256,17 +268,17 @@ extension cannot verify that a receiving application accepted the text.
 
 ## Take a screenshot
 
-Click the camera button in the Super+V header or press **Super+Shift+S** to open
-GNOME’s screenshot controls. Choose an area, window, or screen and capture it.
-The picker closes before capture, and GNOME places the PNG on the clipboard;
-Super V adds it to history while capture is enabled and within the image limits.
-The normal Print Screen shortcut remains available. Change or disable the new
-shortcut in **Settings → Desktop integration → Screenshot shortcut**; an empty
-field disables only this shortcut.
+Click the camera button in the Super+V header or press **Super+Shift+S**.
+A fresh crosshair appears with **no remembered selection rectangle**. Drag the
+area you want; releasing the mouse captures it after the selector disappears.
+Escape cancels. The PNG goes to the clipboard and, when enabled, image history.
+The previous editor closes before the new selection starts.
 
-GNOME also saves screenshots in **Pictures/Screenshots**, following its normal
-settings. Clearing Super V history removes Super V’s stored copies; it does not
-delete GNOME’s screenshot files or overwrite the system clipboard.
+The Super V area capture does not automatically save another raw screenshot
+file. Use **Save image** in the editor to choose a destination. **Print Screen**
+still opens GNOME’s normal area/window/screen controls and follows its own saving
+settings. Change or disable the Super V shortcut in **Settings → Desktop
+integration → Screenshot shortcut**; an empty field disables only this shortcut.
 
 ## Edit a screenshot
 
@@ -275,22 +287,36 @@ Screenshots taken with Super V open a separate editor automatically. Turn off
 capture without opening it. Images in history always have an **Edit image**
 pencil button; select an image and press **Ctrl+E** for the same action.
 
-Choose a tool and drag on the preview: **Crop**, **Arrow**, **Rectangle**,
-**Highlight**, **Pen**, or **Cover sensitive area**. For **Text**, type into the
-text field and click the image. Color and size controls apply to annotations.
-Zoom is relative to fitting the image in the window; **Move image** pans it.
-Use Undo/Redo, **Ctrl+Z**, or **Ctrl+Shift+Z** to revise edits.
+Choose **Crop**, **Arrow**, **Rectangle**, **Highlight**, or **Pen** and drag on
+the image. Choose **Text** to show a focused input box directly on the image,
+with a native typing caret. Type, click another image location to move the box
+without losing your text, and press **Enter** to finish. Escape cancels the text
+draft. Selecting a committed text annotation exposes its input box for editing.
+Copy, Save, and Pin also finish the current text draft.
 
-**Copy image** (**Ctrl+C**) exports a flattened PNG to the system clipboard;
-paste it in your chosen application. With history capture enabled, the edited
-image is also added as a separate entry. **Save image** (**Ctrl+S**) asks for a
-PNG destination. Closing the editor or pressing Escape discards unsaved edits.
+**Light mosaic** replaces the old black-cover button. Draw freely across the
+area to cover, using **Mosaic brush thickness** (1–256 image pixels) and
+**Mosaic tile size** (4–64 image pixels). It paints opaque white/light-gray square
+tiles, independent of the source image’s colors. A click paints a round dab.
+The visual inspiration is the subtle [GitHub CLI square pattern](https://cli.github.com/);
+the application draws its own pattern and includes no downloaded artwork.
 
-Black covers are opaque in exported pixels; they do not erase the original
-history image or GNOME's separate screenshot file. Inspect the exported image
-before sharing it. Editing is temporary, without an on-disk project or scratch
-image. The editor accepts the same bounded PNG/JPEG inputs as image history and exports
-PNG only. Automatic window detection and scrolling capture are not included.
+**Black and white** in the header toggles grayscale for the source image.
+Annotations keep their chosen colors, and mosaics keep their light palette.
+The filter, mosaic strokes, and text placement support Undo/Redo. Color and size
+controls apply to ordinary annotations. **Zoom** is relative to fitting the
+image in the window; **Move image** pans it. Use Undo/Redo, **Ctrl+Z**, or
+**Ctrl+Shift+Z** to revise edits; while typing, the input handles text shortcuts.
+
+**Copy image** (**Ctrl+C**) exports a flattened PNG to the clipboard, which you
+can paste into your application. With history capture enabled, the edited image
+is also added as a separate entry. **Save image** (**Ctrl+S**) asks for a PNG
+destination. Closing the editor discards unsaved edits.
+
+Mosaic covers change exported pixels; the original history image and files saved
+separately remain. Inspect the export before sharing it. Editing is temporary,
+without an on-disk project or scratch image. The same bounded PNG/JPEG inputs and
+PNG exports apply. Automatic window detection and scrolling capture are not included.
 
 **Numbered marker** starts at 1 and advances with each click. **Select annotation**
 selects the topmost mark in its bounds; drag to move it or drag its bottom-right
@@ -422,7 +448,7 @@ sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 gettext
     gir1.2-gtk-4.0 gir1.2-adw-1 gir1.2-gdkpixbuf-2.0 lintian git gh
 make test
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.8_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.9_all.deb
 ```
 
 No npm dependencies or runtime downloads are required. Debian's build invokes

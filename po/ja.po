@@ -32,14 +32,23 @@ msgstr "動物"
 msgid "Animals & Nature"
 msgstr "動物と自然"
 
+msgid "Annotation limit reached. Undo a mark before adding another."
+msgstr "注釈の上限に達しました。注釈を元に戻してから追加してください。"
+
 msgid "Appearance"
 msgstr "外観"
 
 msgid "Apps using Ctrl+Shift+V (comma-separated)"
 msgstr "Ctrl+Shift+V を使うアプリ（カンマ区切り）"
 
+msgid "Arrow"
+msgstr "矢印"
+
 msgid "Arrows"
 msgstr "矢印"
+
+msgid "Black and white"
+msgstr "白黒フィルター"
 
 msgid "Capture clipboard history"
 msgstr "クリップボード履歴を記録"
@@ -50,8 +59,14 @@ msgstr "画面中央"
 msgid "Changes Super V immediately. Language names stay in their native form."
 msgstr "Super V の言語がすぐに変わります。言語名は各言語の表記で表示されます。"
 
+msgid "Choose a folder, or use the last saved location."
+msgstr "フォルダーを選択するか、前回の保存先を使用します。"
+
 msgid "Choose files"
 msgstr "ファイルを選択"
+
+msgid "Choose folder"
+msgstr "フォルダーを選択"
 
 msgid "Classic"
 msgstr "定番"
@@ -71,6 +86,9 @@ msgstr "未固定の項目を消去"
 msgid "Clear unpinned history"
 msgstr "未固定の履歴を消去"
 
+msgid "Click the image to move the text box. Press Enter to finish."
+msgstr "画像をクリックして入力欄を移動します。Enterで確定します。"
+
 msgid "Clipboard"
 msgstr "クリップボード"
 
@@ -80,26 +98,65 @@ msgstr "クリップボードが変更されたため、新しい内容を保持
 msgid "Clipboard history"
 msgstr "クリップボード履歴"
 
+msgid "Close pinned image"
+msgstr "貼り付け画像を閉じる"
+
 msgid "Collects copied text and PNG/JPEG images. Images: up to 8 MiB each, 32 MiB total, 8192 pixels per side and 16 megapixels."
 msgstr "コピーしたテキストと PNG/JPEG 画像を記録します。画像の上限は1枚8 MiB、合計32 MiB、各辺8192ピクセル、1600万画素です。"
+
+msgid "Color"
+msgstr "色"
 
 msgid "Copied to clipboard. Use your application’s paste shortcut."
 msgstr "クリップボードにコピーしました。アプリの貼り付けショートカットを使用してください。"
 
+msgid "Copy image"
+msgstr "画像をコピー"
+
+msgid "Copy text"
+msgstr "テキストをコピー"
+
+msgid "Copy text from image"
+msgstr "画像からテキストをコピー"
+
 msgid "Copy text or an image to start your history."
 msgstr "テキストや画像をコピーすると履歴に表示されます。"
+
+msgid "Could not copy the text."
+msgstr "テキストをコピーできませんでした。"
+
+msgid "Could not export the image. Crop it to reduce its size."
+msgstr "画像を書き出せません。切り抜いてサイズを小さくしてください。"
 
 msgid "Could not initialize the extension. Disable and re-enable it."
 msgstr "拡張機能を初期化できませんでした。無効にしてから再度有効にしてください。"
 
+msgid "Could not load OCR language packs."
+msgstr "OCR 言語パックを読み込めませんでした。"
+
+msgid "Could not open or communicate with the screenshot editor."
+msgstr "スクリーンショットエディターを開けないか、通信できません。"
+
 msgid "Could not open the screenshot tool. Try Print Screen."
 msgstr "スクリーンショットツールを開けませんでした。Print Screen をお試しください。"
+
+msgid "Could not pin this image."
+msgstr "この画像を画面に貼り付けられませんでした。"
+
+msgid "Could not pin this image. Close a pinned image or use a smaller image."
+msgstr "貼り付けられません。貼り付け画像を閉じるか、小さい画像を使用してください。"
 
 msgid "Could not read that GIF. Re-add it in Settings or choose another file."
 msgstr "GIF を読み込めませんでした。設定で追加し直すか、別のファイルを選択してください。"
 
+msgid "Could not save the image."
+msgstr "画像を保存できませんでした。"
+
 msgid "Could not update local history storage. Check directory permissions."
 msgstr "ローカルの履歴を更新できませんでした。ディレクトリの権限を確認してください。"
+
+msgid "Crop"
+msgstr "切り抜き"
 
 msgid "Currency"
 msgstr "通貨"
@@ -110,11 +167,26 @@ msgstr "濃い"
 msgid "Default"
 msgstr "標準"
 
+msgid "Default save folder"
+msgstr "既定の保存フォルダー"
+
+msgid "Delete annotation"
+msgstr "注釈を削除"
+
 msgid "Delete entry"
 msgstr "項目を削除"
 
 msgid "Desktop integration"
 msgstr "デスクトップ連携"
+
+msgid "Edit after taking a screenshot"
+msgstr "撮影後に編集"
+
+msgid "Edit image"
+msgstr "画像を編集"
+
+msgid "Edited image copied. Paste it into your application."
+msgstr "編集した画像をコピーしました。アプリに貼り付けてください。"
 
 msgid "Emoji"
 msgstr "絵文字"
@@ -125,6 +197,10 @@ msgstr "保存した項目をすべて削除"
 msgid "Excluded apps (comma-separated)"
 msgstr "除外するアプリ（カンマ区切り）"
 
+msgid "Filename pattern"
+msgstr "ファイル名の形式"
+
+#, javascript-format
 msgid "Files skipped: %d. Invalid, too large, or favorites full."
 msgstr "%d 件のファイルをスキップしました。無効、サイズ超過、またはお気に入りが上限に達しています。"
 
@@ -149,6 +225,9 @@ msgstr "ギリシャ文字"
 msgid "Happy"
 msgstr "喜び"
 
+msgid "Highlight"
+msgstr "ハイライト"
+
 msgid "History exceeds the storage limit."
 msgstr "履歴が保存容量の上限を超えています。"
 
@@ -164,8 +243,15 @@ msgstr "履歴、ピン留め項目、最近使った絵文字をメモリーに
 msgid "Image"
 msgstr "画像"
 
+msgid "Image saved."
+msgstr "画像を保存しました。"
+
+#, javascript-format
 msgid "Image · %d × %d"
 msgstr "画像 · %d × %d"
+
+msgid "Install Tesseract OCR to recognize text."
+msgstr "テキスト認識には Tesseract OCR をインストールしてください。"
 
 msgid "Invalid stored history was removed."
 msgstr "無効な保存履歴を削除しました。"
@@ -178,6 +264,12 @@ msgstr "言語"
 
 msgid "Light"
 msgstr "明るい"
+
+msgid "Light mosaic"
+msgstr "ライトモザイク"
+
+msgid "Loading OCR languages…"
+msgstr "OCR 言語を読み込み中…"
 
 msgid "Local storage"
 msgstr "ローカル保存"
@@ -200,11 +292,23 @@ msgstr "やや濃い"
 msgid "Medium light"
 msgstr "やや明るい"
 
+msgid "Mosaic brush thickness"
+msgstr "モザイクブラシの太さ"
+
+msgid "Mosaic tile size"
+msgstr "モザイクのブロックサイズ"
+
+msgid "Move image"
+msgstr "画像を移動"
+
 msgid "Near mouse pointer"
 msgstr "マウスポインターの近く"
 
 msgid "Next categories"
 msgstr "次のカテゴリー"
+
+msgid "No OCR language packs are installed."
+msgstr "OCR 言語パックがインストールされていません。"
 
 msgid "No items in this filter."
 msgstr "この絞り込み条件に該当する項目はありません。"
@@ -212,14 +316,42 @@ msgstr "この絞り込み条件に該当する項目はありません。"
 msgid "No matching items."
 msgstr "一致する項目はありません。"
 
+msgid "No text was recognized."
+msgstr "テキストが認識されませんでした。"
+
+msgid "Numbered marker"
+msgstr "番号マーカー"
+
+msgid "OCR failed. Check the language packs or crop a smaller area."
+msgstr "OCR に失敗しました。言語パックを確認するか、狭い範囲を切り抜いてください。"
+
+msgid "OCR language"
+msgstr "OCR 言語"
+
+msgid "OCR runs locally. Install the corresponding Tesseract language packs."
+msgstr "OCR はローカルで実行します。対応する Tesseract 言語パックをインストールしてください。"
+
 msgid "Objects"
 msgstr "物"
+
+msgid "Opacity"
+msgstr "不透明度"
+
+#, javascript-format
+msgid "Opacity: %d percent"
+msgstr "不透明度：%d パーセント"
+
+msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
+msgstr "Super V で撮影した後にエディターを開きます。履歴の画像はいつでも編集できます。"
 
 msgid "Paste automatically"
 msgstr "自動で貼り付け"
 
 msgid "Paste overrides (JSON)"
 msgstr "貼り付けショートカットの個別設定（JSON）"
+
+msgid "Pen"
+msgstr "ペン"
 
 msgid "People & Body"
 msgstr "人と身体"
@@ -230,15 +362,20 @@ msgstr "選択パネルの位置"
 msgid "Pin entry"
 msgstr "項目を固定"
 
+msgid "Pin to screen"
+msgstr "画面に貼り付け"
+
 msgid "Pinned entries are kept."
 msgstr "固定した項目は保持されます。"
 
 msgid "Pinned entries have a separate maximum of 100. Total text is limited to 2 MiB."
 msgstr "固定した項目の上限は別枠で 100 件です。テキストの合計容量は 2 MiB に制限されます。"
 
+#, javascript-format
 msgid "Pinned: %s"
 msgstr "固定済み：%s"
 
+#, javascript-format
 msgid "Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access."
 msgstr "平文の履歴：%s。ディレクトリ権限 0700、ファイル権限 0600。パスワード管理アプリの MIME ヒントと使用中のアプリの除外は完全ではありません。テレメトリーや実行時のネットワークアクセスはありません。"
 
@@ -254,20 +391,53 @@ msgstr "句読点"
 msgid "Recent"
 msgstr "最近使った絵文字"
 
+msgid "Recognize text"
+msgstr "テキストを認識"
+
+msgid "Recognizing text…"
+msgstr "テキストを認識中…"
+
+msgid "Rectangle"
+msgstr "四角形"
+
+msgid "Redo"
+msgstr "やり直す"
+
 msgid "Remember after logout"
 msgstr "ログアウト後も保持"
 
 msgid "Remove favorite (keep file)"
 msgstr "お気に入りから削除（ファイルは保持）"
 
+msgid "Reset"
+msgstr "リセット"
+
+msgid "Reset export preferences"
+msgstr "書き出し設定をリセット"
+
 msgid "Restore clipboard"
 msgstr "クリップボードを復元"
+
+msgid "Review the recognized text before copying."
+msgstr "コピーする前に認識結果を確認してください。"
 
 msgid "Sad"
 msgstr "悲しみ"
 
+msgid "Save image"
+msgstr "画像を保存"
+
 msgid "Screenshot"
 msgstr "スクリーンショット"
+
+msgid "Screenshot editor"
+msgstr "スクリーンショットエディター"
+
+msgid "Screenshot export and OCR"
+msgstr "スクリーンショットの書き出しと OCR"
+
+msgid "Screenshot is too large. Select a smaller area."
+msgstr "スクリーンショットが大きすぎます。小さい範囲を選択してください。"
 
 msgid "Screenshot shortcut (GTK accelerator syntax)"
 msgstr "スクリーンショットのショートカット（GTK形式）"
@@ -290,6 +460,9 @@ msgstr "顔文字を検索"
 msgid "Search symbols"
 msgstr "記号を検索"
 
+msgid "Select annotation"
+msgstr "注釈を選択"
+
 msgid "Settings"
 msgstr "設定"
 
@@ -299,6 +472,7 @@ msgstr "ショートカット（GTK アクセラレーター構文）"
 msgid "Shortcuts: ctrl-v, ctrl-shift-v, shift-insert, manual."
 msgstr "ショートカット：ctrl-v、ctrl-shift-v、shift-insert、manual。"
 
+#, javascript-format
 msgid "Show more (%d)"
 msgstr "さらに表示（%d）"
 
@@ -310,6 +484,9 @@ msgstr "読み込めない保存済み画像を削除しました。"
 
 msgid "Stored history could not be read. It has been removed."
 msgstr "保存した履歴を読み込めなかったため、削除しました。"
+
+msgid "Stroke width / text size"
+msgstr "線の太さ／文字サイズ"
 
 msgid "Super V"
 msgstr "Super V"
@@ -323,6 +500,19 @@ msgstr "驚き"
 msgid "Symbols"
 msgstr "記号"
 
+msgid "Text"
+msgstr "文字"
+
+msgid "Text copied. Paste it into your application."
+msgstr "テキストをコピーしました。アプリに貼り付けてください。"
+
+msgid "Text is empty or exceeds the copy limit."
+msgstr "テキストが空か、コピーの上限を超えています。"
+
+msgid "Text to add"
+msgstr "追加する文字"
+
+#, javascript-format
 msgid "Tone: %s"
 msgstr "肌の色：%s"
 
@@ -334,6 +524,9 @@ msgstr "無効にすると、選択した内容のコピーのみを行い、貼
 
 msgid "Turning this off removes saved text and images; current memory is retained. Clear history on shutdown takes priority."
 msgstr "オフにすると保存済みのテキストと画像を削除し、現在のメモリー内の履歴は保持します。「シャットダウン時に履歴を消去」が優先されます。"
+
+msgid "Undo"
+msgstr "元に戻す"
 
 msgid "Units"
 msgstr "単位"
@@ -350,11 +543,23 @@ msgstr "<Super>v や <Control><Alt>v などのショートカットを使用し�
 msgid "Use exact desktop application IDs (including .desktop where present) or WM classes. Clipboard origin cannot always be identified."
 msgstr "正確なデスクトップアプリ ID（該当する場合は .desktop を含む）または WM クラスを使用してください。クリップボードの取得元は常に識別できるとは限りません。"
 
+msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
+msgstr "{date}、{time}、{width}、{height} を使用できます。スラッシュは使わないでください。"
+
 msgid "You can pin up to 100 entries."
 msgstr "固定できる項目は最大 100 件です。"
 
 msgid "Your recently used emoji will appear here."
 msgstr "最近使った絵文字がここに表示されます。"
+
+msgid "Zoom (%)"
+msgstr "ズーム（%）"
+
+msgid "Zoom in"
+msgstr "拡大"
+
+msgid "Zoom out"
+msgstr "縮小"
 
 msgid "adoration"
 msgstr "愛おしい"
@@ -841,189 +1046,3 @@ msgstr "↑↓ 選択 · Enter 貼り付け · Esc 閉じる · Ctrl+Tab 切替"
 
 msgid "↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close"
 msgstr "↑↓←→ 選択 · Enter 貼り付け · Ctrl+F 検索 · Esc 閉じる"
-
-
-msgid "Annotation limit reached. Undo a mark before adding another."
-msgstr "注釈の上限に達しました。注釈を元に戻してから追加してください。"
-
-msgid "Arrow"
-msgstr "矢印"
-
-msgid "Color"
-msgstr "色"
-
-msgid "Could not export the image. Crop it to reduce its size."
-msgstr "画像を書き出せません。切り抜いてサイズを小さくしてください。"
-
-msgid "Could not open or communicate with the screenshot editor."
-msgstr "スクリーンショットエディターを開けないか、通信できません。"
-
-msgid "Could not save the image."
-msgstr "画像を保存できませんでした。"
-
-msgid "Cover sensitive area"
-msgstr "機密部分を覆う"
-
-msgid "Crop"
-msgstr "切り抜き"
-
-msgid "Edit after taking a screenshot"
-msgstr "撮影後に編集"
-
-msgid "Edit image"
-msgstr "画像を編集"
-
-msgid "Edited image copied. Paste it into your application."
-msgstr "編集した画像をコピーしました。アプリに貼り付けてください。"
-
-msgid "Highlight"
-msgstr "ハイライト"
-
-msgid "Image saved."
-msgstr "画像を保存しました。"
-
-msgid "Move image"
-msgstr "画像を移動"
-
-msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
-msgstr "Super V で撮影した後にエディターを開きます。履歴の画像はいつでも編集できます。"
-
-msgid "Pen"
-msgstr "ペン"
-
-msgid "Rectangle"
-msgstr "四角形"
-
-msgid "Save image"
-msgstr "画像を保存"
-
-msgid "Screenshot editor"
-msgstr "スクリーンショットエディター"
-
-msgid "Stroke width / text size"
-msgstr "線の太さ／文字サイズ"
-
-msgid "Text"
-msgstr "文字"
-
-msgid "Text to add"
-msgstr "追加する文字"
-
-msgid "Zoom (%)"
-msgstr "ズーム（%）"
-
-msgid "Choose a folder, or use the last saved location."
-msgstr "フォルダーを選択するか、前回の保存先を使用します。"
-
-msgid "Choose folder"
-msgstr "フォルダーを選択"
-
-msgid "Close pinned image"
-msgstr "貼り付け画像を閉じる"
-
-msgid "Copy image"
-msgstr "画像をコピー"
-
-msgid "Copy text"
-msgstr "テキストをコピー"
-
-msgid "Copy text from image"
-msgstr "画像からテキストをコピー"
-
-msgid "Could not copy the text."
-msgstr "テキストをコピーできませんでした。"
-
-msgid "Could not load OCR language packs."
-msgstr "OCR 言語パックを読み込めませんでした。"
-
-msgid "Could not pin this image."
-msgstr "この画像を画面に貼り付けられませんでした。"
-
-msgid "Could not pin this image. Close a pinned image or use a smaller image."
-msgstr "貼り付けられません。貼り付け画像を閉じるか、小さい画像を使用してください。"
-
-msgid "Default save folder"
-msgstr "既定の保存フォルダー"
-
-msgid "Delete annotation"
-msgstr "注釈を削除"
-
-msgid "Filename pattern"
-msgstr "ファイル名の形式"
-
-msgid "Install Tesseract OCR to recognize text."
-msgstr "テキスト認識には Tesseract OCR をインストールしてください。"
-
-msgid "Loading OCR languages…"
-msgstr "OCR 言語を読み込み中…"
-
-msgid "No OCR language packs are installed."
-msgstr "OCR 言語パックがインストールされていません。"
-
-msgid "No text was recognized."
-msgstr "テキストが認識されませんでした。"
-
-msgid "Numbered marker"
-msgstr "番号マーカー"
-
-msgid "OCR failed. Check the language packs or crop a smaller area."
-msgstr "OCR に失敗しました。言語パックを確認するか、狭い範囲を切り抜いてください。"
-
-msgid "OCR language"
-msgstr "OCR 言語"
-
-msgid "OCR runs locally. Install the corresponding Tesseract language packs."
-msgstr "OCR はローカルで実行します。対応する Tesseract 言語パックをインストールしてください。"
-
-msgid "Opacity"
-msgstr "不透明度"
-
-#, javascript-format
-
-msgid "Opacity: %d percent"
-msgstr "不透明度：%d パーセント"
-
-msgid "Pin to screen"
-msgstr "画面に貼り付け"
-
-msgid "Recognize text"
-msgstr "テキストを認識"
-
-msgid "Recognizing text…"
-msgstr "テキストを認識中…"
-
-msgid "Redo"
-msgstr "やり直す"
-
-msgid "Reset"
-msgstr "リセット"
-
-msgid "Reset export preferences"
-msgstr "書き出し設定をリセット"
-
-msgid "Review the recognized text before copying."
-msgstr "コピーする前に認識結果を確認してください。"
-
-msgid "Screenshot export and OCR"
-msgstr "スクリーンショットの書き出しと OCR"
-
-msgid "Select annotation"
-msgstr "注釈を選択"
-
-msgid "Text copied. Paste it into your application."
-msgstr "テキストをコピーしました。アプリに貼り付けてください。"
-
-msgid "Text is empty or exceeds the copy limit."
-msgstr "テキストが空か、コピーの上限を超えています。"
-
-msgid "Undo"
-msgstr "元に戻す"
-
-msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
-msgstr "{date}、{time}、{width}、{height} を使用できます。スラッシュは使わないでください。"
-
-msgid "Zoom in"
-msgstr "拡大"
-
-msgid "Zoom out"
-msgstr "縮小"

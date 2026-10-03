@@ -6,6 +6,8 @@ import Shell from 'gi://Shell';
 import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
+import {SelectArea} from 'resource:///org/gnome/shell/ui/screenshot.js';
+import {MAX_IMAGE_BYTES, MAX_IMAGE_DIMENSION, MAX_IMAGE_PIXELS} from './core/image.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
 import {gettext as _, initTranslations} from './translations.js';
 import {History} from './core/history.js';
@@ -375,85 +377,74 @@ export default class SuperVExtension extends Extension {
         catch { Main.notify('Super V', _('Could not open or communicate with the screenshot editor.')); }
     }
 
-    _clearScreenshotSignals() {
-        if (this._captureTimeout) GLib.source_remove(this._captureTimeout);
-        this._captureTimeout = 0;
-        for (const id of this._captureSignals ?? [])
-            Main.screenshotUI.disconnect(id);
-        this._captureSignals = [];
-    }
-
     _cancelScreenshot() {
         this._captureSerial = (this._captureSerial ?? 0) + 1;
-        this._clearScreenshotSignals();
-        if (this._screenshotSource)
-            GLib.source_remove(this._screenshotSource);
+        this._areaCapture?._grabHelper.ungrab();
+        this._areaCapture = null;
+        if (this._screenshotSource) GLib.source_remove(this._screenshotSource);
         this._screenshotSource = 0;
     }
 
     takeScreenshot() {
         if (!this._active || !this._ready || Main.sessionMode.isLocked || Main.sessionMode.isGreeter)
             return;
+        this._cancelScreenshot();
         this._selectionEpoch++;
         this.popup.close();
         this.pasteBackend.cancel();
+        this.editor.close();
         this.pendingRestore = null;
-        this._clearScreenshotSignals();
-        const serial = this._captureSerial = (this._captureSerial ?? 0) + 1;
+        const serial = this._captureSerial;
         const epoch = this._epoch;
-        if (this._screenshotSource)
-            GLib.source_remove(this._screenshotSource);
-        // Release the picker modal grab and let it disappear before GNOME
-        // freezes the screen to present its native capture controls.
+        const current = () => this._active && epoch === this._epoch && serial === this._captureSerial &&
+            !Main.sessionMode.isLocked && !Main.sessionMode.isGreeter;
+        // Each native selector starts with only a crosshair. It has no previous
+        // rectangle, and disappears before the selected pixels are captured.
         this._screenshotSource = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
             this._screenshotSource = 0;
-            if (this._active && !Main.sessionMode.isLocked && !Main.sessionMode.isGreeter) {
-                let captured = false;
-                let closed = false;
-                const complete = () => {
-                    if (!captured || !closed)
+            if (!current()) return GLib.SOURCE_REMOVE;
+            const selector = this._areaCapture = new SelectArea();
+            (async () => {
+                let stream = null;
+                try {
+                    let area;
+                    try { area = await selector.selectAsync(); }
+                    catch { return; } // Escape and loss of the modal grab cancel selection.
+                    if (!area || !current()) return;
+                    if (area.width > MAX_IMAGE_DIMENSION || area.height > MAX_IMAGE_DIMENSION ||
+                        area.width * area.height > MAX_IMAGE_PIXELS) {
+                        Main.notify('Super V', _('Screenshot is too large. Select a smaller area.'));
                         return;
-                    this._clearScreenshotSignals();
-                    if (!this.settings?.get_boolean('edit-after-screenshot'))
+                    }
+                    // SelectArea schedules its actor destruction on the next idle.
+                    await new Promise(resolve => GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                        resolve(); return GLib.SOURCE_REMOVE;
+                    }));
+                    if (!current()) return;
+                    stream = Gio.MemoryOutputStream.new_resizable();
+                    await new Shell.Screenshot().screenshot_area(area.x, area.y, area.width, area.height, stream);
+                    stream.close(null);
+                    if (!current()) return;
+                    if (stream.get_data_size() > MAX_IMAGE_BYTES) {
+                        Main.notify('Super V', _('Screenshot is too large. Select a smaller area.'));
                         return;
-                    // GNOME 46 can finish saving after the overlay has closed;
-                    // GNOME 50 waits for saving before starting its close.
-                    this._screenshotSource = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-                        this._screenshotSource = 0;
-                        this.clipboard.readImage().then(image => {
-                            if (image && this._active && epoch === this._epoch && serial === this._captureSerial &&
-                                this.settings.get_boolean('edit-after-screenshot'))
-                                this._openEditor(image.bytes, image.mime);
-                        }).catch(() => {});
-                        return GLib.SOURCE_REMOVE;
-                    });
-                };
-                this._captureSignals = [
-                    Main.screenshotUI.connect('screenshot-taken', () => { captured = true; complete(); }),
-                    Main.screenshotUI.connect('closed', () => {
-                        closed = true;
-                        if (captured) {
-                            complete();
-                        } else {
-                            this._captureTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 3000, () => {
-                                this._captureTimeout = 0;
-                                this._clearScreenshotSignals();
-                                return GLib.SOURCE_REMOVE;
-                            });
-                        }
-                    }),
-                    // A cancelled capture must not adopt a later Print Screen.
-                    Main.screenshotUI.connect('notify::visible', () => {
-                        if (closed && Main.screenshotUI.visible)
-                            this._clearScreenshotSignals();
-                    }),
-                ];
-                Main.screenshotUI.open().catch(() => {
-                    this._clearScreenshotSignals();
-                    if (this._active)
+                    }
+                    const bytes = stream.steal_as_bytes().get_data();
+                    this.clipboard.writeImage(bytes, 'image/png');
+                    if (this.settings.get_boolean('history-enabled')) {
+                        const image = this.images.add(bytes, 'image/png');
+                        this.history.addImage(image); this.changed();
+                    }
+                    if (this.settings.get_boolean('edit-after-screenshot'))
+                        this._openEditor(bytes, 'image/png');
+                } catch (error) {
+                    if (current() && !error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
                         Main.notify('Super V', _('Could not open the screenshot tool. Try Print Screen.'));
-                });
-            }
+                } finally {
+                    if (stream && !stream.is_closed()) stream.close(null);
+                    if (this._areaCapture === selector) this._areaCapture = null;
+                }
+            })();
             return GLib.SOURCE_REMOVE;
         });
     }
@@ -501,7 +492,7 @@ export default class SuperVExtension extends Extension {
         this._epoch++;
         this.editor?.close();
         this.screenPins?.destroy();
-        this._clearScreenshotSignals();
+        this._cancelScreenshot();
         this._stateCancellable?.cancel();
         if (this._binding)
             Main.wm.removeKeybinding('open-popup');

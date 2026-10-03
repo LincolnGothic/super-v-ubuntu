@@ -3,7 +3,7 @@
   <schema id="org.gnome.shell.extensions.super-v-ubuntu" path="/org/gnome/shell/extensions/super-v-ubuntu/">
     <key name="ui-language" type="s"><choices><choice value="system"/><choice value="en"/><choice value="zh_CN"/><choice value="zh_TW"/><choice value="ja"/><choice value="es"/><choice value="fr"/><choice value="ko"/></choices><default>'system'</default><summary>Language for the picker and preferences</summary></key>
     <key name="open-popup" type="as"><default>['&lt;Super&gt;v']</default><summary>Open clipboard and emoji picker</summary></key>
-    <key name="take-screenshot" type="as"><default>['&lt;Super&gt;&lt;Shift&gt;s']</default><summary>Open GNOME screenshot controls</summary></key>
+    <key name="take-screenshot" type="as"><default>['&lt;Super&gt;&lt;Shift&gt;s']</default><summary>Select a fresh screenshot area</summary></key>
     <key name="edit-after-screenshot" type="b"><default>true</default><summary>Open editor after Super V screenshots</summary></key>
     <key name="export-folder" type="s"><default>''</default><summary>Last or preferred PNG export folder URI</summary></key>
     <key name="export-pattern" type="s"><default>'Super V {date} {time}'</default><summary>PNG filename pattern with date, time and image dimensions</summary></key>

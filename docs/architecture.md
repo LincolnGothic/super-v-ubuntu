@@ -106,3 +106,20 @@ Recognition supports cancellation, 30-second timeouts, and 64 KiB output limits.
 The OCR review buffer is temporary; explicit Copy writes through Shell so clipboard
 ownership survives closing the GTK editor. Filename patterns and folder URIs are
 GSettings preferences. Successful private exports remember their parent folder.
+
+## v0.1.9 screenshot interaction
+
+The GTK canvas has a native entry overlay for text drafts; the draft is committed
+once on Enter, a tool change or export. The entry handles keyboard/IME input and
+preserves focus when clicking another image position. It is hidden from exported
+pixels. Mosaic annotations store a bounded freehand path, brush width and tile
+size. The renderer uses a small repeating opaque gray/white Cairo pattern.
+Grayscale is document state with undo/redo; a weak cache holds the converted source
+pixbuf, while annotation colors remain independent.
+
+Super V creates a new exported GNOME SelectArea for every capture. Its rectangle
+is hidden until a drag; after selection finishes and the actor is removed, a
+Shell Screenshot writes the area to a memory stream. Epoch/serial checks invalidate
+pending selection/capture on clear, lock, disable or another capture. The result
+is bounded and written to the clipboard/history, then optionally opened in the
+editor. No extra raw screenshot file is saved by this area-capture path.

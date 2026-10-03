@@ -47,7 +47,7 @@ export class ImageEditor {
             this.labels.push({widget: button, message, icon});
             return button;
         };
-        this.undoButton = action(N_('Undo'), () => { this.document.undo(); this._update(); }, 'edit-undo-symbolic');
+        this.undoButton = action(N_('Undo'), () => { this._commitText(); this.document.undo(); this._update(); }, 'edit-undo-symbolic');
         this.redoButton = action(N_('Redo'), () => { this.document.redo(); this._update(); }, 'edit-redo-symbolic');
         header.pack_start(this.undoButton);
         header.pack_start(this.redoButton);
@@ -70,12 +70,18 @@ export class ImageEditor {
         this.toolButtons = new Map();
         for (const [tool, message] of [['move', _('Move image')], ['select', _('Select annotation')], ['crop', _('Crop')],
             ['arrow', _('Arrow')], ['rectangle', _('Rectangle')], ['text', _('Text')],
-            ['highlight', _('Highlight')], ['pen', _('Pen')], ['redact', _('Cover sensitive area')], ['number', _('Numbered marker')]]) {
+            ['highlight', _('Highlight')], ['pen', _('Pen')], ['mosaic', _('Light mosaic')], ['number', _('Numbered marker')]]) {
             const button = new Gtk.ToggleButton({label: message});
             button.connect('clicked', () => this.setTool(tool));
             toolbar.insert(button, -1);
             this.toolButtons.set(tool, button);
         }
+        this.grayscaleButton = new Gtk.ToggleButton({label: _('Black and white')});
+        this.grayscaleButton.connect('clicked', () => {
+            if (this._commitText() !== false) this.document.toggleGrayscale();
+            this._update();
+        });
+        header.pack_start(this.grayscaleButton);
         const options = new Gtk.Box({spacing: 8, margin_start: 12, margin_end: 12});
         root.append(options);
         this.color = new Gtk.ColorButton({use_alpha: false});
@@ -87,20 +93,41 @@ export class ImageEditor {
         this.size = Gtk.SpinButton.new_with_range(1, 72, 1);
         this.size.value = 4;
         this.size.set_tooltip_text(_('Stroke width / text size'));
+        this.sizeLabel = new Gtk.Label({label: _('Stroke width / text size')});
+        options.append(this.sizeLabel);
         options.append(this.size);
-        this.text = new Gtk.Entry({hexpand: true, max_length: 500, placeholder_text: _('Text to add')});
-        options.append(this.text);
+        this.block = Gtk.SpinButton.new_with_range(4, 64, 1);
+        this.block.value = 12;
+        this.block.set_tooltip_text(_('Mosaic tile size'));
+        this.blockLabel = new Gtk.Label({label: _('Mosaic tile size')});
+        options.append(this.blockLabel);
+        options.append(this.block);
+        this.text = new Gtk.Entry({max_length: 500, placeholder_text: _('Text to add'),
+            halign: Gtk.Align.START, valign: Gtk.Align.START, width_chars: 12, max_width_chars: 12});
+        this.text.set_tooltip_text(_('Click the image to move the text box. Press Enter to finish.'));
         this.color.connect('color-set', () => this._styleSelected());
         this.size.connect('value-changed', () => this._styleSelected());
-        this.text.connect('changed', () => this._styleSelected());
+        this.block.connect('value-changed', () => this._styleSelected());
+        this.text.connect('changed', () => { this._styleSelected(); this.canvas?.queue_draw(); });
+        this.text.connect('activate', () => {
+            const result = this._commitText();
+            if (result === false) return;
+            const id = result ?? this.selected;
+            this.setTool('select'); this.selected = id; this._update(); this.canvas.grab_focus();
+        });
         this.zoom = Gtk.SpinButton.new_with_range(25, 400, 25);
         this.zoom.value = 100;
         this.zoom.set_tooltip_text(_('Zoom (%)'));
-        this.zoom.connect('value-changed', () => this.canvas.queue_draw());
+        this.zoom.connect('value-changed', () => { this.canvas.queue_draw(); this._placeText(); });
         options.append(this.zoom);
         this.canvas = new Gtk.DrawingArea({hexpand: true, vexpand: true,
             content_width: 300, content_height: 200, focusable: true});
-        root.append(this.canvas);
+        this.canvasOverlay = new Gtk.Overlay({child: this.canvas, hexpand: true, vexpand: true});
+        this.canvasOverlay.add_overlay(this.text);
+        root.append(this.canvasOverlay);
+        this.canvas.connect('resize', () => this._placeText());
+        this.textCss = new Gtk.CssProvider();
+        this.text.get_style_context().add_provider(this.textCss, Gtk.STYLE_PROVIDER_PRIORITY_APPLICATION);
         this.canvas.set_draw_func((_area, cr, width, height) => {
             if (!this.pixbuf)
                 return;
@@ -110,7 +137,11 @@ export class ImageEditor {
             cr.save();
             cr.translate(t.x, t.y);
             cr.scale(t.scale, t.scale);
-            drawDocument(cr, this.pixbuf, this.document.state, this.preview);
+            const editing = this.text.visible && this.tool === 'select'
+                ? this.document.state.annotations.find(a => a.id === this.selected) : null;
+            // The native input renders the live text and caret. Do not paint a
+            // second copy underneath it; only the committed text is exported.
+            drawDocument(cr, this.pixbuf, this.document.state, this.preview ?? (editing ? {...editing, text: ''} : null));
             const selected = this.preview?.id ? this.preview : this.document.state.annotations.find(a => a.id === this.selected);
             if (selected && this.tool === 'select') {
                 const b = annotationBounds(selected);
@@ -150,6 +181,9 @@ export class ImageEditor {
                 }
                 if ([Gdk.KEY_s, Gdk.KEY_S].includes(key)) { this.save(); return true; }
             }
+            if (key === Gdk.KEY_Escape && this.textDraft) {
+                this.textDraft = null; this.text.text = ''; this.setTool('move'); return true;
+            }
             if (key === Gdk.KEY_Escape) { this.window.close(); return true; }
             if (!editingText && [Gdk.KEY_Delete, Gdk.KEY_BackSpace].includes(key) && this.selected !== null) {
                 this.document.delete(this.selected); this.selected = null; this._update(); return true;
@@ -177,7 +211,7 @@ export class ImageEditor {
     retranslate() {
         this.window.title = _('Screenshot editor');
         const names = {move: _('Move image'), select: _('Select annotation'), crop: _('Crop'), arrow: _('Arrow'), rectangle: _('Rectangle'),
-            text: _('Text'), highlight: _('Highlight'), pen: _('Pen'), redact: _('Cover sensitive area'), number: _('Numbered marker')};
+            text: _('Text'), highlight: _('Highlight'), pen: _('Pen'), mosaic: _('Light mosaic'), number: _('Numbered marker')};
         for (const [tool, button] of this.toolButtons)
             button.label = names[tool];
         for (const {widget, message, icon} of this.labels) {
@@ -189,21 +223,94 @@ export class ImageEditor {
         this.size.set_tooltip_text(_('Stroke width / text size'));
         this.zoom.set_tooltip_text(_('Zoom (%)'));
         this.text.placeholder_text = _('Text to add');
+        this.text.set_tooltip_text(_('Click the image to move the text box. Press Enter to finish.'));
+        this.block.set_tooltip_text(_('Mosaic tile size'));
+        this.grayscaleButton.label = _('Black and white');
+        this.blockLabel.label = _('Mosaic tile size');
         this._update();
     }
 
     setTool(tool) {
+        if (this._commitText() === false) {
+            for (const [name, button] of this.toolButtons) button.active = name === this.tool;
+            this.text.grab_focus_without_selecting();
+            return;
+        }
+        const previousTool = this.tool;
         this.tool = tool;
+        this.editingSelectedText = false;
         this.start = this.preview = null;
         this.selected = null;
         for (const [name, button] of this.toolButtons)
             button.active = name === tool;
         this.text.visible = tool === 'text';
-        if (['text', 'number'].includes(tool) && this.size.value < 8)
+        this.block.visible = tool === 'mosaic';
+        this.blockLabel.visible = this.block.visible;
+        this.color.visible = tool !== 'mosaic';
+        this.size.set_range(1, tool === 'mosaic' ? 256 : 72);
+        this.size.set_tooltip_text(tool === 'mosaic' ? _('Mosaic brush thickness') : _('Stroke width / text size'));
+        this.sizeLabel.label = this.size.get_tooltip_text();
+        if (['text', 'number'].includes(tool) && (this.size.value < 8 || previousTool === 'mosaic'))
             this.size.value = 24;
+        else if (tool === 'mosaic')
+            this.size.value = 48;
         else if (!['text', 'number', 'select'].includes(tool) && this.size.value > 16)
             this.size.value = 4;
+        if (tool === 'text') {
+            const c = this.document.state.crop;
+            this.textDraft = {x: c.x + c.width / 4, y: c.y + c.height / 4};
+            this.text.text = '';
+            this._placeText(); this.text.grab_focus();
+        }
+        this.canvas.set_cursor_from_name(tool === 'text' ? 'text' : ['move', 'select'].includes(tool) ? 'default' : 'crosshair');
         this._update();
+    }
+
+    _textPreview() {
+        if (!this.textDraft || !this.text.text.trim()) return null;
+        const {x, y} = this.textDraft;
+        return {type: 'text', x, y, x2: x, y2: y, text: this.text.text,
+            color: this._color(), width: this.size.value, points: []};
+    }
+
+    _commitText() {
+        if (!this.textDraft) return null;
+        const preview = this._textPreview();
+        let id = null;
+        if (preview) {
+            try { id = this.document.add(preview); }
+            catch { this.toast(_('Annotation limit reached. Undo a mark before adding another.')); return false; }
+        }
+        this.textDraft = null;
+        this.text.visible = false;
+        this.text.text = '';
+        return id;
+    }
+
+    _color() {
+        const rgba = this.color.get_rgba();
+        return '#' + [rgba.red, rgba.green, rgba.blue].map(v =>
+            Math.round(v * 255).toString(16).padStart(2, '0')).join('');
+    }
+
+    _placeText() {
+        if (!this.canvas || !this.text.visible) return;
+        const mark = this.textDraft ?? this.document.state.annotations.find(a => a.id === this.selected);
+        if (!mark || mark.type && mark.type !== 'text') return;
+        const c = this.document.state.crop, t = this._transform();
+        const fontSize = Math.max(12, Math.min(48, this.size.value * t.scale));
+        this.text.margin_start = Math.max(0, Math.min(Math.round(t.x + (mark.x - c.x) * t.scale),
+            this.canvas.get_width() - fontSize * 8 - 24));
+        this.text.margin_top = Math.max(0, Math.min(Math.round(t.y + (mark.y - c.y) * t.scale),
+            this.canvas.get_height() - fontSize * 1.8));
+        const rgba = this.color.get_rgba();
+        const background = 0.2126 * rgba.red + 0.7152 * rgba.green + 0.0722 * rgba.blue > 0.6 ? '#202124' : '#ffffff';
+        const css = `entry { font-size: ${fontSize}px; color: ${this._color()}; border: 2px solid #3584e4; background-color: ${background}; padding: 4px 6px; }`;
+        if (this._textCss !== css) {
+            if (this.textCss.load_from_string) this.textCss.load_from_string(css);
+            else this.textCss.load_from_data(css, -1);
+            this._textCss = css;
+        }
     }
 
     _transform(width = this.canvas.get_width(), height = this.canvas.get_height()) {
@@ -211,7 +318,7 @@ export class ImageEditor {
     }
 
     _begin(x, y) {
-        this.canvas.grab_focus();
+        if (this.tool !== 'text') this.canvas.grab_focus();
         this.origin = [x, y];
         this.oldPan = [...this.pan];
         const point = imagePoint(this.document.state.crop, this._transform(), x, y);
@@ -222,14 +329,23 @@ export class ImageEditor {
         }
         this.start = point;
         this.points = [point];
+        if (this.tool === 'text') {
+            this.textDraft = {x: point[0], y: point[1]};
+            this.text.visible = true;
+            this._placeText(); this.text.grab_focus_without_selecting();
+            this.start = null;
+            return;
+        }
         if (this.tool === 'select') {
             const selected = this.document.state.annotations.find(a => a.id === this.selected);
             const bounds = selected && annotationBounds(selected);
             this.resizing = bounds && Math.hypot(point[0] - bounds.x - bounds.width,
                 point[1] - bounds.y - bounds.height) < 10 / this._transform().scale;
             if (!this.resizing) this.selected = this.document.hit(...point, 6 / this._transform().scale);
+            this.editingSelectedText = !this.resizing;
             this._loadSelected();
             this._update();
+            if (this.text.visible) this.text.grab_focus();
         }
     }
 
@@ -244,13 +360,13 @@ export class ImageEditor {
         } else {
             const end = this.document.point(...imagePoint(this.document.state.crop, this._transform(),
                 this.origin[0] + dx, this.origin[1] + dy));
-            if (this.tool === 'pen' && this.points.length < 1024)
+            if (['pen', 'mosaic'].includes(this.tool) && this.points.length < 1024)
                 this.points.push(end);
             const rgba = this.color.get_rgba();
             const color = '#' + [rgba.red, rgba.green, rgba.blue].map(v =>
                 Math.round(v * 255).toString(16).padStart(2, '0')).join('');
             this.preview = {type: this.tool, x: this.start[0], y: this.start[1], x2: end[0], y2: end[1],
-                width: this.size.value, color, text: this.text.text, points: this.points,
+                width: this.size.value, color, text: this.text.text, points: this.points, block: this.block.value,
                 number: Math.max(0, ...this.document.state.annotations.filter(a => a.type === 'number').map(a => a.number)) + 1};
         }
         this.canvas.queue_draw();
@@ -283,9 +399,11 @@ export class ImageEditor {
         this.deleteButton.sensitive = this.selected !== null;
         this.undoButton.sensitive = this.document.past.length > 0;
         this.redoButton.sensitive = this.document.future.length > 0;
+        this.grayscaleButton.active = this.document.state.grayscale;
         const c = this.document.state.crop;
         this.dimensions.label = format(_('Image · %d × %d'), c.width, c.height);
         this.canvas.queue_draw();
+        this._placeText();
     }
 
     _loadSelected() {
@@ -293,18 +411,24 @@ export class ImageEditor {
         this.loadingStyle = true;
         if (a) {
             const rgba = new Gdk.RGBA(); rgba.parse(a.color); this.color.set_rgba(rgba);
-            this.size.value = a.width; this.text.text = a.text;
+            this.size.set_range(1, a.type === 'mosaic' ? 256 : 72);
+            this.size.value = a.width; this.text.text = a.text; this.block.value = a.block;
         }
-        this.text.visible = a?.type === 'text';
+        this.text.visible = a?.type === 'text' && this.editingSelectedText;
+        this.block.visible = a?.type === 'mosaic';
+        this.blockLabel.visible = this.block.visible;
+        this.color.visible = a?.type !== 'mosaic';
+        this.sizeLabel.label = a?.type === 'mosaic' ? _('Mosaic brush thickness') : _('Stroke width / text size');
         this.loadingStyle = false;
     }
 
     _styleSelected() {
+        this._placeText();
         if (this.loadingStyle || this.tool !== 'select' || this.selected === null) return;
         const rgba = this.color.get_rgba();
         const color = '#' + [rgba.red, rgba.green, rgba.blue].map(v =>
             Math.round(v * 255).toString(16).padStart(2, '0')).join('');
-        this.document.update(this.selected, {color, width: this.size.value, text: this.text.text});
+        this.document.update(this.selected, {color, width: this.size.value, text: this.text.text, block: this.block.value});
         this._update();
     }
 
@@ -315,6 +439,7 @@ export class ImageEditor {
             return;
         this.copyButton.sensitive = false;
         try {
+            if (this._commitText() === false) return;
             await this.onCopy(exportPng(this.pixbuf, this.document.state));
             if (!this.cancel.is_cancelled())
                 this.toast(_('Edited image copied. Paste it into your application.'));
@@ -329,7 +454,7 @@ export class ImageEditor {
     async pin() {
         if (!this.pinButton.sensitive) return;
         this.pinButton.sensitive = false;
-        try { await this.onPin(exportPng(this.pixbuf, this.document.state)); }
+        try { if (this._commitText() === false) return; await this.onPin(exportPng(this.pixbuf, this.document.state)); }
         catch { if (!this.cancel.is_cancelled()) this.toast(_('Could not pin this image.')); }
         finally { this.pinButton.sensitive = true; }
     }
@@ -337,6 +462,7 @@ export class ImageEditor {
     async recognizeText() {
         if (this.ocrDialog) { this.ocrDialog.present(); return; }
         if (!this.ocr.program) { this.toast(_('Install Tesseract OCR to recognize text.')); return; }
+        if (this._commitText() === false) return;
         const dialog = new Adw.Window({transient_for: this.window, modal: true, default_width: 640,
             default_height: 420, title: _('Copy text from image')});
         this.ocrDialog = dialog;
@@ -460,6 +586,7 @@ export class ImageEditor {
     }
 
     saveTo(file) {
+        if (this._commitText() === false) return Promise.reject(new Error('Annotation limit reached'));
         const bytes = new GLib.Bytes(exportPng(this.pixbuf, this.document.state));
         return new Promise((resolve, reject) => {
             file.replace_contents_bytes_async(bytes, null, false, Gio.FileCreateFlags.PRIVATE,

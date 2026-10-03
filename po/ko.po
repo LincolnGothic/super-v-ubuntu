@@ -32,14 +32,23 @@ msgstr "동물"
 msgid "Animals & Nature"
 msgstr "동물과 자연"
 
+msgid "Annotation limit reached. Undo a mark before adding another."
+msgstr "주석 한도에 도달했습니다. 주석을 하나 실행 취소한 후 추가하세요."
+
 msgid "Appearance"
 msgstr "외관"
 
 msgid "Apps using Ctrl+Shift+V (comma-separated)"
 msgstr "Ctrl+Shift+V를 사용하는 앱(쉼표로 구분)"
 
+msgid "Arrow"
+msgstr "화살표"
+
 msgid "Arrows"
 msgstr "화살표"
+
+msgid "Black and white"
+msgstr "흑백 필터"
 
 msgid "Capture clipboard history"
 msgstr "클립보드 기록 수집"
@@ -50,8 +59,14 @@ msgstr "화면 중앙"
 msgid "Changes Super V immediately. Language names stay in their native form."
 msgstr "Super V의 언어가 즉시 변경됩니다. 언어 이름은 각 언어의 원래 표기로 표시됩니다."
 
+msgid "Choose a folder, or use the last saved location."
+msgstr "폴더를 선택하거나 마지막 저장 위치를 사용하세요."
+
 msgid "Choose files"
 msgstr "파일 선택"
+
+msgid "Choose folder"
+msgstr "폴더 선택"
 
 msgid "Classic"
 msgstr "기본"
@@ -71,6 +86,9 @@ msgstr "고정되지 않은 항목 지우기"
 msgid "Clear unpinned history"
 msgstr "고정되지 않은 기록 지우기"
 
+msgid "Click the image to move the text box. Press Enter to finish."
+msgstr "이미지를 클릭하여 입력 상자를 이동하세요. Enter 키를 눌러 완료하세요."
+
 msgid "Clipboard"
 msgstr "클립보드"
 
@@ -80,26 +98,65 @@ msgstr "클립보드가 변경되어 최신 내용을 유지했습니다."
 msgid "Clipboard history"
 msgstr "클립보드 기록"
 
+msgid "Close pinned image"
+msgstr "고정 이미지 닫기"
+
 msgid "Collects copied text and PNG/JPEG images. Images: up to 8 MiB each, 32 MiB total, 8192 pixels per side and 16 megapixels."
 msgstr "복사한 텍스트와 PNG/JPEG 이미지를 기록합니다. 이미지 제한: 개당 8 MiB, 총 32 MiB, 한 변 8192픽셀, 1600만 화소."
+
+msgid "Color"
+msgstr "색상"
 
 msgid "Copied to clipboard. Use your application’s paste shortcut."
 msgstr "클립보드에 복사했습니다. 앱의 붙여넣기 단축키를 사용하세요."
 
+msgid "Copy image"
+msgstr "이미지 복사"
+
+msgid "Copy text"
+msgstr "텍스트 복사"
+
+msgid "Copy text from image"
+msgstr "이미지에서 텍스트 복사"
+
 msgid "Copy text or an image to start your history."
 msgstr "텍스트나 이미지를 복사하면 기록이 시작됩니다."
+
+msgid "Could not copy the text."
+msgstr "텍스트를 복사할 수 없습니다."
+
+msgid "Could not export the image. Crop it to reduce its size."
+msgstr "이미지를 내보낼 수 없습니다. 잘라내어 크기를 줄이세요."
 
 msgid "Could not initialize the extension. Disable and re-enable it."
 msgstr "확장 기능을 초기화할 수 없습니다. 비활성화한 후 다시 활성화하세요."
 
+msgid "Could not load OCR language packs."
+msgstr "OCR 언어 팩을 불러올 수 없습니다."
+
+msgid "Could not open or communicate with the screenshot editor."
+msgstr "스크린샷 편집기를 열거나 통신할 수 없습니다."
+
 msgid "Could not open the screenshot tool. Try Print Screen."
 msgstr "스크린샷 도구를 열 수 없습니다. Print Screen 키를 눌러 보세요."
+
+msgid "Could not pin this image."
+msgstr "이 이미지를 화면에 고정할 수 없습니다."
+
+msgid "Could not pin this image. Close a pinned image or use a smaller image."
+msgstr "고정할 수 없습니다. 고정 이미지를 닫거나 더 작은 이미지를 사용하세요."
 
 msgid "Could not read that GIF. Re-add it in Settings or choose another file."
 msgstr "GIF를 읽을 수 없습니다. 설정에서 다시 추가하거나 다른 파일을 선택하세요."
 
+msgid "Could not save the image."
+msgstr "이미지를 저장할 수 없습니다."
+
 msgid "Could not update local history storage. Check directory permissions."
 msgstr "로컬 기록을 업데이트할 수 없습니다. 디렉터리 권한을 확인하세요."
+
+msgid "Crop"
+msgstr "잘라내기"
 
 msgid "Currency"
 msgstr "통화"
@@ -110,11 +167,26 @@ msgstr "어두운색"
 msgid "Default"
 msgstr "기본"
 
+msgid "Default save folder"
+msgstr "기본 저장 폴더"
+
+msgid "Delete annotation"
+msgstr "주석 삭제"
+
 msgid "Delete entry"
 msgstr "항목 삭제"
 
 msgid "Desktop integration"
 msgstr "데스크톱 통합"
+
+msgid "Edit after taking a screenshot"
+msgstr "스크린샷 촬영 후 편집"
+
+msgid "Edit image"
+msgstr "이미지 편집"
+
+msgid "Edited image copied. Paste it into your application."
+msgstr "편집한 이미지를 복사했습니다. 앱에 붙여넣으세요."
 
 msgid "Emoji"
 msgstr "이모지"
@@ -125,6 +197,10 @@ msgstr "저장된 모든 항목 삭제"
 msgid "Excluded apps (comma-separated)"
 msgstr "제외할 앱(쉼표로 구분)"
 
+msgid "Filename pattern"
+msgstr "파일 이름 형식"
+
+#, javascript-format
 msgid "Files skipped: %d. Invalid, too large, or favorites full."
 msgstr "건너뛴 파일: %d개. 유효하지 않거나 너무 크거나 즐겨찾기가 가득 찼습니다."
 
@@ -149,6 +225,9 @@ msgstr "그리스 문자"
 msgid "Happy"
 msgstr "행복"
 
+msgid "Highlight"
+msgstr "강조"
+
 msgid "History exceeds the storage limit."
 msgstr "기록이 저장 용량 제한을 초과합니다."
 
@@ -164,8 +243,15 @@ msgstr "기록, 고정 항목, 최근 이모지는 메모리에만 보관됩니�
 msgid "Image"
 msgstr "이미지"
 
+msgid "Image saved."
+msgstr "이미지를 저장했습니다."
+
+#, javascript-format
 msgid "Image · %d × %d"
 msgstr "이미지 · %d × %d"
+
+msgid "Install Tesseract OCR to recognize text."
+msgstr "텍스트를 인식하려면 Tesseract OCR을 설치하세요."
 
 msgid "Invalid stored history was removed."
 msgstr "유효하지 않은 저장 기록을 삭제했습니다."
@@ -178,6 +264,12 @@ msgstr "언어"
 
 msgid "Light"
 msgstr "밝은색"
+
+msgid "Light mosaic"
+msgstr "밝은 모자이크"
+
+msgid "Loading OCR languages…"
+msgstr "OCR 언어 불러오는 중…"
 
 msgid "Local storage"
 msgstr "로컬 저장소"
@@ -200,11 +292,23 @@ msgstr "약간 어두운색"
 msgid "Medium light"
 msgstr "약간 밝은색"
 
+msgid "Mosaic brush thickness"
+msgstr "모자이크 브러시 굵기"
+
+msgid "Mosaic tile size"
+msgstr "모자이크 타일 크기"
+
+msgid "Move image"
+msgstr "이미지 이동"
+
 msgid "Near mouse pointer"
 msgstr "마우스 포인터 근처"
 
 msgid "Next categories"
 msgstr "다음 카테고리"
+
+msgid "No OCR language packs are installed."
+msgstr "설치된 OCR 언어 팩이 없습니다."
 
 msgid "No items in this filter."
 msgstr "이 필터에 해당하는 항목이 없습니다."
@@ -212,14 +316,42 @@ msgstr "이 필터에 해당하는 항목이 없습니다."
 msgid "No matching items."
 msgstr "일치하는 항목이 없습니다."
 
+msgid "No text was recognized."
+msgstr "인식된 텍스트가 없습니다."
+
+msgid "Numbered marker"
+msgstr "번호 마커"
+
+msgid "OCR failed. Check the language packs or crop a smaller area."
+msgstr "OCR에 실패했습니다. 언어 팩을 확인하거나 더 작은 영역으로 자르세요."
+
+msgid "OCR language"
+msgstr "OCR 언어"
+
+msgid "OCR runs locally. Install the corresponding Tesseract language packs."
+msgstr "OCR은 로컬에서 실행됩니다. 해당 Tesseract 언어 팩을 설치하세요."
+
 msgid "Objects"
 msgstr "사물"
+
+msgid "Opacity"
+msgstr "불투명도"
+
+#, javascript-format
+msgid "Opacity: %d percent"
+msgstr "불투명도: %d퍼센트"
+
+msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
+msgstr "Super V로 촬영한 후 편집기를 엽니다. 기록의 이미지는 언제든 편집할 수 있습니다."
 
 msgid "Paste automatically"
 msgstr "자동으로 붙여넣기"
 
 msgid "Paste overrides (JSON)"
 msgstr "붙여넣기 단축키 개별 설정(JSON)"
+
+msgid "Pen"
+msgstr "펜"
 
 msgid "People & Body"
 msgstr "사람과 신체"
@@ -230,15 +362,20 @@ msgstr "선택기 위치"
 msgid "Pin entry"
 msgstr "항목 고정"
 
+msgid "Pin to screen"
+msgstr "화면에 고정"
+
 msgid "Pinned entries are kept."
 msgstr "고정된 항목은 유지됩니다."
 
 msgid "Pinned entries have a separate maximum of 100. Total text is limited to 2 MiB."
 msgstr "고정된 항목은 별도로 최대 100개까지 저장할 수 있습니다. 전체 텍스트 용량은 2 MiB로 제한됩니다."
 
+#, javascript-format
 msgid "Pinned: %s"
 msgstr "고정됨: %s"
 
+#, javascript-format
 msgid "Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access."
 msgstr "평문 기록: %s. 디렉터리 권한 0700, 파일 권한 0600. 비밀번호 관리자 MIME 힌트와 활성 앱 제외 기능은 완벽하지 않을 수 있습니다. 원격 측정이나 실행 중 네트워크 접근은 없습니다."
 
@@ -254,20 +391,53 @@ msgstr "문장 부호"
 msgid "Recent"
 msgstr "최근 사용"
 
+msgid "Recognize text"
+msgstr "텍스트 인식"
+
+msgid "Recognizing text…"
+msgstr "텍스트 인식 중…"
+
+msgid "Rectangle"
+msgstr "사각형"
+
+msgid "Redo"
+msgstr "다시 실행"
+
 msgid "Remember after logout"
 msgstr "로그아웃 후에도 유지"
 
 msgid "Remove favorite (keep file)"
 msgstr "즐겨찾기 제거(파일 유지)"
 
+msgid "Reset"
+msgstr "초기화"
+
+msgid "Reset export preferences"
+msgstr "내보내기 설정 초기화"
+
 msgid "Restore clipboard"
 msgstr "클립보드 복원"
+
+msgid "Review the recognized text before copying."
+msgstr "복사하기 전에 인식된 텍스트를 확인하세요."
 
 msgid "Sad"
 msgstr "슬픔"
 
+msgid "Save image"
+msgstr "이미지 저장"
+
 msgid "Screenshot"
 msgstr "스크린샷"
+
+msgid "Screenshot editor"
+msgstr "스크린샷 편집기"
+
+msgid "Screenshot export and OCR"
+msgstr "스크린샷 내보내기 및 OCR"
+
+msgid "Screenshot is too large. Select a smaller area."
+msgstr "스크린샷이 너무 큽니다. 더 작은 영역을 선택하세요."
 
 msgid "Screenshot shortcut (GTK accelerator syntax)"
 msgstr "스크린샷 단축키 (GTK 형식)"
@@ -290,6 +460,9 @@ msgstr "카오모지 검색"
 msgid "Search symbols"
 msgstr "기호 검색"
 
+msgid "Select annotation"
+msgstr "주석 선택"
+
 msgid "Settings"
 msgstr "설정"
 
@@ -299,6 +472,7 @@ msgstr "단축키(GTK 액셀러레이터 문법)"
 msgid "Shortcuts: ctrl-v, ctrl-shift-v, shift-insert, manual."
 msgstr "단축키: ctrl-v, ctrl-shift-v, shift-insert, manual."
 
+#, javascript-format
 msgid "Show more (%d)"
 msgstr "더 보기(%d)"
 
@@ -310,6 +484,9 @@ msgstr "읽을 수 없는 일부 저장된 이미지를 삭제했습니다."
 
 msgid "Stored history could not be read. It has been removed."
 msgstr "저장된 기록을 읽을 수 없어 삭제했습니다."
+
+msgid "Stroke width / text size"
+msgstr "선 굵기 / 글자 크기"
 
 msgid "Super V"
 msgstr "Super V"
@@ -323,6 +500,19 @@ msgstr "놀람"
 msgid "Symbols"
 msgstr "기호"
 
+msgid "Text"
+msgstr "텍스트"
+
+msgid "Text copied. Paste it into your application."
+msgstr "텍스트를 복사했습니다. 앱에 붙여넣으세요."
+
+msgid "Text is empty or exceeds the copy limit."
+msgstr "텍스트가 비어 있거나 복사 제한을 초과했습니다."
+
+msgid "Text to add"
+msgstr "추가할 텍스트"
+
+#, javascript-format
 msgid "Tone: %s"
 msgstr "피부색: %s"
 
@@ -334,6 +524,9 @@ msgstr "끄면 붙여넣기 단축키를 보내지 않고 선택한 항목만 �
 
 msgid "Turning this off removes saved text and images; current memory is retained. Clear history on shutdown takes priority."
 msgstr "끄면 저장된 텍스트와 이미지를 삭제하고 현재 메모리의 기록은 유지합니다. 종료 시 기록 지우기 설정이 우선합니다."
+
+msgid "Undo"
+msgstr "실행 취소"
 
 msgid "Units"
 msgstr "단위"
@@ -350,11 +543,23 @@ msgstr "<Super>v 또는 <Control><Alt>v 같은 단축키를 사용하세요."
 msgid "Use exact desktop application IDs (including .desktop where present) or WM classes. Clipboard origin cannot always be identified."
 msgstr "정확한 데스크톱 앱 ID(해당하는 경우 .desktop 포함) 또는 WM 클래스를 사용하세요. 클립보드의 출처를 항상 식별할 수 있는 것은 아닙니다."
 
+msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
+msgstr "{date}, {time}, {width}, {height}를 사용하고 슬래시는 피하세요."
+
 msgid "You can pin up to 100 entries."
 msgstr "최대 100개 항목을 고정할 수 있습니다."
 
 msgid "Your recently used emoji will appear here."
 msgstr "최근 사용한 이모지가 여기에 표시됩니다."
+
+msgid "Zoom (%)"
+msgstr "확대/축소 (%)"
+
+msgid "Zoom in"
+msgstr "확대"
+
+msgid "Zoom out"
+msgstr "축소"
 
 msgid "adoration"
 msgstr "애정"
@@ -841,189 +1046,3 @@ msgstr "↑↓ 선택 · Enter 붙여넣기 · Esc 닫기 · Ctrl+Tab 전환"
 
 msgid "↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close"
 msgstr "↑↓←→ 선택 · Enter 붙여넣기 · Ctrl+F 검색 · Esc 닫기"
-
-
-msgid "Annotation limit reached. Undo a mark before adding another."
-msgstr "주석 한도에 도달했습니다. 주석을 하나 실행 취소한 후 추가하세요."
-
-msgid "Arrow"
-msgstr "화살표"
-
-msgid "Color"
-msgstr "색상"
-
-msgid "Could not export the image. Crop it to reduce its size."
-msgstr "이미지를 내보낼 수 없습니다. 잘라내어 크기를 줄이세요."
-
-msgid "Could not open or communicate with the screenshot editor."
-msgstr "스크린샷 편집기를 열거나 통신할 수 없습니다."
-
-msgid "Could not save the image."
-msgstr "이미지를 저장할 수 없습니다."
-
-msgid "Cover sensitive area"
-msgstr "민감한 영역 가리기"
-
-msgid "Crop"
-msgstr "잘라내기"
-
-msgid "Edit after taking a screenshot"
-msgstr "스크린샷 촬영 후 편집"
-
-msgid "Edit image"
-msgstr "이미지 편집"
-
-msgid "Edited image copied. Paste it into your application."
-msgstr "편집한 이미지를 복사했습니다. 앱에 붙여넣으세요."
-
-msgid "Highlight"
-msgstr "강조"
-
-msgid "Image saved."
-msgstr "이미지를 저장했습니다."
-
-msgid "Move image"
-msgstr "이미지 이동"
-
-msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
-msgstr "Super V로 촬영한 후 편집기를 엽니다. 기록의 이미지는 언제든 편집할 수 있습니다."
-
-msgid "Pen"
-msgstr "펜"
-
-msgid "Rectangle"
-msgstr "사각형"
-
-msgid "Save image"
-msgstr "이미지 저장"
-
-msgid "Screenshot editor"
-msgstr "스크린샷 편집기"
-
-msgid "Stroke width / text size"
-msgstr "선 굵기 / 글자 크기"
-
-msgid "Text"
-msgstr "텍스트"
-
-msgid "Text to add"
-msgstr "추가할 텍스트"
-
-msgid "Zoom (%)"
-msgstr "확대/축소 (%)"
-
-msgid "Choose a folder, or use the last saved location."
-msgstr "폴더를 선택하거나 마지막 저장 위치를 사용하세요."
-
-msgid "Choose folder"
-msgstr "폴더 선택"
-
-msgid "Close pinned image"
-msgstr "고정 이미지 닫기"
-
-msgid "Copy image"
-msgstr "이미지 복사"
-
-msgid "Copy text"
-msgstr "텍스트 복사"
-
-msgid "Copy text from image"
-msgstr "이미지에서 텍스트 복사"
-
-msgid "Could not copy the text."
-msgstr "텍스트를 복사할 수 없습니다."
-
-msgid "Could not load OCR language packs."
-msgstr "OCR 언어 팩을 불러올 수 없습니다."
-
-msgid "Could not pin this image."
-msgstr "이 이미지를 화면에 고정할 수 없습니다."
-
-msgid "Could not pin this image. Close a pinned image or use a smaller image."
-msgstr "고정할 수 없습니다. 고정 이미지를 닫거나 더 작은 이미지를 사용하세요."
-
-msgid "Default save folder"
-msgstr "기본 저장 폴더"
-
-msgid "Delete annotation"
-msgstr "주석 삭제"
-
-msgid "Filename pattern"
-msgstr "파일 이름 형식"
-
-msgid "Install Tesseract OCR to recognize text."
-msgstr "텍스트를 인식하려면 Tesseract OCR을 설치하세요."
-
-msgid "Loading OCR languages…"
-msgstr "OCR 언어 불러오는 중…"
-
-msgid "No OCR language packs are installed."
-msgstr "설치된 OCR 언어 팩이 없습니다."
-
-msgid "No text was recognized."
-msgstr "인식된 텍스트가 없습니다."
-
-msgid "Numbered marker"
-msgstr "번호 마커"
-
-msgid "OCR failed. Check the language packs or crop a smaller area."
-msgstr "OCR에 실패했습니다. 언어 팩을 확인하거나 더 작은 영역으로 자르세요."
-
-msgid "OCR language"
-msgstr "OCR 언어"
-
-msgid "OCR runs locally. Install the corresponding Tesseract language packs."
-msgstr "OCR은 로컬에서 실행됩니다. 해당 Tesseract 언어 팩을 설치하세요."
-
-msgid "Opacity"
-msgstr "불투명도"
-
-#, javascript-format
-
-msgid "Opacity: %d percent"
-msgstr "불투명도: %d퍼센트"
-
-msgid "Pin to screen"
-msgstr "화면에 고정"
-
-msgid "Recognize text"
-msgstr "텍스트 인식"
-
-msgid "Recognizing text…"
-msgstr "텍스트 인식 중…"
-
-msgid "Redo"
-msgstr "다시 실행"
-
-msgid "Reset"
-msgstr "초기화"
-
-msgid "Reset export preferences"
-msgstr "내보내기 설정 초기화"
-
-msgid "Review the recognized text before copying."
-msgstr "복사하기 전에 인식된 텍스트를 확인하세요."
-
-msgid "Screenshot export and OCR"
-msgstr "스크린샷 내보내기 및 OCR"
-
-msgid "Select annotation"
-msgstr "주석 선택"
-
-msgid "Text copied. Paste it into your application."
-msgstr "텍스트를 복사했습니다. 앱에 붙여넣으세요."
-
-msgid "Text is empty or exceeds the copy limit."
-msgstr "텍스트가 비어 있거나 복사 제한을 초과했습니다."
-
-msgid "Undo"
-msgstr "실행 취소"
-
-msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
-msgstr "{date}, {time}, {width}, {height}를 사용하고 슬래시는 피하세요."
-
-msgid "Zoom in"
-msgstr "확대"
-
-msgid "Zoom out"
-msgstr "축소"

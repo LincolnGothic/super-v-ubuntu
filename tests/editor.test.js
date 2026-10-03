@@ -90,3 +90,23 @@ test('selection chooses the topmost mark and respects crop clipping', () => {
     doc.crop([20, 20], [80, 80]); assert.equal(doc.hit(10, 10), null);
     assert.throws(() => doc.transformed(first, Infinity, 0));
 });
+
+test('light mosaic brush validates independent tile size and large stroke thickness', () => {
+    const doc = new EditorDocument(400, 200);
+    const id = doc.add({...mark, type: 'mosaic', width: 200, block: 24, points: [[40, 40], [50, 80]]});
+    assert.equal(doc.state.annotations[0].width, 200);
+    assert.equal(doc.state.annotations[0].block, 24);
+    doc.update(id, {width: 64, block: 4});
+    assert.equal(doc.state.annotations[0].block, 4);
+    for (const patch of [{width: 257}, {block: 0}, {block: 65}, {block: 4.5}])
+        assert.throws(() => doc.add({...mark, type: 'mosaic', ...patch}));
+    doc.undo(); assert.equal(doc.state.annotations[0].width, 200);
+});
+test('black and white filter is undoable without modifying annotations or source coordinates', () => {
+    const doc = new EditorDocument(100, 100);
+    doc.add(mark); doc.toggleGrayscale();
+    assert.equal(doc.state.grayscale, true);
+    assert.equal(doc.state.annotations[0].x, mark.x);
+    doc.undo(); assert.equal(doc.state.grayscale, false);
+    doc.redo(); assert.equal(doc.state.grayscale, true);
+});

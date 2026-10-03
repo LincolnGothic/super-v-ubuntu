@@ -340,7 +340,7 @@ async function controller() {
     const sources = new Map();
     const signals = new Map();
     let signalId = 0;
-    const main = {notify() {}, sessionMode: {isLocked: false, isGreeter: false},
+    const main = {selectors: [], notify() {}, sessionMode: {isLocked: false, isGreeter: false},
         screenshotUI: {connect(name, handler) { signals.set(++signalId, {name, handler}); return signalId; },
             disconnect(id) { signals.delete(id); },
             emit(name) { for (const signal of [...signals.values()]) if (signal.name === name) signal.handler(); },
@@ -353,7 +353,17 @@ async function controller() {
             timeout_add(_priority, _time, callback) { const id = ++signalId + 1000; sources.set(id, callback); return id; },
             idle_add(_priority, callback) { const id = sources.size + 1; sources.set(id, callback); return id; },
             source_remove: id => sources.delete(id)}},
-        'gi://Gio': {default: {}}, 'gi://Meta': {default: {}}, 'gi://Shell': {default: {}},
+        'gi://Gio': {default: {MemoryOutputStream: {new_resizable: () => ({closed: false,
+            close() { this.closed = true; }, is_closed() { return this.closed; },
+            get_data_size: () => pngBytes.length, steal_as_bytes: () => ({get_data: () => pngBytes})})}}},
+        'gi://Meta': {default: {}}, 'gi://Shell': {default: {Screenshot: class {
+            async screenshot_area(...args) { main.area = args.slice(0, 4); await main.capturePromise; }
+        }}},
+        'resource:///org/gnome/shell/ui/screenshot.js': {SelectArea: class {
+            constructor() { main.selectors.push(this); this._grabHelper = {ungrab: () => this.finish(null)}; }
+            selectAsync() { main.opened = (main.opened ?? 0) + 1;
+                return new Promise(resolve => { this.finish = resolve; }); }
+        }},
         'resource:///org/gnome/shell/ui/main.js': main,
         'resource:///org/gnome/shell/ui/modalDialog.js': {State: {OPENED: 1, OPENING: 2}},
         'resource:///org/gnome/shell/extensions/extension.js': {Extension: class {}, gettext: message => message},
@@ -383,6 +393,8 @@ async function controller() {
     const pastes = [];
     c.clipboard = {invalidate() {}, generation: 1, readText: async () => 'old', write: x => writes.push(x),
         writeGif: x => writes.push(x), writeImage: (bytes, mime) => writes.push({bytes, mime})};
+    c.images = {add: () => ({digest: 'a'.repeat(64), mime: 'image/png', bytes: pngBytes.length, width: 64, height: 48}),
+        retain() {}, snapshot: () => new Map()};
     c.gifs = {read: async () => new Uint8Array([1, 2, 3])};
     c.pasteBackend = {paste: x => pastes.push(x), cancel() {}};
     const editors = [];
@@ -566,30 +578,28 @@ test('unreadable GIF leaves the clipboard and paste target untouched', async () 
 });
 
 for (const outcome of ['capture', 'cancel', 'disabled setting', 'clear', 'lock']) {
-    test(`screenshot editor respects ${outcome}`, async () => {
-        const {c, main, tick, editors} = await controller();
-        c.takeScreenshot();
-        tick();
-        if (outcome !== 'cancel') main.screenshotUI.emit('screenshot-taken');
+    test(`manual area editor respects ${outcome}`, async () => {
+        const {c, main, tick, editors, writes} = await controller();
+        c.takeScreenshot(); tick();
         if (outcome === 'disabled setting') c.settings.get_boolean = key => key !== 'edit-after-screenshot';
-        main.screenshotUI.emit('closed');
+        main.selectors[0].finish(outcome === 'cancel' ? null : {x: 5, y: 7, width: 64, height: 48});
         if (outcome === 'clear') c.clear(true);
         if (outcome === 'lock') { main.sessionMode.isLocked = true; c._cancelScreenshot(); }
-        tick();
-        await settle();
+        await settle(); tick(); await settle();
         assert.equal(editors.length, outcome === 'capture' ? 1 : 0);
+        assert.equal(writes.length, ['capture', 'disabled setting'].includes(outcome) ? 1 : 0);
+        if (outcome === 'capture') assert.deepEqual(main.area, [5, 7, 64, 48]);
     });
 }
-test('clear during screenshot transfer prevents the editor reopening', async () => {
-    const {c, main, tick, editors} = await controller();
+test('clear during native capture prevents clipboard and editor writes', async () => {
+    const {c, main, tick, editors, writes} = await controller();
     let resolve;
-    c.clipboard.readImage = () => new Promise(done => { resolve = done; });
+    main.capturePromise = new Promise(done => { resolve = done; });
     c.takeScreenshot(); tick();
-    main.screenshotUI.emit('screenshot-taken'); main.screenshotUI.emit('closed'); tick();
-    c.clear(true);
-    resolve({bytes: pngBytes, mime: 'image/png'});
-    await settle();
-    assert.equal(editors.length, 0);
+    main.selectors[0].finish({x: 0, y: 0, width: 64, height: 48});
+    await settle(); tick(); await settle();
+    c.clear(true); resolve(); await settle();
+    assert.equal(editors.length, 0); assert.equal(writes.length, 0);
 });
 test('editing a history image opens its original without pasting or replacing it', async () => {
     const {c, editors, writes, pastes} = await controller();
@@ -602,17 +612,19 @@ test('editing a history image opens its original without pasting or replacing it
     assert.equal(c.history.entries[0], entry);
 });
 
-test('GNOME 46 closed-before-saved ordering still opens the editor', async () => {
+test('every capture has a new selector and cancelled selection cannot adopt later Print Screen', async () => {
     const {c, main, tick, editors} = await controller();
-    c.takeScreenshot(); tick();
-    main.screenshotUI.emit('closed');
-    main.screenshotUI.emit('screenshot-taken'); tick();
-    await settle(); assert.equal(editors.length, 1);
-});
-test('cancelled capture cannot adopt a later native screenshot', async () => {
-    const {c, main, tick, editors} = await controller();
-    c.takeScreenshot(); tick(); main.screenshotUI.emit('closed');
-    main.screenshotUI.visible = true; main.screenshotUI.emit('notify::visible');
-    main.screenshotUI.emit('screenshot-taken'); tick(); await settle();
+    c.takeScreenshot(); tick(); const first = main.selectors[0];
+    c.takeScreenshot(); tick(); const second = main.selectors[1];
+    assert.notEqual(first, second);
+    first.finish({x: 0, y: 0, width: 64, height: 48});
+    second.finish(null); await settle(); tick(); await settle();
+    main.screenshotUI.emit('screenshot-taken');
     assert.equal(editors.length, 0);
+});
+test('an oversized selection is rejected before allocating its capture', async () => {
+    const {c, main, tick, writes} = await controller();
+    c.takeScreenshot(); tick(); main.selectors[0].finish({x: 0, y: 0, width: 8192, height: 8192});
+    await settle(); tick(); await settle();
+    assert.equal(main.area, undefined); assert.equal(writes.length, 0);
 });
