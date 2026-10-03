@@ -57,7 +57,13 @@ msgstr ""
 msgid "Changes Super V immediately. Language names stay in their native form."
 msgstr ""
 
+msgid "Choose a folder, or use the last saved location."
+msgstr ""
+
 msgid "Choose files"
+msgstr ""
+
+msgid "Choose folder"
 msgstr ""
 
 msgid "Classic"
@@ -87,6 +93,9 @@ msgstr ""
 msgid "Clipboard history"
 msgstr ""
 
+msgid "Close pinned image"
+msgstr ""
+
 msgid "Collects copied text and PNG/JPEG images. Images: up to 8 MiB each, 32 MiB total, 8192 pixels per side and 16 megapixels."
 msgstr ""
 
@@ -96,7 +105,19 @@ msgstr ""
 msgid "Copied to clipboard. Use your application’s paste shortcut."
 msgstr ""
 
+msgid "Copy image"
+msgstr ""
+
+msgid "Copy text"
+msgstr ""
+
+msgid "Copy text from image"
+msgstr ""
+
 msgid "Copy text or an image to start your history."
+msgstr ""
+
+msgid "Could not copy the text."
 msgstr ""
 
 msgid "Could not export the image. Crop it to reduce its size."
@@ -105,10 +126,19 @@ msgstr ""
 msgid "Could not initialize the extension. Disable and re-enable it."
 msgstr ""
 
+msgid "Could not load OCR language packs."
+msgstr ""
+
 msgid "Could not open or communicate with the screenshot editor."
 msgstr ""
 
 msgid "Could not open the screenshot tool. Try Print Screen."
+msgstr ""
+
+msgid "Could not pin this image."
+msgstr ""
+
+msgid "Could not pin this image. Close a pinned image or use a smaller image."
 msgstr ""
 
 msgid "Could not read that GIF. Re-add it in Settings or choose another file."
@@ -135,6 +165,12 @@ msgstr ""
 msgid "Default"
 msgstr ""
 
+msgid "Default save folder"
+msgstr ""
+
+msgid "Delete annotation"
+msgstr ""
+
 msgid "Delete entry"
 msgstr ""
 
@@ -157,6 +193,9 @@ msgid "Erase all saved items"
 msgstr ""
 
 msgid "Excluded apps (comma-separated)"
+msgstr ""
+
+msgid "Filename pattern"
 msgstr ""
 
 #, javascript-format
@@ -209,6 +248,9 @@ msgstr ""
 msgid "Image · %d × %d"
 msgstr ""
 
+msgid "Install Tesseract OCR to recognize text."
+msgstr ""
+
 msgid "Invalid stored history was removed."
 msgstr ""
 
@@ -219,6 +261,9 @@ msgid "Language"
 msgstr ""
 
 msgid "Light"
+msgstr ""
+
+msgid "Loading OCR languages…"
 msgstr ""
 
 msgid "Local storage"
@@ -251,13 +296,38 @@ msgstr ""
 msgid "Next categories"
 msgstr ""
 
+msgid "No OCR language packs are installed."
+msgstr ""
+
 msgid "No items in this filter."
 msgstr ""
 
 msgid "No matching items."
 msgstr ""
 
+msgid "No text was recognized."
+msgstr ""
+
+msgid "Numbered marker"
+msgstr ""
+
+msgid "OCR failed. Check the language packs or crop a smaller area."
+msgstr ""
+
+msgid "OCR language"
+msgstr ""
+
+msgid "OCR runs locally. Install the corresponding Tesseract language packs."
+msgstr ""
+
 msgid "Objects"
+msgstr ""
+
+msgid "Opacity"
+msgstr ""
+
+#, javascript-format
+msgid "Opacity: %d percent"
 msgstr ""
 
 msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
@@ -279,6 +349,9 @@ msgid "Picker position"
 msgstr ""
 
 msgid "Pin entry"
+msgstr ""
+
+msgid "Pin to screen"
 msgstr ""
 
 msgid "Pinned entries are kept."
@@ -307,7 +380,16 @@ msgstr ""
 msgid "Recent"
 msgstr ""
 
+msgid "Recognize text"
+msgstr ""
+
+msgid "Recognizing text…"
+msgstr ""
+
 msgid "Rectangle"
+msgstr ""
+
+msgid "Redo"
 msgstr ""
 
 msgid "Remember after logout"
@@ -316,7 +398,16 @@ msgstr ""
 msgid "Remove favorite (keep file)"
 msgstr ""
 
+msgid "Reset"
+msgstr ""
+
+msgid "Reset export preferences"
+msgstr ""
+
 msgid "Restore clipboard"
+msgstr ""
+
+msgid "Review the recognized text before copying."
 msgstr ""
 
 msgid "Sad"
@@ -329,6 +420,9 @@ msgid "Screenshot"
 msgstr ""
 
 msgid "Screenshot editor"
+msgstr ""
+
+msgid "Screenshot export and OCR"
 msgstr ""
 
 msgid "Screenshot shortcut (GTK accelerator syntax)"
@@ -350,6 +444,9 @@ msgid "Search kaomoji"
 msgstr ""
 
 msgid "Search symbols"
+msgstr ""
+
+msgid "Select annotation"
 msgstr ""
 
 msgid "Settings"
@@ -392,6 +489,12 @@ msgstr ""
 msgid "Text"
 msgstr ""
 
+msgid "Text copied. Paste it into your application."
+msgstr ""
+
+msgid "Text is empty or exceeds the copy limit."
+msgstr ""
+
 msgid "Text to add"
 msgstr ""
 
@@ -406,6 +509,9 @@ msgid "Turn off to copy selections without sending a paste shortcut."
 msgstr ""
 
 msgid "Turning this off removes saved text and images; current memory is retained. Clear history on shutdown takes priority."
+msgstr ""
+
+msgid "Undo"
 msgstr ""
 
 msgid "Units"
@@ -423,6 +529,9 @@ msgstr ""
 msgid "Use exact desktop application IDs (including .desktop where present) or WM classes. Clipboard origin cannot always be identified."
 msgstr ""
 
+msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
+msgstr ""
+
 msgid "You can pin up to 100 entries."
 msgstr ""
 
@@ -430,6 +539,12 @@ msgid "Your recently used emoji will appear here."
 msgstr ""
 
 msgid "Zoom (%)"
+msgstr ""
+
+msgid "Zoom in"
+msgstr ""
+
+msgid "Zoom out"
 msgstr ""
 
 msgid "adoration"

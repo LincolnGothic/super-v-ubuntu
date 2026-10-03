@@ -7,15 +7,18 @@ import GioUnix from 'gi://GioUnix';
 import GLib from 'gi://GLib';
 import System from 'system';
 import {gettext as _, initTranslations} from './translations.js';
-import {format} from './core/localization.js';
-import {EditorDocument, imageTransform, imagePoint} from './core/editor.js';
+import {format, N_} from './core/localization.js';
+import {EditorDocument, annotationBounds, imageTransform, imagePoint} from './core/editor.js';
 import {MAX_IMAGE_BYTES} from './core/image.js';
 import {decodeImage, drawDocument, exportPng} from './editor-render.js';
+import {DEFAULT_EXPORT_PATTERN, exportFilename, MAX_OCR_TEXT_BYTES, OCR_LANGUAGES} from './core/export.js';
+import {OcrEngine} from './ocr.js';
+import {writePipe} from './process.js';
 
 export const directory = Gio.File.new_for_uri(import.meta.url).get_parent();
 
 export class ImageEditor {
-    constructor(bytes, mime, application = null, onCopy = () => {}) {
+    constructor(bytes, mime, application = null, onCopy = () => {}, callbacks = {}) {
         this.cancel = new Gio.Cancellable();
         const source = Gio.SettingsSchemaSource.new_from_directory(directory.get_child('schemas').get_path(),
             Gio.SettingsSchemaSource.get_default(), false);
@@ -24,6 +27,9 @@ export class ImageEditor {
         this.pixbuf = decodeImage(bytes, mime);
         this.document = new EditorDocument(this.pixbuf.width, this.pixbuf.height);
         this.onCopy = onCopy;
+        this.onPin = callbacks.onPin ?? (() => {});
+        this.onText = callbacks.onText ?? (() => {});
+        this.ocr = callbacks.ocr ?? new OcrEngine();
         this.tool = 'move';
         this.pan = [0, 0];
         this.labels = [];
@@ -41,22 +47,30 @@ export class ImageEditor {
             this.labels.push({widget: button, message, icon});
             return button;
         };
-        this.undoButton = action('Undo', () => { this.document.undo(); this._update(); }, 'edit-undo-symbolic');
-        this.redoButton = action('Redo', () => { this.document.redo(); this._update(); }, 'edit-redo-symbolic');
+        this.undoButton = action(N_('Undo'), () => { this.document.undo(); this._update(); }, 'edit-undo-symbolic');
+        this.redoButton = action(N_('Redo'), () => { this.document.redo(); this._update(); }, 'edit-redo-symbolic');
         header.pack_start(this.undoButton);
         header.pack_start(this.redoButton);
-        this.copyButton = action('Copy image', () => this.copy());
-        this.saveButton = action('Save image', () => this.save());
+        this.copyButton = action(N_('Copy image'), () => this.copy());
+        this.saveButton = action(N_('Save image'), () => this.save());
+        this.pinButton = action(N_('Pin to screen'), () => this.pin(), 'view-pin-symbolic');
+        this.ocrButton = action(N_('Copy text from image'), () => this.recognizeText(), 'edit-find-symbolic');
+        header.pack_end(this.pinButton);
+        header.pack_end(this.ocrButton);
+        this.deleteButton = action(N_('Delete annotation'), () => {
+            this.document.delete(this.selected); this.selected = null; this._update();
+        }, 'edit-delete-symbolic');
+        header.pack_start(this.deleteButton);
         header.pack_end(this.saveButton);
         header.pack_end(this.copyButton);
         const toolbar = new Gtk.FlowBox({selection_mode: Gtk.SelectionMode.NONE,
-            max_children_per_line: 8, min_children_per_line: 4, column_spacing: 4, row_spacing: 4,
+            max_children_per_line: 5, min_children_per_line: 2, column_spacing: 4, row_spacing: 4,
             margin_start: 12, margin_end: 12});
         root.append(toolbar);
         this.toolButtons = new Map();
-        for (const [tool, message] of [['move', _('Move image')], ['crop', _('Crop')],
+        for (const [tool, message] of [['move', _('Move image')], ['select', _('Select annotation')], ['crop', _('Crop')],
             ['arrow', _('Arrow')], ['rectangle', _('Rectangle')], ['text', _('Text')],
-            ['highlight', _('Highlight')], ['pen', _('Pen')], ['redact', _('Cover sensitive area')]]) {
+            ['highlight', _('Highlight')], ['pen', _('Pen')], ['redact', _('Cover sensitive area')], ['number', _('Numbered marker')]]) {
             const button = new Gtk.ToggleButton({label: message});
             button.connect('clicked', () => this.setTool(tool));
             toolbar.insert(button, -1);
@@ -76,6 +90,9 @@ export class ImageEditor {
         options.append(this.size);
         this.text = new Gtk.Entry({hexpand: true, max_length: 500, placeholder_text: _('Text to add')});
         options.append(this.text);
+        this.color.connect('color-set', () => this._styleSelected());
+        this.size.connect('value-changed', () => this._styleSelected());
+        this.text.connect('changed', () => this._styleSelected());
         this.zoom = Gtk.SpinButton.new_with_range(25, 400, 25);
         this.zoom.value = 100;
         this.zoom.set_tooltip_text(_('Zoom (%)'));
@@ -94,6 +111,17 @@ export class ImageEditor {
             cr.translate(t.x, t.y);
             cr.scale(t.scale, t.scale);
             drawDocument(cr, this.pixbuf, this.document.state, this.preview);
+            const selected = this.preview?.id ? this.preview : this.document.state.annotations.find(a => a.id === this.selected);
+            if (selected && this.tool === 'select') {
+                const b = annotationBounds(selected);
+                cr.setSourceRGB(0.2, 0.65, 1);
+                cr.setLineWidth(2 / t.scale);
+                cr.rectangle(b.x - this.document.state.crop.x, b.y - this.document.state.crop.y, b.width, b.height);
+                cr.stroke();
+                cr.rectangle(b.x + b.width - this.document.state.crop.x - 4 / t.scale,
+                    b.y + b.height - this.document.state.crop.y - 4 / t.scale, 8 / t.scale, 8 / t.scale);
+                cr.fill();
+            }
             cr.restore();
         });
         const drag = new Gtk.GestureDrag({button: 1});
@@ -120,6 +148,9 @@ export class ImageEditor {
                 if ([Gdk.KEY_s, Gdk.KEY_S].includes(key)) { this.save(); return true; }
             }
             if (key === Gdk.KEY_Escape) { this.window.close(); return true; }
+            if (!editingText && [Gdk.KEY_Delete, Gdk.KEY_BackSpace].includes(key) && this.selected !== null) {
+                this.document.delete(this.selected); this.selected = null; this._update(); return true;
+            }
             return false;
         });
         this.window.add_controller(keys);
@@ -131,6 +162,8 @@ export class ImageEditor {
             this.cancel.cancel();
             this.settings.disconnect(this._languageHandler);
             this.dialog?.destroy();
+            this.ocrCancel?.cancel();
+            this.ocrDialog?.destroy();
             this.pixbuf = null;
             return false;
         });
@@ -140,8 +173,8 @@ export class ImageEditor {
 
     retranslate() {
         this.window.title = _('Screenshot editor');
-        const names = {move: _('Move image'), crop: _('Crop'), arrow: _('Arrow'), rectangle: _('Rectangle'),
-            text: _('Text'), highlight: _('Highlight'), pen: _('Pen'), redact: _('Cover sensitive area')};
+        const names = {move: _('Move image'), select: _('Select annotation'), crop: _('Crop'), arrow: _('Arrow'), rectangle: _('Rectangle'),
+            text: _('Text'), highlight: _('Highlight'), pen: _('Pen'), redact: _('Cover sensitive area'), number: _('Numbered marker')};
         for (const [tool, button] of this.toolButtons)
             button.label = names[tool];
         for (const {widget, message, icon} of this.labels) {
@@ -159,14 +192,15 @@ export class ImageEditor {
     setTool(tool) {
         this.tool = tool;
         this.start = this.preview = null;
+        this.selected = null;
         for (const [name, button] of this.toolButtons)
             button.active = name === tool;
         this.text.visible = tool === 'text';
-        if (tool === 'text' && this.size.value < 8)
+        if (['text', 'number'].includes(tool) && this.size.value < 8)
             this.size.value = 24;
-        else if (tool !== 'text' && this.size.value > 16)
+        else if (!['text', 'number', 'select'].includes(tool) && this.size.value > 16)
             this.size.value = 4;
-        this.canvas.queue_draw();
+        this._update();
     }
 
     _transform(width = this.canvas.get_width(), height = this.canvas.get_height()) {
@@ -185,12 +219,24 @@ export class ImageEditor {
         }
         this.start = point;
         this.points = [point];
+        if (this.tool === 'select') {
+            const selected = this.document.state.annotations.find(a => a.id === this.selected);
+            const bounds = selected && annotationBounds(selected);
+            this.resizing = bounds && Math.hypot(point[0] - bounds.x - bounds.width,
+                point[1] - bounds.y - bounds.height) < 10 / this._transform().scale;
+            if (!this.resizing) this.selected = this.document.hit(...point, 6 / this._transform().scale);
+            this._loadSelected();
+            this._update();
+        }
     }
 
     _drag(dx, dy) {
         if (!this.start)
             return;
-        if (this.tool === 'move') {
+        if (this.tool === 'select') {
+            this.preview = this.document.transformed(this.selected, dx / this._transform().scale,
+                dy / this._transform().scale, this.resizing);
+        } else if (this.tool === 'move') {
             this.pan = [this.oldPan[0] + dx, this.oldPan[1] + dy];
         } else {
             const end = this.document.point(...imagePoint(this.document.state.crop, this._transform(),
@@ -201,7 +247,8 @@ export class ImageEditor {
             const color = '#' + [rgba.red, rgba.green, rgba.blue].map(v =>
                 Math.round(v * 255).toString(16).padStart(2, '0')).join('');
             this.preview = {type: this.tool, x: this.start[0], y: this.start[1], x2: end[0], y2: end[1],
-                width: this.size.value, color, text: this.text.text, points: this.points};
+                width: this.size.value, color, text: this.text.text, points: this.points,
+                number: Math.max(0, ...this.document.state.annotations.filter(a => a.type === 'number').map(a => a.number)) + 1};
         }
         this.canvas.queue_draw();
     }
@@ -210,7 +257,9 @@ export class ImageEditor {
         this._drag(dx, dy);
         try {
             if (this.preview) {
-                if (this.tool === 'crop') {
+                if (this.tool === 'select') {
+                    if (dx || dy) this.document.update(this.selected, this.preview);
+                } else if (this.tool === 'crop') {
                     this.document.crop(this.start, [this.preview.x2, this.preview.y2]);
                     this.pan = [0, 0];
                     this.zoom.value = 100;
@@ -226,11 +275,34 @@ export class ImageEditor {
     }
 
     _update() {
+        if (!this.document.state.annotations.some(a => a.id === this.selected)) this.selected = null;
+        if (this.tool === 'select') this._loadSelected();
+        this.deleteButton.sensitive = this.selected !== null;
         this.undoButton.sensitive = this.document.past.length > 0;
         this.redoButton.sensitive = this.document.future.length > 0;
         const c = this.document.state.crop;
         this.dimensions.label = format(_('Image · %d × %d'), c.width, c.height);
         this.canvas.queue_draw();
+    }
+
+    _loadSelected() {
+        const a = this.document.state.annotations.find(mark => mark.id === this.selected);
+        this.loadingStyle = true;
+        if (a) {
+            const rgba = new Gdk.RGBA(); rgba.parse(a.color); this.color.set_rgba(rgba);
+            this.size.value = a.width; this.text.text = a.text;
+        }
+        this.text.visible = a?.type === 'text';
+        this.loadingStyle = false;
+    }
+
+    _styleSelected() {
+        if (this.loadingStyle || this.tool !== 'select' || this.selected === null) return;
+        const rgba = this.color.get_rgba();
+        const color = '#' + [rgba.red, rgba.green, rgba.blue].map(v =>
+            Math.round(v * 255).toString(16).padStart(2, '0')).join('');
+        this.document.update(this.selected, {color, width: this.size.value, text: this.text.text});
+        this._update();
     }
 
     toast(message) { this.overlay.add_toast(new Adw.Toast({title: message})); }
@@ -251,12 +323,114 @@ export class ImageEditor {
         }
     }
 
+    async pin() {
+        if (!this.pinButton.sensitive) return;
+        this.pinButton.sensitive = false;
+        try { await this.onPin(exportPng(this.pixbuf, this.document.state)); }
+        catch { if (!this.cancel.is_cancelled()) this.toast(_('Could not pin this image.')); }
+        finally { this.pinButton.sensitive = true; }
+    }
+
+    async recognizeText() {
+        if (this.ocrDialog) { this.ocrDialog.present(); return; }
+        if (!this.ocr.program) { this.toast(_('Install Tesseract OCR to recognize text.')); return; }
+        const dialog = new Adw.Window({transient_for: this.window, modal: true, default_width: 640,
+            default_height: 420, title: _('Copy text from image')});
+        this.ocrDialog = dialog;
+        this.ocrCancel = new Gio.Cancellable();
+        const root = new Gtk.Box({orientation: Gtk.Orientation.VERTICAL, spacing: 8,
+            margin_start: 12, margin_end: 12, margin_bottom: 12});
+        root.append(new Adw.HeaderBar()); dialog.set_content(root);
+        const controls = new Gtk.Box({spacing: 8}); root.append(controls);
+        const language = new Gtk.DropDown({hexpand: true, tooltip_text: _('OCR language')});
+        controls.append(language);
+        const run = new Gtk.Button({label: _('Recognize text'), sensitive: false}); controls.append(run);
+        const copy = new Gtk.Button({label: _('Copy text'), sensitive: false}); controls.append(copy);
+        const status = new Gtk.Label({label: _('Loading OCR languages…'), wrap: true}); root.append(status);
+        const view = new Gtk.TextView({wrap_mode: Gtk.WrapMode.WORD_CHAR, left_margin: 8, right_margin: 8,
+            top_margin: 8, bottom_margin: 8});
+        const scroll = new Gtk.ScrolledWindow({hexpand: true, vexpand: true}); scroll.set_child(view); root.append(scroll);
+        this.ocrBuffer = view.buffer;
+        this.ocrCopy = copy; this.ocrRun = run; this.ocrLanguage = language; this.ocrStatus = status;
+        let installed = [];
+        const copyText = async selection => {
+            const bounds = selection ? view.buffer.get_selection_bounds() : [];
+            const [start, end] = bounds[0] ? bounds.slice(1) : view.buffer.get_bounds();
+            const text = view.buffer.get_text(start, end, false);
+            if (!text || new TextEncoder().encode(text).length > MAX_OCR_TEXT_BYTES) {
+                status.label = _('Text is empty or exceeds the copy limit.'); return;
+            }
+            try { await this.onText(text); status.label = _('Text copied. Paste it into your application.'); }
+            catch { status.label = _('Could not copy the text.'); }
+        };
+        copy.connect('clicked', () => copyText(false));
+        const keys = new Gtk.EventControllerKey({propagation_phase: Gtk.PropagationPhase.CAPTURE});
+        keys.connect('key-pressed', (_controller, key, _code, modifiers) => {
+            if (modifiers & Gdk.ModifierType.CONTROL_MASK && [Gdk.KEY_c, Gdk.KEY_C].includes(key)) {
+                copyText(true); return true;
+            }
+            if (key === Gdk.KEY_Escape) { dialog.close(); return true; }
+            return false;
+        });
+        dialog.add_controller(keys);
+        const recognize = async () => {
+            this.ocrCancel.cancel(); this.ocrCancel = new Gio.Cancellable();
+            const cancel = this.ocrCancel;
+            run.sensitive = false; copy.sensitive = false; language.sensitive = false;
+            status.label = _('Recognizing text…');
+            try {
+                const selected = installed[language.selected];
+                this.settings.set_string('ocr-language', selected);
+                const text = await this.ocr.recognize(exportPng(this.pixbuf, this.document.state), selected, installed, cancel);
+                if (cancel.is_cancelled() || this.ocrDialog !== dialog) return;
+                view.buffer.set_text(text, -1);
+                copy.sensitive = !!text;
+                status.label = text ? _('Review the recognized text before copying.') : _('No text was recognized.');
+            } catch {
+                if (!cancel.is_cancelled() && this.ocrDialog === dialog)
+                    status.label = _('OCR failed. Check the language packs or crop a smaller area.');
+            } finally {
+                if (!cancel.is_cancelled() && this.ocrDialog === dialog) {
+                    run.sensitive = true; language.sensitive = true;
+                }
+            }
+        };
+        run.connect('clicked', recognize);
+        dialog.connect('close-request', () => {
+            this.ocrCancel.cancel(); this.ocrDialog = null; this.ocrBuffer = null;
+            return false;
+        });
+        dialog.present();
+        try {
+            installed = await this.ocr.languages(this.ocrCancel);
+            if (this.ocrDialog !== dialog || this.ocrCancel.is_cancelled()) return;
+            if (!installed.length) { status.label = _('No OCR language packs are installed.'); return; }
+            language.model = Gtk.StringList.new(installed.map(id => OCR_LANGUAGES.find(option => option.id === id)?.label ?? id));
+            const choice = this.settings.get_string('ocr-language');
+            language.selected = Math.max(0, installed.indexOf(choice));
+            await recognize();
+        } catch {
+            if (this.ocrDialog === dialog) status.label = _('Could not load OCR language packs.');
+        }
+    }
+
     save() {
         if (this.dialog)
             return;
         const dialog = new Gtk.FileChooserNative({title: _('Save image'), transient_for: this.window,
             action: Gtk.FileChooserAction.SAVE, modal: true});
-        dialog.set_current_name('Super V screenshot.png');
+        const now = GLib.DateTime.new_now_local();
+        const c = this.document.state.crop;
+        let filename;
+        try { filename = exportFilename(this.settings.get_string('export-pattern'), {
+            date: now.format('%Y-%m-%d'), time: now.format('%H-%M-%S'), width: c.width, height: c.height}); }
+        catch { filename = exportFilename(DEFAULT_EXPORT_PATTERN, {
+            date: now.format('%Y-%m-%d'), time: now.format('%H-%M-%S'), width: c.width, height: c.height}); }
+        dialog.set_current_name(filename);
+        const folder = this.settings.get_string('export-folder');
+        if (folder) {
+            try { dialog.set_current_folder(Gio.File.new_for_uri(folder)); } catch { /* Ask for a new location. */ }
+        }
         const filter = new Gtk.FileFilter();
         filter.add_mime_type('image/png');
         filter.name = 'PNG';
@@ -286,22 +460,13 @@ export class ImageEditor {
         return new Promise((resolve, reject) => {
             file.replace_contents_bytes_async(bytes, null, false, Gio.FileCreateFlags.PRIVATE,
                 this.cancel, (f, result) => {
-                    try { f.replace_contents_finish(result); resolve(); } catch (error) { reject(error); }
+                    try {
+                        f.replace_contents_finish(result);
+                        this.settings.set_string('export-folder', f.get_parent().get_uri());
+                        resolve();
+                    } catch (error) { reject(error); }
                 });
         });
-    }
-}
-
-async function writeOutput(stream, data, cancel) {
-    let offset = 0;
-    while (offset < data.length) {
-        const chunk = new GLib.Bytes(data.slice(offset, offset + 4096));
-        const written = await new Promise((resolve, reject) => stream.write_bytes_async(chunk,
-            GLib.PRIORITY_DEFAULT, cancel, (s, r) => {
-                try { resolve(s.write_bytes_finish(r)); } catch (error) { reject(error); }
-            }));
-        if (!written) throw new Error('Editor pipe closed');
-        offset += written;
     }
 }
 
@@ -334,10 +499,17 @@ if (ARGV[0] === '--pipe') {
         application.hold();
         readInput().then(bytes => {
             const output = new GioUnix.OutputStream({fd: 1, close_fd: false});
-            const editor = new ImageEditor(bytes, ARGV[1], application, png => {
-                const frame = new TextEncoder().encode(JSON.stringify({png: GLib.base64_encode(png)}) + '\n');
-                return writeOutput(output, frame, editor.cancel);
-            });
+            let pending = Promise.resolve();
+            const send = payload => {
+                const frame = new TextEncoder().encode(JSON.stringify(payload) + '\n');
+                const result = pending.then(() => writePipe(output, frame, editor.cancel));
+                pending = result.catch(() => {}); return result;
+            };
+            const editor = new ImageEditor(bytes, ARGV[1], application,
+                png => send({action: 'copy-image', png: GLib.base64_encode(png)}), {
+                    onPin: png => send({action: 'pin', png: GLib.base64_encode(png)}),
+                    onText: text => send({action: 'copy-text', text}),
+                });
             editor.window.present();
             application.release();
         }).catch(() => System.exit(1));

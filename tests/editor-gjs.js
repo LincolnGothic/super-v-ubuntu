@@ -4,6 +4,10 @@ import Adw from 'gi://Adw';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk?version=4.0';
+import GdkPixbuf from 'gi://GdkPixbuf';
+import {runProcess} from '../extension/process.js';
+import {EditorDocument} from '../extension/core/editor.js';
+import {LineFrames} from '../extension/core/frames.js';
 import System from 'system';
 import {ImageEditor} from '../extension/editor.js';
 import {decodeImage, exportPng} from '../extension/editor-render.js';
@@ -60,6 +64,64 @@ GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
             editor.toolButtons.get(tool).emit('clicked');
             check(editor.tool === tool && editor.toolButtons.get(tool).active, 'Toolbar selection failed');
         }
+        editor.document = new EditorDocument(64, 48);
+        const first = editor.document.add({type: 'rectangle', x: 5, y: 5, x2: 18, y2: 16, color: '#ff0000', width: 2});
+        const later = editor.document.add({type: 'number', x: 40, y: 30, x2: 40, y2: 30, color: '#e01b24', width: 12});
+        editor.setTool('select');
+        const t = editor._transform();
+        editor._begin(t.x + 10 * t.scale, t.y + 10 * t.scale);
+        editor._end(5 * t.scale, 3 * t.scale);
+        check(editor.selected === first && editor.document.state.annotations[0].x === 10,
+            'Select gesture did not move its mark');
+        check(editor.document.state.annotations[1].id === later && editor.document.state.annotations[1].x === 40,
+            'Moving a mark changed a later annotation');
+        editor._begin(t.x + 23 * t.scale, t.y + 19 * t.scale);
+        editor._end(4 * t.scale, 4 * t.scale);
+        check(editor.document.state.annotations[0].x2 === 27, 'Resize handle did not resize');
+        editor.deleteButton.emit('clicked');
+        check(editor.document.state.annotations.length === 1 && editor.document.state.annotations[0].number === 1,
+            'Deleting a selected mark removed another mark');
+        editor.undoButton.emit('clicked');
+        check(editor.document.state.annotations.length === 2, 'Annotation delete was not undoable');
+        const marker = decodeImage(exportPng(editor.pixbuf, editor.document.state), 'image/png');
+        check(pixel(marker, 40, 25).some(value => value > 0), 'Numbered marker was not rendered');
+        let pinned;
+        editor.onPin = bytes => { pinned = decodeImage(bytes, 'image/png'); };
+        await editor.pin();
+        check(pinned?.width === 64, 'Pin action did not export annotations');
+        const frames = new LineFrames(100);
+        check(frames.push(new Uint8Array([0xe4])).length === 0 &&
+            frames.push(new Uint8Array([0xbd, 0xa0, 10]))[0] === '你', 'Native Unicode framing failed');
+        const input = new Uint8Array(32768).map((_, i) => i % 251);
+        const echoed = await runProcess(['/usr/bin/cat'], input);
+        check(echoed.length === input.length && echoed.every((v, i) => v === input[i]), 'Native pipe transfer corrupted bytes');
+        for (const options of [{timeoutMs: 20}, {cancel: new Gio.Cancellable()}]) {
+            if (options.cancel) GLib.timeout_add(GLib.PRIORITY_DEFAULT, 20, () => { options.cancel.cancel(); return GLib.SOURCE_REMOVE; });
+            let rejected = false;
+            try { await runProcess(['/usr/bin/sleep', '2'], null, options); } catch { rejected = true; }
+            check(rejected, 'OCR subprocess did not stop on timeout/cancel');
+        }
+        let bounded = false;
+        try { await runProcess(['/usr/bin/head', '-c', '2000', '/dev/zero'], null, {outputLimit: 100}); } catch { bounded = true; }
+        check(bounded, 'OCR output limit did not stop the subprocess');
+        const white = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, false, 8, 640, 140);
+        white.fill(0xffffffff);
+        const textDocument = new EditorDocument(640, 140);
+        textDocument.add({type: 'text', x: 20, y: 75, x2: 20, y2: 75, color: '#000000', width: 38,
+            text: 'SUPER V LOCAL OCR'});
+        let copiedText = '';
+        const ocrEditor = new ImageEditor(exportPng(white, textDocument.state), 'image/png', null, () => {},
+            {onText: text => { copiedText = text; }});
+        try {
+            ocrEditor.window.present();
+            check((await ocrEditor.ocr.languages(null)).includes('eng'), 'English OCR pack is missing');
+            await ocrEditor.recognizeText();
+            check(ocrEditor.ocrCopy.sensitive, `Local OCR failed: ${ocrEditor.ocrStatus.label}`);
+            ocrEditor.ocrCopy.emit('clicked');
+            check(copiedText.includes('SUPER V LOCAL OCR'), 'OCR did not recognize and copy synthetic text');
+            ocrEditor.ocrDialog.close();
+            check(!ocrEditor.ocrDialog && ocrEditor.ocrCancel.is_cancelled(), 'Closing OCR did not cancel work');
+        } finally { ocrEditor.window.close(); }
         const jpeg = decodeImage(GLib.base64_decode(fixtures.jpeg), 'image/jpeg');
         check(jpeg.width === 64 && jpeg.height === 48, 'JPEG input failed');
         const dialog = new Gtk.FileChooserNative({transient_for: editor.window, action: Gtk.FileChooserAction.SAVE});

@@ -911,3 +911,119 @@ msgstr "Texte à ajouter"
 
 msgid "Zoom (%)"
 msgstr "Zoom (%)"
+
+msgid "Choose a folder, or use the last saved location."
+msgstr "Choisissez un dossier ou utilisez le dernier emplacement."
+
+msgid "Choose folder"
+msgstr "Choisir un dossier"
+
+msgid "Close pinned image"
+msgstr "Fermer l’image épinglée"
+
+msgid "Copy image"
+msgstr "Copier l’image"
+
+msgid "Copy text"
+msgstr "Copier le texte"
+
+msgid "Copy text from image"
+msgstr "Copier le texte de l’image"
+
+msgid "Could not copy the text."
+msgstr "Impossible de copier le texte."
+
+msgid "Could not load OCR language packs."
+msgstr "Impossible de charger les langues OCR."
+
+msgid "Could not pin this image."
+msgstr "Impossible d’épingler cette image."
+
+msgid "Could not pin this image. Close a pinned image or use a smaller image."
+msgstr "Impossible d’épingler. Fermez une image épinglée ou utilisez une image plus petite."
+
+msgid "Default save folder"
+msgstr "Dossier d’enregistrement par défaut"
+
+msgid "Delete annotation"
+msgstr "Supprimer l’annotation"
+
+msgid "Filename pattern"
+msgstr "Format du nom de fichier"
+
+msgid "Install Tesseract OCR to recognize text."
+msgstr "Installez Tesseract OCR pour reconnaître le texte."
+
+msgid "Loading OCR languages…"
+msgstr "Chargement des langues OCR…"
+
+msgid "No OCR language packs are installed."
+msgstr "Aucune langue OCR n’est installée."
+
+msgid "No text was recognized."
+msgstr "Aucun texte reconnu."
+
+msgid "Numbered marker"
+msgstr "Repère numéroté"
+
+msgid "OCR failed. Check the language packs or crop a smaller area."
+msgstr "Échec de l’OCR. Vérifiez les langues ou recadrez une zone plus petite."
+
+msgid "OCR language"
+msgstr "Langue OCR"
+
+msgid "OCR runs locally. Install the corresponding Tesseract language packs."
+msgstr "L’OCR fonctionne localement. Installez les langues Tesseract correspondantes."
+
+msgid "Opacity"
+msgstr "Opacité"
+
+#, javascript-format
+
+msgid "Opacity: %d percent"
+msgstr "Opacité : %d pour cent"
+
+msgid "Pin to screen"
+msgstr "Épingler à l’écran"
+
+msgid "Recognize text"
+msgstr "Reconnaître le texte"
+
+msgid "Recognizing text…"
+msgstr "Reconnaissance du texte…"
+
+msgid "Redo"
+msgstr "Rétablir"
+
+msgid "Reset"
+msgstr "Réinitialiser"
+
+msgid "Reset export preferences"
+msgstr "Réinitialiser les préférences d’exportation"
+
+msgid "Review the recognized text before copying."
+msgstr "Vérifiez le texte reconnu avant de le copier."
+
+msgid "Screenshot export and OCR"
+msgstr "Exportation des captures et OCR"
+
+msgid "Select annotation"
+msgstr "Sélectionner une annotation"
+
+msgid "Text copied. Paste it into your application."
+msgstr "Texte copié. Collez-le dans votre application."
+
+msgid "Text is empty or exceeds the copy limit."
+msgstr "Le texte est vide ou dépasse la limite de copie."
+
+msgid "Undo"
+msgstr "Annuler"
+
+msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
+msgstr "Utilisez {date}, {time}, {width} et {height} ; évitez les barres obliques."
+
+msgid "Zoom in"
+msgstr "Agrandir"
+
+msgid "Zoom out"
+msgstr "Réduire"

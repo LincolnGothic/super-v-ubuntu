@@ -1,6 +1,6 @@
 # Architecture
 
-Super V Ubuntu runs as a GNOME Shell 46/50 ES-module extension. It adds two
+Super V Ubuntu runs as a GNOME Shell 46/48/50 ES-module extension. It adds two
 user-mode keybindings and a reusable, compact St/Clutter shell dialog. There is
 a temporary GTK editor window, without a daemon, Electron runtime, X11 automation, or runtime
 network access. The Debian package installs it at
@@ -78,10 +78,31 @@ fully-qualified emoji test records and English CLDR 48 annotations. Its inputs,
 hashes, generator, and Unicode license are included. Build, test and operation
 are offline; refreshing upstream data is an explicit developer action.
 
-GNOME 46 and 50 are declared in metadata. Tagged source API inspection is
+GNOME 46, 48 and 50 are declared in metadata. Tagged source API inspection is
 recorded in `docs/api-audit.md`. `shell-compat.js` selects current orientation,
 stage event-actor and backend APIs when available, with GNOME 46 fallbacks.
 It also normalizes the unfocused stage returned by older Shell versions.
 These checks do not establish GUI compatibility:
 real GNOME Wayland runtime validation is still required before claiming tested
 desktop support. New versions must undergo an API audit and desktop testing.
+
+
+## Screenshot tools
+
+The editor document stores stable annotation IDs and immutable undo snapshots.
+Selection and transform commits replace only the selected ID; numbering is
+assigned when adding markers. Cairo/Pango renders previews and flattened PNGs;
+selection handles remain outside the export renderer. The pipe bridge validates
+action-specific image/text frames and accumulates bytes before UTF-8 decoding.
+
+`pins.js` keeps at most five Shell chrome overlays. `core/pins.js` limits compressed
+inputs to 32 MiB and clamps geometry to work areas. Preview decoding downsizes to
+1024×1024. Pins hold their original bytes only for Copy and are destroyed on lock,
+clear, source deletion, or disable. Their drag grab and monitor signals are released.
+
+`ocr.js` invokes native Tesseract through `process.js`: argv is fixed except a
+validated installed language ID; PNG input and bounded UTF-8 output use pipes.
+Recognition supports cancellation, 30-second timeouts, and 64 KiB output limits.
+The OCR review buffer is temporary; explicit Copy writes through Shell so clipboard
+ownership survives closing the GTK editor. Filename patterns and folder URIs are
+GSettings preferences. Successful private exports remember their parent folder.

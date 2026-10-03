@@ -2,20 +2,20 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
-v0.1.7 ajoute un éditeur avec recadrage, flèches, rectangles, texte, surlignage, crayon et masquage noir opaque, ainsi que annuler/rétablir, zoom, copie et sauvegarde PNG. Il s’ouvre automatiquement après une capture avec Super V ; désactivez cette option dans Paramètres → Intégration au bureau. Le bouton crayon d’une image de l’historique ou Ctrl+E ouvre aussi l’éditeur. L’exportation ne supprime ni l’original ni les captures enregistrées par GNOME.
+v0.1.8 ajoute des images épinglées à l’écran avec déplacement, zoom et opacité, des repères numérotés, des annotations sélectionnables, déplaçables, redimensionnables et supprimables, ainsi que l’OCR local. Dans l’éditeur, utilisez « Épingler à l’écran » pour une référence ou « Copier le texte de l’image » pour choisir une langue installée, vérifier et modifier le résultat, puis le copier. « Paramètres → Exportation des captures et OCR » règle le dossier, le nom et la langue OCR. L’anglais est installé avec le paquet ; les autres langues nécessitent les paquets Tesseract correspondants. Les images épinglées à l’écran sont distinctes des éléments épinglés de l’historique et se ferment au verrouillage, à l’effacement ou à la désactivation.
 
 v0.1.6 conserve les images PNG/JPEG avec miniatures, épinglage et collage. Le bouton de caméra ou Super+Shift+S ouvre l’outil GNOME pour capturer une zone, une fenêtre ou l’écran. Le raccourci est modifiable ou désactivable dans les paramètres. «Effacer l’historique à l’arrêt» garde le texte, les images, les éléments épinglés et les emojis récents uniquement en mémoire ; ils disparaissent aussi au redémarrage, à la déconnexion ou au rechargement de l’extension. L’historique enregistré est supprimé dès l’activation, mais pas les fichiers de capture de GNOME.
 
 Un sélecteur Super+V inspiré de Windows pour Ubuntu GNOME : historique du presse-papiers, émojis, kaomoji, symboles et GIF locaux favoris. Les données restent sur votre ordinateur, sans télémétrie ni accès réseau à l’exécution.
 
-Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
+Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Debian 13 / GNOME 48 · Wayland · x86-64 & ARM64
 
 ## Première installation
 
-Téléchargez le [paquet v0.1.7](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.7/super-v-ubuntu_0.1.7_all.deb) et ouvrez un terminal dans le dossier contenant le fichier :
+Téléchargez le [paquet v0.1.8](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.8/super-v-ubuntu_0.1.8_all.deb) et ouvrez un terminal dans le dossier contenant le fichier :
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.7_all.deb
+sudo apt install ./super-v-ubuntu_0.1.8_all.deb
 ```
 
 Après l’installation, **enregistrez votre travail, déconnectez-vous puis reconnectez-vous**. Exécutez ces commandes avec votre compte habituel, sans sudo. La première réserve Super+M aux notifications et libère Super+V ; elle remplace tout raccourci de notification personnalisé.
@@ -26,11 +26,11 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-Appuyez sur **Super+V** ; le titre doit afficher **Super V 0.1.7**.
+Appuyez sur **Super+V** ; le titre doit afficher **Super V 0.1.8**.
 
-## Mise à jour vers v0.1.7
+## Mise à jour vers v0.1.8
 
-Téléchargez le paquet ci-dessus et exécutez la même commande apt dans son dossier. Il remplace l’ancienne version, sans désinstallation préalable. Ensuite, **enregistrez votre travail, déconnectez-vous puis reconnectez-vous**, et vérifiez **Super V 0.1.7** dans le titre de **Super+V**. La langue et les raccourcis sont conservés ; l’historique de texte enregistré, les éléments épinglés et les emojis récents sont migrés. L’historique configuré pour être effacé à la déconnexion est supprimé selon ce réglage.
+Téléchargez le paquet ci-dessus et exécutez la même commande apt dans son dossier. Il remplace l’ancienne version, sans désinstallation préalable. Ensuite, **enregistrez votre travail, déconnectez-vous puis reconnectez-vous**, et vérifiez **Super V 0.1.8** dans le titre de **Super+V**. La langue et les raccourcis sont conservés ; l’historique de texte enregistré, les éléments épinglés et les emojis récents sont migrés. L’historique configuré pour être effacé à la déconnexion est supprimé selon ce réglage.
 
 Vérifiez le paquet installé et l’extension chargée par GNOME avec votre compte habituel :
 
@@ -39,9 +39,9 @@ dpkg-query -W super-v-ubuntu
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-Les deux versions doivent indiquer **0.1.7** (le numéro interne de l’extension est 8). Si seul le paquet est à jour, déconnectez-vous puis reconnectez-vous. Pour le paquet système, Path doit être `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`. Si le chemin pointe vers votre dossier personnel, sauvegardez ce dossier UUID et déplacez-le hors du répertoire des extensions, puis reconnectez-vous. Si Super+V ne répond pas, utilisez la commande enable ci-dessus ; s’il ouvre les notifications, vérifiez la commande de raccourci de la première installation. Pour ouvrir directement les paramètres, exécutez `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`.
+Les deux versions doivent indiquer **0.1.8** (le numéro interne de l’extension est 9). Si seul le paquet est à jour, déconnectez-vous puis reconnectez-vous. Pour le paquet système, Path doit être `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`. Si le chemin pointe vers votre dossier personnel, sauvegardez ce dossier UUID et déplacez-le hors du répertoire des extensions, puis reconnectez-vous. Si Super+V ne répond pas, utilisez la commande enable ci-dessus ; s’il ouvre les notifications, vérifiez la commande de raccourci de la première installation. Pour ouvrir directement les paramètres, exécutez `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`.
 
-## Guide des paramètres de v0.1.7
+## Guide des paramètres de v0.1.8
 
 Ouvrez Super+V et cliquez sur l’engrenage dans l’en-tête pour ouvrir les paramètres.
 

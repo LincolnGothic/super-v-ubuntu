@@ -361,6 +361,7 @@ async function controller() {
         [mockPath('popup.js')]: {SuperVPopup: class {}},
         [mockPath('gifs.js')]: {GifLibrary: class {}},
         [mockPath('images.js')]: {ImageLibrary: class {}},
+        [mockPath('pins.js')]: {ScreenPins: class {}},
     };
     const module = await loadModule('extension/extension.js', mocks);
     const c = new module.default();

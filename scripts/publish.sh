@@ -26,7 +26,7 @@ if gh repo view "$task_repo" --json nameWithOwner >/dev/null 2>&1; then
     git push -u origin main
 else
     test -z "$(git remote)" || { printf '%s\n' 'Review existing remotes before creating a repository.' >&2; exit 1; }
-    gh repo create "$task_repo" --public --description 'Local clipboard history and Unicode emoji picker for GNOME Shell 46 and 50' --source . --remote origin --push
+    gh repo create "$task_repo" --public --description 'Local clipboard history and Unicode emoji picker for GNOME Shell 46, 48 and 50' --source . --remote origin --push
 fi
 task_sha=$(git rev-parse HEAD)
 git remote -v
@@ -40,26 +40,12 @@ for task_attempt in 1 2 3 4 5 6 7 8 9 10 11 12; do
 done
 test -n "$task_run" || { printf '%s\n' 'No CI run found; release was not created. Check GitHub Actions.' >&2; exit 1; }
 gh run watch "$task_run" --repo "$task_repo" --exit-status
+task_version=$(node -p "JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version")
+task_tag="v$task_version"
+gh release view "$task_tag" --repo "$task_repo" --json url,isDraft,assets,tagName
 task_temp=$(mktemp -d)
 trap 'rm -rf "$task_temp"' EXIT HUP INT TERM
-git clone --quiet --no-local "$task_root" "$task_temp/source"
-git -C "$task_temp/source" checkout --quiet "$task_sha"
-(cd "$task_temp/source" && make package)
-lintian --fail-on error,warning "$task_temp/super-v-ubuntu_0.1.4_all.deb"
-mkdir -p "$task_root/artifacts"
-cp "$task_temp/super-v-ubuntu_0.1.4_all.deb" "$task_root/artifacts/"
-(cd "$task_root/artifacts" && sha256sum super-v-ubuntu_0.1.4_all.deb > SHA256SUMS)
-if git rev-parse v0.1.4 >/dev/null 2>&1; then
-    test "$(git rev-list -n 1 v0.1.4)" = "$task_sha" || { printf '%s\n' 'Existing v0.1.4 tag differs from main.' >&2; exit 1; }
-else
-    git tag -a v0.1.4 -m 'Super V Ubuntu 0.1.4'
-fi
-git push origin v0.1.4
-gh release create v0.1.4 artifacts/super-v-ubuntu_0.1.4_all.deb artifacts/SHA256SUMS \
-    --repo "$task_repo" --verify-tag --title 'Super V Ubuntu 0.1.4' --notes-file docs/release-notes.md
-gh release view v0.1.4 --repo "$task_repo" --json url,isDraft,assets,tagName
-mkdir "$task_temp/verify"
-gh release download v0.1.4 --repo "$task_repo" --dir "$task_temp/verify" --pattern '*.deb' --pattern SHA256SUMS
-(cd "$task_temp/verify" && sha256sum --check SHA256SUMS)
+gh release download "$task_tag" --repo "$task_repo" --dir "$task_temp" --pattern '*.deb' --pattern SHA256SUMS
+(cd "$task_temp" && sha256sum --check SHA256SUMS)
 git status --short
 git log -1 --format='%H %s'

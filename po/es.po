@@ -911,3 +911,119 @@ msgstr "Texto para añadir"
 
 msgid "Zoom (%)"
 msgstr "Zoom (%)"
+
+msgid "Choose a folder, or use the last saved location."
+msgstr "Elige una carpeta o usa la última ubicación guardada."
+
+msgid "Choose folder"
+msgstr "Elegir carpeta"
+
+msgid "Close pinned image"
+msgstr "Cerrar imagen fijada"
+
+msgid "Copy image"
+msgstr "Copiar imagen"
+
+msgid "Copy text"
+msgstr "Copiar texto"
+
+msgid "Copy text from image"
+msgstr "Copiar texto de la imagen"
+
+msgid "Could not copy the text."
+msgstr "No se pudo copiar el texto."
+
+msgid "Could not load OCR language packs."
+msgstr "No se pudieron cargar los paquetes de idiomas OCR."
+
+msgid "Could not pin this image."
+msgstr "No se pudo fijar esta imagen."
+
+msgid "Could not pin this image. Close a pinned image or use a smaller image."
+msgstr "No se pudo fijar. Cierra una imagen fijada o usa una más pequeña."
+
+msgid "Default save folder"
+msgstr "Carpeta de guardado predeterminada"
+
+msgid "Delete annotation"
+msgstr "Eliminar anotación"
+
+msgid "Filename pattern"
+msgstr "Formato del nombre de archivo"
+
+msgid "Install Tesseract OCR to recognize text."
+msgstr "Instala Tesseract OCR para reconocer texto."
+
+msgid "Loading OCR languages…"
+msgstr "Cargando idiomas OCR…"
+
+msgid "No OCR language packs are installed."
+msgstr "No hay paquetes de idiomas OCR instalados."
+
+msgid "No text was recognized."
+msgstr "No se reconoció texto."
+
+msgid "Numbered marker"
+msgstr "Marcador numerado"
+
+msgid "OCR failed. Check the language packs or crop a smaller area."
+msgstr "Falló el OCR. Comprueba los idiomas o recorta un área menor."
+
+msgid "OCR language"
+msgstr "Idioma OCR"
+
+msgid "OCR runs locally. Install the corresponding Tesseract language packs."
+msgstr "El OCR se ejecuta localmente. Instala los paquetes de idiomas de Tesseract correspondientes."
+
+msgid "Opacity"
+msgstr "Opacidad"
+
+#, javascript-format
+
+msgid "Opacity: %d percent"
+msgstr "Opacidad: %d por ciento"
+
+msgid "Pin to screen"
+msgstr "Fijar en pantalla"
+
+msgid "Recognize text"
+msgstr "Reconocer texto"
+
+msgid "Recognizing text…"
+msgstr "Reconociendo texto…"
+
+msgid "Redo"
+msgstr "Rehacer"
+
+msgid "Reset"
+msgstr "Restablecer"
+
+msgid "Reset export preferences"
+msgstr "Restablecer ajustes de exportación"
+
+msgid "Review the recognized text before copying."
+msgstr "Revisa el texto reconocido antes de copiarlo."
+
+msgid "Screenshot export and OCR"
+msgstr "Exportación de capturas y OCR"
+
+msgid "Select annotation"
+msgstr "Seleccionar anotación"
+
+msgid "Text copied. Paste it into your application."
+msgstr "Texto copiado. Pégalo en tu aplicación."
+
+msgid "Text is empty or exceeds the copy limit."
+msgstr "El texto está vacío o supera el límite de copia."
+
+msgid "Undo"
+msgstr "Deshacer"
+
+msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
+msgstr "Usa {date}, {time}, {width} y {height}; evita las barras."
+
+msgid "Zoom in"
+msgstr "Acercar"
+
+msgid "Zoom out"
+msgstr "Alejar"

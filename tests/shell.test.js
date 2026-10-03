@@ -99,7 +99,7 @@ export async function run() {
         check('popup opens', popup.showPanel());
         popup._setTab('emoji');
         await Scripting.sleep(300);
-        check('loaded version is visible', popup._title.text === 'Super V 0.1.7');
+        check('loaded version is visible', popup._title.text === 'Super V 0.1.8');
         check('six equally sized emoji per row', popup._rows.length === 60 &&
             popup.list.get_first_child().get_n_children() === 6);
         const cells = popup._rows.slice(0, 7).map(rectangle);
@@ -307,6 +307,30 @@ export async function run() {
                 throw new Error(`Image receiver failed: ${received[2]}`);
             check(`actual ${format} image paste reaches the original GTK window`, received[1].includes('IMAGE PASTE RECEIVED'));
         }
+        const pinId = extension.screenPins.add(GLib.base64_decode(fixtures.png), 'image/png', 'fixture');
+        const pin = extension.screenPins.items.get(pinId);
+        await Scripting.sleep(100);
+        check('screen pin renders a native image above application windows', pin.image.content && pin.root.visible && pin.root.width >= 240);
+        pin.more.emit('clicked', 1);
+        check('pin zoom control changes its scale', pin.zoom > 1);
+        pin.opacityButton.emit('clicked', 1);
+        check('pin opacity changes the image while keeping controls readable', pin.image.opacity < 255 && pin.root.opacity === 255);
+        const oldX = pin.root.x, oldY = pin.root.y;
+        const imageRect = rectangle(pin.image);
+        const dragX = imageRect.x + imageRect.width / 2, dragY = imageRect.y + imageRect.height / 2;
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), dragX, dragY);
+        await Scripting.sleep(50);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+        await Scripting.sleep(50);
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), dragX - 80, dragY - 60);
+        await Scripting.sleep(50);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+        await Scripting.sleep(50);
+        check('physical pointer drag moves a screen pin', pin.root.x !== oldX || pin.root.y !== oldY);
+        pin.copy.emit('clicked', 1);
+        check('pin Copy preserves original PNG bytes', (await extension.clipboard.readImage())?.mime === 'image/png');
+        extension.screenPins.removeSource('fixture');
+        check('deleting a pin source releases its overlay and budget', !extension.screenPins.items.size && !extension.screenPins.budget.items.size);
         const pictures = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES);
         check('native screenshot output stays in the disposable session',
             pictures.startsWith(GLib.getenv('XDG_CONFIG_HOME').replace(/\/config$/u, '/')));
@@ -324,8 +348,8 @@ export async function run() {
         check('Super V capture opens the editor automatically', !!extension.editor.child);
         const editorWindow = global.get_window_actors().find(actor => actor.meta_window.get_title() === _('Screenshot editor')).meta_window;
         const editorScreenshot = GLib.getenv('SUPER_V_EDITOR_SCREENSHOT');
-        if (editorScreenshot) {
-            await Scripting.sleep(200);
+        if (editorScreenshot && locale === 'en') {
+            await Scripting.sleep(4500);
             const frame = editorWindow.get_frame_rect();
             const output = Gio.File.new_for_path(editorScreenshot).replace(null, false, Gio.FileCreateFlags.PRIVATE, null);
             await new Shell.Screenshot().screenshot_area(frame.x, frame.y, frame.width, frame.height, output);

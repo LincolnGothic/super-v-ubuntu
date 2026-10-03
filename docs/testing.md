@@ -5,16 +5,16 @@ emoji generation, ESLint, Node logic/adapter tests, and GJS/Gio filesystem
 integration. Mock adapter tests exercise the actual asynchronous controller
 and clipboard modules, but do not prove Mutter clipboard, shell rendering or
 input delivery works on a real desktop. CI builds the `.deb` and checks it
-without an interactive shell. See `verification-v0.1.7.md` for current executed results.
+without an interactive shell. See `verification-v0.1.8.md` for current executed results.
 
 ## Package checks
 
 ```sh
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.7_all.deb
-dpkg-deb --info ../super-v-ubuntu_0.1.7_all.deb
-dpkg-deb --contents ../super-v-ubuntu_0.1.7_all.deb
-python3 scripts/audit-package.py ../super-v-ubuntu_0.1.7_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.8_all.deb
+dpkg-deb --info ../super-v-ubuntu_0.1.8_all.deb
+dpkg-deb --contents ../super-v-ubuntu_0.1.8_all.deb
+python3 scripts/audit-package.py ../super-v-ubuntu_0.1.8_all.deb
 ```
 
 The archive must contain runtime files and compiled schemas only beneath
@@ -24,7 +24,7 @@ scripts changing user settings belong in it.
 
 ## Manual GUI procedure — NOT TESTED in the build workspace
 
-Run this matrix on Ubuntu 24.04 / GNOME 46 and Ubuntu 26.04 / GNOME 50,
+Run this matrix on Ubuntu 24.04 / GNOME 46, Ubuntu 26.04 / GNOME 50, and Debian 13 / GNOME 48,
 using Wayland and preferably a disposable user account.
 Install `gnome-text-editor`, `gnome-terminal` and `firefox` if absent. Remove
 any user-local copy of this UUID before testing the system package, keeping
@@ -33,7 +33,7 @@ a backup if it contains local changes.
 ```sh
 gnome-shell --version
 printf '%s\n' "$XDG_SESSION_TYPE"
-sudo apt install ./super-v-ubuntu_0.1.7_all.deb
+sudo apt install ./super-v-ubuntu_0.1.8_all.deb
 ```
 
 Log out/in, then enable and inspect it as your desktop user:
@@ -98,7 +98,7 @@ Record any custom notification bindings first; the command replaces them.
     entries or cause shell exceptions. Test light/dark themes, 100%/200% scale,
     multiple monitors, long previews, scrolling beyond 60 results and keyboard
     navigation through incrementally rendered results.
-11. Confirm the header reads Super V 0.1.7. With pointer placement selected,
+11. Confirm the header reads Super V 0.1.8. With pointer placement selected,
     open next to an input and near each screen edge. Check work-area bounds,
     different monitor origins and 200% scale. Choose centered placement and
     verify the panel centers on the focused monitor. Outside clicks on the
@@ -153,3 +153,33 @@ and application, exact versions, rendering issues and shell exceptions. On
 Wayland use logout/login for code reload; do not use Alt+F2 `r`. A nested shell
 is optional for developer iteration, but still test actual applications and
 the user's normal session before declaring desktop support.
+
+
+## v0.1.8 native platform matrix
+
+CI uses ubuntu-24.04, ubuntu-24.04-arm, ubuntu-26.04, and ubuntu-26.04-arm runners.
+Debian 13 runs in native Debian containers on the amd64 and arm64 runners; it is
+not QEMU emulation. Each target runs the complete build checks, package audit,
+lintian, all seven interface languages in a disposable Wayland compositor,
+Tesseract recognition/cancel/timeout/output limits, and apt installation/removal.
+Release publication waits for every target. Architecture: all describes the shared
+JavaScript payload, not absence of native CPU tests.
+
+Additional interactive checks:
+
+1. Open an image, draw several marks, select an earlier one, move and resize it,
+   change its color/size, delete it, then undo/redo. Later marks stay unchanged.
+2. Add numbered markers with clicks; exported PNG includes labels but no handles.
+3. Create five screen pins. Drag, zoom, change opacity, copy, and close them.
+   Try multi-monitor moves and removing a monitor; pins remain reachable.
+4. Confirm lock, clear, source deletion, and disabling close screen pins and editor.
+5. Test OCR with actual Chinese, Japanese, Korean, Spanish, and French images after
+   installing their language packs; review results before copying. Exercise Ctrl+C
+   with a selected range and empty/noisy inputs. Close during recognition.
+6. Save to a chosen folder, reopen Save, and verify location and filename tokens;
+   cancel and overwrite a disposable file. Invalid patterns cannot create paths.
+7. Upgrade the prior package without uninstalling, log out/in, verify version 0.1.8,
+   retained settings, and the shutdown-clearing preference.
+
+Automated checks do not establish hardware GPU behavior, all receiving apps,
+OCR accuracy on arbitrary documents, or interactive monitor/lock acceptance.

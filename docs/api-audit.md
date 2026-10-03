@@ -1,4 +1,4 @@
-# GNOME 46 and 50 API audit
+# GNOME 46, 48 and 50 API audit
 
 Source inspection performed against upstream **46.0** and **50.1**.
 These are API requirements, not GUI test results. The 50.1 audit was performed
@@ -39,10 +39,34 @@ execute Mutter virtual input or St widgets. No upstream implementation source
 is included in the extension. The old widget `vertical` property still exists
 in the tagged 50.1 source but is deprecated; its migration is preventative.
 
-GTK4's accelerator parser/validator and libadwaita 1.5 preference row classes
-were exercised/inspected in actual GJS integration tests. Gio state persistence
-was tested against the installed GLib 2.80. No St/Clutter widgets, real clipboard
-signals or virtual input were executed in GNOME Shell in this workspace.
-GNOME 46 and 50 are enabled in metadata and permitted by Debian dependencies.
-Actual Shell desktop behavior on both targets is NOT TESTED here. GNOME
-47–49, 51+ and X11 are not declared supported.
+## GNOME 48 / Debian 13 and screenshot tools
+
+The 2026-10-03 audit inspected these tagged upstream 48.0 sources:
+
+| Interface | Source | Result |
+| --- | --- | --- |
+| Reusable modal popup | [modalDialog.js](https://github.com/GNOME/gnome-shell/blob/48.0/js/ui/modalDialog.js) | Open, close, state, and focus APIs retained |
+| Orientation | [st-box-layout.h](https://github.com/GNOME/gnome-shell/blob/48.0/src/st/st-box-layout.h) | Current orientation API; feature detection keeps the 46 fallback |
+| Stage seat and input | [keyboard.js](https://github.com/GNOME/gnome-shell/blob/48.0/js/ui/keyboard.js) | Stage context backend and virtual input paths retained |
+| Bounded clipboard transfer | [meta-selection.h](https://github.com/GNOME/mutter/blob/48.0/src/meta/meta-selection.h) | MIME and async transfer signatures retained |
+| Capture notifications | [screenshot.js](https://github.com/GNOME/gnome-shell/blob/48.0/js/ui/screenshot.js) | Screenshot UI and completion/close signals retained |
+| Chrome and monitor work areas | [layout.js](https://github.com/GNOME/gnome-shell/blob/48.0/js/ui/layout.js) | Temporary pin overlays can use addChrome/removeChrome and monitor signals |
+| Separate GTK preferences | [prefs.js](https://github.com/GNOME/gnome-shell/blob/48.0/js/extensions/prefs.js) | Existing base class retained |
+| Pin image texture | [48.0 st-image-content.h](https://github.com/GNOME/gnome-shell/blob/48.0/src/st/st-image-content.h), [46.0 header](https://github.com/GNOME/gnome-shell/blob/46.0/src/st/st-image-content.h) | 48+ set_bytes requires a Cogl context; 46 inherits Clutter.Image without that argument |
+
+Pin drags use the grab actor's captured-event handler. Grabbing an actor changes
+the capture root, so a handler connected only to the stage misses subsequent
+motion. The native pointer regression test exercises press, motion, and release.
+
+GJS TextDecoder does not implement the stream option. Editor protocol frames
+are accumulated as bounded bytes until newline, then decoded as complete UTF-8.
+A native split-code-point test and full screenshot copy test cover this path.
+Tesseract receives stdin and returns stdout through owned GLib.Bytes writes;
+no shell interpolation or scratch image is involved. See the upstream
+[Tesseract command-line guide](https://tesseract-ocr.github.io/tessdoc/Command-Line-Usage.html).
+
+Metadata declares GNOME 46, 48, and 50. CI runs actual isolated Wayland sessions
+on Ubuntu 24.04, Ubuntu 26.04, and Debian 13, for native amd64 and arm64. Source
+inspection is distinct from these runtime checks and interactive desktop acceptance;
+executed results are recorded in verification-v0.1.8.md. GNOME 47, 49, 51+, X11,
+and other desktops are not declared supported.

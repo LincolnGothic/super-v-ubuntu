@@ -54,3 +54,39 @@ test('zoom and pan map viewport gestures to the original cropped image', () => {
     assert.equal(transform.scale, 10);
     assert.deepEqual(imagePoint(crop, transform, transform.x + 250, transform.y + 300), [35, 50]);
 });
+
+test('numbered markers advance without changing existing marks and survive undo', () => {
+    const doc = new EditorDocument(200, 100);
+    const first = doc.add({...mark, type: 'number'});
+    const second = doc.add({...mark, type: 'number', x: 50});
+    assert.deepEqual(doc.state.annotations.map(a => a.number), [1, 2]);
+    doc.delete(first); doc.undo();
+    assert.deepEqual(doc.state.annotations.map(a => a.number), [1, 2]);
+    doc.update(second, {color: '#ffffff'});
+    assert.equal(doc.state.annotations[1].number, 2);
+});
+test('moving and resizing one mark preserves later annotations and undo snapshots', () => {
+    const doc = new EditorDocument(100, 100);
+    const first = doc.add({...mark, type: 'rectangle'});
+    const second = doc.add({...mark, type: 'arrow', x: 40, x2: 70});
+    const previous = JSON.stringify(doc.state);
+    doc.update(first, doc.transformed(first, 1000, 1000));
+    const moved = doc.state.annotations[0];
+    assert.equal(moved.x2, 100); assert.equal(moved.y2, 100);
+    assert.equal(doc.state.annotations[1].id, second);
+    assert.equal(doc.state.annotations[1].x, 40);
+    doc.undo(); assert.equal(JSON.stringify(doc.state), previous);
+    doc.update(first, doc.transformed(first, 10, 10, true));
+    assert.equal(doc.state.annotations[0].x2, 40);
+    doc.delete(first); assert.equal(doc.state.annotations[0].id, second);
+    doc.undo(); assert.equal(doc.state.annotations.length, 2);
+});
+test('selection chooses the topmost mark and respects crop clipping', () => {
+    const doc = new EditorDocument(100, 100);
+    const first = doc.add({...mark, type: 'rectangle'});
+    const second = doc.add({...mark, type: 'highlight'});
+    assert.equal(doc.hit(10, 10), second);
+    doc.delete(second); assert.equal(doc.hit(10, 10), first);
+    doc.crop([20, 20], [80, 80]); assert.equal(doc.hit(10, 10), null);
+    assert.throws(() => doc.transformed(first, Infinity, 0));
+});
