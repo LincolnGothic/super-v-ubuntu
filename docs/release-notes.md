@@ -1,23 +1,36 @@
-Super V Ubuntu 0.1.7 adds a local screenshot editor.
+Super V Ubuntu 0.1.8 extends the screenshot editor and adds Debian 13 support.
 
-- Crop, arrows, rectangles, text, highlights, freehand drawing and opaque black
-  covers, with undo/redo and zoom/pan.
-- Copy a flattened PNG to the clipboard or save it to a chosen PNG file.
-- Open automatically after screenshots taken through Super V, with an opt-out
-  in Settings → Desktop integration → Edit after taking a screenshot.
-- Edit PNG/JPEG images in history with the pencil button or Ctrl+E.
-- All new controls are translated into all seven supported languages.
+- Pin edited images above application windows; drag, zoom, change opacity,
+  copy, or close them. Up to five temporary pins are supported.
+- Add automatically numbered markers for instructions and bug reports.
+- Select existing annotations to move, resize, recolor, edit text, or delete
+  one mark while preserving later annotations. Undo/redo remains available.
+- Recognize image text locally with Tesseract, review the editable result,
+  choose installed recognition languages, and copy text through Shell.
+- Remember the last save folder and customize PNG filenames with
+  {date}, {time}, {width}, and {height}; configure them in Settings.
+- Include all new controls in English, Simplified Chinese, Traditional Chinese,
+  Japanese, Spanish, French, and Korean.
 
-The original history image and GNOME screenshot file remain separate. Covering
-pixels in an export does not delete those originals. Existing image bounds
-apply: 8 MiB per input/export, 8192 pixels per side, 16 megapixels.
-Pin-to-screen, OCR and scrolling capture are not included in this release.
+Installers are provided for Ubuntu 24.04/GNOME 46, Ubuntu 26.04/GNOME 50,
+and Debian 13/GNOME 48, plus one all-target installer. Each Architecture: all
+package works on x86-64/amd64 and ARM64/AArch64 using native distribution
+runtimes. All six platform/CPU combinations must pass native CI before release.
+SHA256SUMS covers all four installers. See the README's platform table.
 
-Upgrade with `sudo apt install ./super-v-ubuntu_0.1.7_all.deb`, then save your
-work, log out and log back in. The Super+V header should read **Super V 0.1.7**.
-Language, shortcuts and saved history are preserved. A user-local extension
-with the same UUID overrides the system package; see the README upgrade guide.
+English OCR is installed automatically. Other languages require optional
+Tesseract language packs; the README lists the apt command. OCR does not use
+network services or scratch images. Pins and editor state are temporary and
+close on lock, clear, or disable. Image bounds and private export permissions
+remain unchanged. Original history images and GNOME screenshot files remain
+separate from edited exports. Scrolling capture is not included.
 
-Publication is gated on logic/translation/native GJS checks, package audit and
-lintian, and isolated GNOME Wayland editor, clipboard, capture and paste tests.
-Full desktop application acceptance remains the matrix in docs/testing.md.
+Install the package for your distribution with `sudo apt install ./PACKAGE.deb`,
+save your work, log out and back in, and check **Super V 0.1.8** in the header.
+No uninstall is needed. Language, shortcuts, and saved history are preserved
+unless your history-clearing preference requests otherwise. A user-local copy
+of the same UUID takes precedence; see the upgrade guide.
+
+The release is gated on logic, translation, GJS, package, lintian, installation,
+removal, and isolated native Wayland editor/clipboard/OCR/pin tests. Interactive
+application and hardware acceptance remains in docs/testing.md.

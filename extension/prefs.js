@@ -9,6 +9,7 @@ import {format, languageOptions} from './core/localization.js';
 import {parsePasteOverrides, validateAppList} from './core/settings.js';
 import {gifPaths, MAX_GIF_FILES} from './core/gif.js';
 import {GifLibrary} from './gifs.js';
+import {DEFAULT_EXPORT_PATTERN, validateExportPattern, OCR_LANGUAGES} from './core/export.js';
 
 export default class SuperVPreferences extends ExtensionPreferences {
     fillPreferencesWindow(window) {
@@ -46,6 +47,7 @@ export default class SuperVPreferences extends ExtensionPreferences {
     }
 
     _fillPage(window, settings) {
+        let folderDialog = null;
         const page = new Adw.PreferencesPage({title: _('Super V'), icon_name: 'edit-paste-symbolic'});
         window.add(page);
         const appearance = new Adw.PreferencesGroup({title: _('Appearance')});
@@ -99,6 +101,51 @@ export default class SuperVPreferences extends ExtensionPreferences {
             subtitle: _('Open the editor after screenshots taken through Super V. Images in history can always be edited.')});
         settings.bind('edit-after-screenshot', editScreenshot, 'active', Gio.SettingsBindFlags.DEFAULT);
         integration.add(editScreenshot);
+        const exports = new Adw.PreferencesGroup({title: _('Screenshot export and OCR')});
+        page.add(exports);
+        const folder = new Adw.ActionRow({title: _('Default save folder'),
+            subtitle: settings.get_string('export-folder') || _('Choose a folder, or use the last saved location.')});
+        const choose = new Gtk.Button({label: _('Choose folder'), valign: Gtk.Align.CENTER});
+        choose.connect('clicked', () => {
+            if (folderDialog) return;
+            const dialog = new Gtk.FileChooserNative({title: _('Choose folder'), transient_for: window,
+                action: Gtk.FileChooserAction.SELECT_FOLDER, modal: true});
+            folderDialog = dialog;
+            dialog.connect('response', (_dialog, response) => {
+                if (response === Gtk.ResponseType.ACCEPT) {
+                    const uri = dialog.get_file().get_uri(); settings.set_string('export-folder', uri); folder.subtitle = uri;
+                }
+                dialog.destroy();
+                folderDialog = null;
+            });
+            dialog.show();
+        });
+        folder.add_suffix(choose); exports.add(folder);
+        const pattern = new Adw.EntryRow({title: _('Filename pattern'), text: settings.get_string('export-pattern'),
+            show_apply_button: true});
+        pattern.connect('apply', () => {
+            try {
+                settings.set_string('export-pattern', validateExportPattern(pattern.text)); pattern.remove_css_class('error');
+            } catch {
+                pattern.add_css_class('error');
+                window.add_toast(new Adw.Toast({title: _('Use {date}, {time}, {width}, and {height}; avoid slashes.')}));
+            }
+        });
+        exports.add(pattern);
+        const resetExport = new Adw.ActionRow({title: _('Reset export preferences')});
+        const reset = new Gtk.Button({label: _('Reset'), valign: Gtk.Align.CENTER});
+        reset.connect('clicked', () => {
+            settings.set_string('export-folder', ''); settings.set_string('export-pattern', DEFAULT_EXPORT_PATTERN);
+            pattern.text = DEFAULT_EXPORT_PATTERN; pattern.remove_css_class('error');
+            folder.subtitle = _('Choose a folder, or use the last saved location.');
+        });
+        resetExport.add_suffix(reset); exports.add(resetExport);
+        const ocrLanguage = new Adw.ComboRow({title: _('OCR language'),
+            subtitle: _('OCR runs locally. Install the corresponding Tesseract language packs.'),
+            model: Gtk.StringList.new(OCR_LANGUAGES.map(option => option.label)),
+            selected: Math.max(0, OCR_LANGUAGES.findIndex(option => option.id === settings.get_string('ocr-language')))});
+        ocrLanguage.connect('notify::selected', () => settings.set_string('ocr-language', OCR_LANGUAGES[ocrLanguage.selected].id));
+        exports.add(ocrLanguage);
         const position = new Adw.ComboRow({title: _('Picker position'),
             subtitle: _('Super+V opens near the mouse pointer, or in the center of the focused screen.'),
             model: Gtk.StringList.new([_('Near mouse pointer'), _('Center of screen')]),
@@ -227,6 +274,6 @@ export default class SuperVPreferences extends ExtensionPreferences {
         const privacy = new Adw.PreferencesGroup({title: _('Local storage'),
             description: format(_('Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access.'), GLib.build_filenamev([GLib.get_user_state_dir(), 'super-v-ubuntu', 'history.json']))});
         page.add(privacy);
-        return {page, cleanup: () => settings.disconnect(gifSignal)};
+        return {page, cleanup: () => { settings.disconnect(gifSignal); folderDialog?.destroy(); }};
     }
 }

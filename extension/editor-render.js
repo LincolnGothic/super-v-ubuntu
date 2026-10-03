@@ -33,9 +33,24 @@ export function drawAnnotation(cr, a) {
     const width = Math.abs(a.x2 - a.x), height = Math.abs(a.y2 - a.y);
     if (a.type === 'text') {
         const layout = PangoCairo.create_layout(cr);
-        layout.set_font_description(Pango.FontDescription.from_string(`Sans ${a.width}`));
+        const font = Pango.FontDescription.from_string('Sans');
+        font.set_absolute_size(a.width * Pango.SCALE);
+        layout.set_font_description(font);
         layout.set_text(a.text, -1);
         cr.moveTo(a.x, a.y);
+        PangoCairo.show_layout(cr, layout);
+    } else if (a.type === 'number') {
+        const radius = Math.max(10, a.width * 0.8);
+        cr.arc(a.x, a.y, radius, 0, 2 * Math.PI);
+        cr.fill();
+        const layout = PangoCairo.create_layout(cr);
+        const font = Pango.FontDescription.from_string('Sans Bold');
+        font.set_absolute_size(Math.max(10, radius * 1.1) * Pango.SCALE);
+        layout.set_font_description(font);
+        layout.set_text(String(a.number), -1);
+        const [, logical] = layout.get_pixel_extents();
+        cr.setSourceRGB(1, 1, 1);
+        cr.moveTo(a.x - logical.width / 2 - logical.x, a.y - logical.height / 2 - logical.y);
         PangoCairo.show_layout(cr, layout);
     } else if (['rectangle', 'redact', 'highlight'].includes(a.type)) {
         cr.rectangle(x, y, width, height);
@@ -81,8 +96,10 @@ export function drawDocument(cr, pixbuf, state, preview = null) {
     cr.translate(-c.x, -c.y);
     Gdk.cairo_set_source_pixbuf(cr, pixbuf, 0, 0);
     cr.paint();
-    for (const annotation of state.annotations)
-        drawAnnotation(cr, annotation);
+    for (const annotation of state.annotations) {
+        if (!preview?.id || preview.id !== annotation.id)
+            drawAnnotation(cr, annotation);
+    }
     if (preview)
         drawAnnotation(cr, {...preview, type: preview.type === 'crop' ? 'rectangle' : preview.type});
     cr.restore();

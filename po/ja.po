@@ -911,3 +911,119 @@ msgstr "追加する文字"
 
 msgid "Zoom (%)"
 msgstr "ズーム（%）"
+
+msgid "Choose a folder, or use the last saved location."
+msgstr "フォルダーを選択するか、前回の保存先を使用します。"
+
+msgid "Choose folder"
+msgstr "フォルダーを選択"
+
+msgid "Close pinned image"
+msgstr "貼り付け画像を閉じる"
+
+msgid "Copy image"
+msgstr "画像をコピー"
+
+msgid "Copy text"
+msgstr "テキストをコピー"
+
+msgid "Copy text from image"
+msgstr "画像からテキストをコピー"
+
+msgid "Could not copy the text."
+msgstr "テキストをコピーできませんでした。"
+
+msgid "Could not load OCR language packs."
+msgstr "OCR 言語パックを読み込めませんでした。"
+
+msgid "Could not pin this image."
+msgstr "この画像を画面に貼り付けられませんでした。"
+
+msgid "Could not pin this image. Close a pinned image or use a smaller image."
+msgstr "貼り付けられません。貼り付け画像を閉じるか、小さい画像を使用してください。"
+
+msgid "Default save folder"
+msgstr "既定の保存フォルダー"
+
+msgid "Delete annotation"
+msgstr "注釈を削除"
+
+msgid "Filename pattern"
+msgstr "ファイル名の形式"
+
+msgid "Install Tesseract OCR to recognize text."
+msgstr "テキスト認識には Tesseract OCR をインストールしてください。"
+
+msgid "Loading OCR languages…"
+msgstr "OCR 言語を読み込み中…"
+
+msgid "No OCR language packs are installed."
+msgstr "OCR 言語パックがインストールされていません。"
+
+msgid "No text was recognized."
+msgstr "テキストが認識されませんでした。"
+
+msgid "Numbered marker"
+msgstr "番号マーカー"
+
+msgid "OCR failed. Check the language packs or crop a smaller area."
+msgstr "OCR に失敗しました。言語パックを確認するか、狭い範囲を切り抜いてください。"
+
+msgid "OCR language"
+msgstr "OCR 言語"
+
+msgid "OCR runs locally. Install the corresponding Tesseract language packs."
+msgstr "OCR はローカルで実行します。対応する Tesseract 言語パックをインストールしてください。"
+
+msgid "Opacity"
+msgstr "不透明度"
+
+#, javascript-format
+
+msgid "Opacity: %d percent"
+msgstr "不透明度：%d パーセント"
+
+msgid "Pin to screen"
+msgstr "画面に貼り付け"
+
+msgid "Recognize text"
+msgstr "テキストを認識"
+
+msgid "Recognizing text…"
+msgstr "テキストを認識中…"
+
+msgid "Redo"
+msgstr "やり直す"
+
+msgid "Reset"
+msgstr "リセット"
+
+msgid "Reset export preferences"
+msgstr "書き出し設定をリセット"
+
+msgid "Review the recognized text before copying."
+msgstr "コピーする前に認識結果を確認してください。"
+
+msgid "Screenshot export and OCR"
+msgstr "スクリーンショットの書き出しと OCR"
+
+msgid "Select annotation"
+msgstr "注釈を選択"
+
+msgid "Text copied. Paste it into your application."
+msgstr "テキストをコピーしました。アプリに貼り付けてください。"
+
+msgid "Text is empty or exceeds the copy limit."
+msgstr "テキストが空か、コピーの上限を超えています。"
+
+msgid "Undo"
+msgstr "元に戻す"
+
+msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
+msgstr "{date}、{time}、{width}、{height} を使用できます。スラッシュは使わないでください。"
+
+msgid "Zoom in"
+msgstr "拡大"
+
+msgid "Zoom out"
+msgstr "縮小"

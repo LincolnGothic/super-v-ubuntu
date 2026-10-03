@@ -17,6 +17,7 @@ import {SuperVPopup} from './popup.js';
 import {GifLibrary} from './gifs.js';
 import {ImageLibrary} from './images.js';
 import {EditorBridge} from './editor-bridge.js';
+import {ScreenPins} from './pins.js';
 
 export default class SuperVExtension extends Extension {
     enable() {
@@ -143,20 +144,27 @@ export default class SuperVExtension extends Extension {
                     // Invalid or oversized image data is ignored without logs.
                 }
             });
-        this.editor = new EditorBridge(this.dir, bytes => {
+        const copyImage = (bytes, mime = 'image/png') => {
             if (!this._active || Main.sessionMode.isLocked || Main.sessionMode.isGreeter)
                 return;
             this.pendingRestore = null;
-            this.clipboard.writeImage(bytes, 'image/png');
+            this.clipboard.writeImage(bytes, mime);
             if (this.settings.get_boolean('history-enabled')) {
-                const image = this.images.add(bytes, 'image/png');
+                const image = this.images.add(bytes, mime);
                 this.history.addImage(image);
                 this.changed();
             }
-        }, () => {
+        };
+        this.screenPins = new ScreenPins(copyImage);
+        this.editor = new EditorBridge(this.dir, copyImage, () => {
             if (this._active)
                 Main.notify('Super V', _('Could not open or communicate with the screenshot editor.'));
-        });
+        }, {onPin: bytes => this.pinImage(bytes, 'image/png', this._editorEntryId, this._editorSourceDigest), onText: text => {
+            if (!this._active || Main.sessionMode.isLocked || Main.sessionMode.isGreeter) return;
+            this.pendingRestore = null;
+            this.clipboard.write(text);
+            if (this.settings.get_boolean('history-enabled') && this.history.add(text)) this.changed();
+        }});
         this.pasteBackend = new PasteBackend(this.settings,
             window => this.identifiers(window), () => {
                 if (this._active)
@@ -171,6 +179,7 @@ export default class SuperVExtension extends Extension {
                 this.pasteBackend?.cancel();
                 this.pendingRestore = null;
                 this.editor?.close();
+                this.screenPins?.clear();
                 this._cancelScreenshot();
             }
         });
@@ -241,6 +250,7 @@ export default class SuperVExtension extends Extension {
 
     clear(includePinned) {
         this.editor?.close();
+        this.screenPins?.clear();
         this._cancelScreenshot();
         this._stateRevision++;
         this.clipboard?.invalidate();
@@ -259,7 +269,9 @@ export default class SuperVExtension extends Extension {
     }
 
     deleteEntry(id) {
-        if (this._editorEntryId === id)
+        const digest = this.history.entries.find(entry => entry.id === id)?.digest;
+        this.screenPins?.removeSource(id, digest);
+        if (this._editorEntryId === id || digest && digest === this._editorSourceDigest)
             this.editor?.close();
         this.history.delete(id);
         this.changed();
@@ -344,6 +356,12 @@ export default class SuperVExtension extends Extension {
             this._openEditor(image.bytes, entry.mime, entry.id);
     }
 
+    pinImage(bytes, mime, sourceId = null, sourceDigest = null) {
+        if (!this._active || !this._ready || Main.sessionMode.isLocked || Main.sessionMode.isGreeter) return;
+        try { this.screenPins.add(bytes, mime, sourceId, sourceDigest); }
+        catch { Main.notify('Super V', _('Could not pin this image. Close a pinned image or use a smaller image.')); }
+    }
+
     _openEditor(bytes, mime, id = null) {
         if (!this._active || !this._ready || Main.sessionMode.isLocked || Main.sessionMode.isGreeter)
             return;
@@ -352,6 +370,7 @@ export default class SuperVExtension extends Extension {
         this.pasteBackend.cancel();
         this.pendingRestore = null;
         this._editorEntryId = id;
+        this._editorSourceDigest = GLib.compute_checksum_for_bytes(GLib.ChecksumType.SHA256, new GLib.Bytes(bytes));
         try { this.editor.open(bytes, mime); }
         catch { Main.notify('Super V', _('Could not open or communicate with the screenshot editor.')); }
     }
@@ -481,6 +500,7 @@ export default class SuperVExtension extends Extension {
         this._active = false;
         this._epoch++;
         this.editor?.close();
+        this.screenPins?.destroy();
         this._clearScreenshotSignals();
         this._stateCancellable?.cancel();
         if (this._binding)
@@ -507,6 +527,8 @@ export default class SuperVExtension extends Extension {
         this.history = this.emoji = this.store = this.pendingRestore = this._target = this.gifs = null;
         this.images = null;
         this.editor = null;
+        this._editorSourceDigest = null;
+        this.screenPins = null;
         this._stateCancellable = null;
         this._emojiRecords = null;
     }

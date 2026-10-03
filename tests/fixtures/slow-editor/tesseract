@@ -1,0 +1,15 @@
+#!/usr/bin/python3
+# SPDX-License-Identifier: GPL-3.0-or-later
+"""A deliberately slow OCR process for the native termination regression test."""
+import os
+from pathlib import Path
+import sys
+import time
+
+if '--list-langs' in sys.argv:
+    print('eng')
+else:
+    sys.stdin.buffer.read()
+    (Path(os.environ['XDG_STATE_HOME']) / 'slow-ocr.pid').write_text(str(os.getpid()))
+    time.sleep(30)
+    print('This cancelled result must never be copied.')

@@ -40,6 +40,28 @@ function verify(language) {
             visit(child);
     };
     visit(window);
+    const pattern = rows.find(row => row.title === _('Filename pattern'));
+    if (!pattern) throw new Error('Export filename preference is missing');
+    pattern.text = 'capture-{date}-{width}x{height}'; pattern.emit('apply');
+    if (settings.get_string('export-pattern') !== pattern.text) throw new Error('Export pattern was not saved');
+    pattern.text = '../private'; pattern.emit('apply');
+    if (settings.get_string('export-pattern') === pattern.text || !pattern.has_css_class('error'))
+        throw new Error('Unsafe export pattern was accepted');
+    const resetRow = rows.find(row => row.title === _('Reset export preferences'));
+    const findButton = widget => {
+        if (widget.get_label?.() === _('Reset')) return widget;
+        for (let child = widget.get_first_child(); child; child = child.get_next_sibling()) {
+            const result = findButton(child); if (result) return result;
+        }
+        return null;
+    };
+    settings.set_string('export-folder', 'file:///tmp'); findButton(resetRow).emit('clicked');
+    if (settings.get_string('export-folder') || settings.get_string('export-pattern') !== 'Super V {date} {time}')
+        throw new Error('Export preferences did not reset');
+    const ocr = rows.find(row => row.title === _('OCR language'));
+    ocr.selected = 3;
+    if (settings.get_string('ocr-language') !== 'jpn') throw new Error('OCR language choice did not persist');
+    ocr.selected = 0;
     const clear = rows.find(row => row.title === _('Clear history on shutdown'));
     const remember = rows.find(row => row.title === _('Remember after logout'));
     const shortcut = rows.find(row => row.title === _('Screenshot shortcut (GTK accelerator syntax)'));

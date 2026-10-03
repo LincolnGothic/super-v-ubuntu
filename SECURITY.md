@@ -43,6 +43,17 @@ Opaque black covers affect exported pixels. The original history image and
 GNOME's screenshot file remain separate and may still contain sensitive data.
 Saved exports are independent files and are not cleared with clipboard history.
 
+Screen pins are temporary, with five pins and a 32 MiB compressed-input budget.
+Their decoded previews are limited to 1024×1024; original pin bytes are held only
+in memory for Copy. Lock, clear, and disable destroy overlays and references.
+OCR invokes the installed Tesseract executable directly, without a command shell;
+images enter stdin and bounded text leaves stdout. No scratch images or network
+service is used. Cancelling or closing the editor stops recognition; a run is
+limited to 30 seconds and 64 KiB output. OCR text reaches the clipboard only after
+an explicit Copy. Settings store a save-folder URI, filename pattern, and OCR
+language ID, but no image or recognized text. Independent exports and GNOME
+screenshots retain the same erasure limitations described above.
+
 Password-manager MIME hints `x-kde-passwordManagerHint`,
 `application/x-keepassxc`, `application/x-keepass`, `x-gtk-password` and
 `application/x-bitwarden` are rejected. Defaults also exclude common password

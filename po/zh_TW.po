@@ -911,3 +911,119 @@ msgstr "要新增的文字"
 
 msgid "Zoom (%)"
 msgstr "縮放（%）"
+
+msgid "Choose a folder, or use the last saved location."
+msgstr "選擇資料夾，或使用上次儲存的位置。"
+
+msgid "Choose folder"
+msgstr "選擇資料夾"
+
+msgid "Close pinned image"
+msgstr "關閉貼圖"
+
+msgid "Copy image"
+msgstr "複製影像"
+
+msgid "Copy text"
+msgstr "複製文字"
+
+msgid "Copy text from image"
+msgstr "從影像複製文字"
+
+msgid "Could not copy the text."
+msgstr "無法複製文字。"
+
+msgid "Could not load OCR language packs."
+msgstr "無法載入 OCR 語言套件。"
+
+msgid "Could not pin this image."
+msgstr "無法將此影像貼到螢幕。"
+
+msgid "Could not pin this image. Close a pinned image or use a smaller image."
+msgstr "無法貼圖。請關閉一張貼圖或使用較小的影像。"
+
+msgid "Default save folder"
+msgstr "預設儲存資料夾"
+
+msgid "Delete annotation"
+msgstr "刪除標註"
+
+msgid "Filename pattern"
+msgstr "檔名格式"
+
+msgid "Install Tesseract OCR to recognize text."
+msgstr "請安裝 Tesseract OCR 以辨識文字。"
+
+msgid "Loading OCR languages…"
+msgstr "正在載入 OCR 語言…"
+
+msgid "No OCR language packs are installed."
+msgstr "尚未安裝 OCR 語言套件。"
+
+msgid "No text was recognized."
+msgstr "未辨識到文字。"
+
+msgid "Numbered marker"
+msgstr "編號標記"
+
+msgid "OCR failed. Check the language packs or crop a smaller area."
+msgstr "OCR 失敗。請檢查語言套件或裁切較小的區域。"
+
+msgid "OCR language"
+msgstr "OCR 語言"
+
+msgid "OCR runs locally. Install the corresponding Tesseract language packs."
+msgstr "OCR 在本機執行。請安裝對應的 Tesseract 語言套件。"
+
+msgid "Opacity"
+msgstr "不透明度"
+
+#, javascript-format
+
+msgid "Opacity: %d percent"
+msgstr "不透明度：百分之 %d"
+
+msgid "Pin to screen"
+msgstr "貼到螢幕"
+
+msgid "Recognize text"
+msgstr "辨識文字"
+
+msgid "Recognizing text…"
+msgstr "正在辨識文字…"
+
+msgid "Redo"
+msgstr "重做"
+
+msgid "Reset"
+msgstr "重設"
+
+msgid "Reset export preferences"
+msgstr "重設匯出設定"
+
+msgid "Review the recognized text before copying."
+msgstr "複製前請檢查辨識出的文字。"
+
+msgid "Screenshot export and OCR"
+msgstr "螢幕截圖匯出與 OCR"
+
+msgid "Select annotation"
+msgstr "選取標註"
+
+msgid "Text copied. Paste it into your application."
+msgstr "文字已複製。請貼到應用程式中。"
+
+msgid "Text is empty or exceeds the copy limit."
+msgstr "文字為空或超出複製限制。"
+
+msgid "Undo"
+msgstr "復原"
+
+msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
+msgstr "可使用 {date}、{time}、{width} 與 {height}；請勿使用斜線。"
+
+msgid "Zoom in"
+msgstr "放大"
+
+msgid "Zoom out"
+msgstr "縮小"

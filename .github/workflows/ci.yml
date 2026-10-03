@@ -7,55 +7,87 @@ on:
 permissions:
   contents: read
 jobs:
-  validate-build:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
+  ubuntu:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {runner: ubuntu-24.04, target: ubuntu24.04, arch: amd64}
+          - {runner: ubuntu-24.04-arm, target: ubuntu24.04, arch: arm64}
+          - {runner: ubuntu-26.04, target: ubuntu26.04, arch: amd64}
+          - {runner: ubuntu-26.04-arm, target: ubuntu26.04, arch: arm64}
+    runs-on: ${{ matrix.runner }}
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
-      - name: Install build tools
+      - name: Install native build and Wayland test tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends build-essential debhelper libglib2.0-bin nodejs python3 gettext locales eslint gjs gir1.2-gtk-4.0 gir1.2-adw-1 lintian
-      - name: Generate test locale
-        run: sudo locale-gen en_US.UTF-8
-      - name: Validate, test, and build Debian package
-        run: make package
-      - name: Audit package
+          sudo apt-get install -y --no-install-recommends build-essential debhelper libglib2.0-bin nodejs python3 gettext locales eslint lintian gnome-shell gjs gir1.2-gtk-4.0 gir1.2-gdkpixbuf-2.0 gir1.2-adw-1 dbus-x11 libgl1-mesa-dri fonts-noto-color-emoji fonts-noto-cjk ripgrep tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim tesseract-ocr-chi-tra tesseract-ocr-jpn tesseract-ocr-spa tesseract-ocr-fra tesseract-ocr-kor
+          sudo locale-gen en_US.UTF-8
+      - name: Test and build for the native target
+        run: ./scripts/ci-target.sh '${{ matrix.target }}' '${{ matrix.arch }}'
+      - name: Verify package installation and removal
         run: |
-          lintian --fail-on error,warning ../super-v-ubuntu_0.1.7_all.deb
-          dpkg-deb --info ../super-v-ubuntu_0.1.7_all.deb
-          dpkg-deb --contents ../super-v-ubuntu_0.1.7_all.deb
-          python3 scripts/audit-package.py ../super-v-ubuntu_0.1.7_all.deb
-          install -D -m 0644 ../super-v-ubuntu_0.1.7_all.deb artifacts/super-v-ubuntu_0.1.7_all.deb
+          sudo apt-get install -y ./artifacts/*_${{ matrix.target }}_all.deb
+          dpkg-query -W super-v-ubuntu
+          test -f /usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local/ocr.js
+          sudo apt-get remove -y super-v-ubuntu
+          test ! -f /usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local/extension.js
       - uses: actions/upload-artifact@v4
         with:
-          name: super-v-ubuntu-deb
-          path: artifacts/super-v-ubuntu_0.1.7_all.deb
+          name: deb-${{ matrix.target }}-${{ matrix.arch }}
+          path: artifacts/*.deb
           if-no-files-found: error
-  shell-ui:
-    runs-on: ubuntu-24.04
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@v4
-      - name: Install isolated Shell test tools
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y --no-install-recommends gnome-shell gjs gir1.2-gtk-4.0 gir1.2-adw-1 dbus-x11 libgl1-mesa-dri fonts-noto-color-emoji fonts-noto-cjk libglib2.0-bin gettext locales ripgrep
-      - name: Check real popup layout and outside mouse clicks
-        run: |
-          set -euo pipefail
-          glib-compile-schemas --strict extension/schemas
-          sudo locale-gen en_US.UTF-8
-          make translations
-          ./scripts/test-shell.sh | tee shell-test.log
       - uses: actions/upload-artifact@v4
         if: always()
         with:
-          name: shell-ui-log
-          path: shell-test.log
+          name: log-${{ matrix.target }}-${{ matrix.arch }}
+          path: shell-*.log
+          if-no-files-found: ignore
+  debian:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - {runner: ubuntu-24.04, arch: amd64}
+          - {runner: ubuntu-24.04-arm, arch: arm64}
+    runs-on: ${{ matrix.runner }}
+    container:
+      image: debian:13
+      options: --security-opt apparmor=unconfined --volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Debian native build and Wayland test tools
+        run: |
+          apt-get update
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential debhelper libglib2.0-bin nodejs python3 gettext locales eslint lintian gnome-shell gjs gir1.2-gtk-4.0 gir1.2-gdkpixbuf-2.0 gir1.2-adw-1 dbus-x11 libgl1-mesa-dri fonts-noto-color-emoji fonts-noto-cjk ripgrep tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim tesseract-ocr-chi-tra tesseract-ocr-jpn tesseract-ocr-spa tesseract-ocr-fra tesseract-ocr-kor
+          localedef -i en_US -f UTF-8 en_US.UTF-8
+          useradd -m -u 1001 testuser
+          chown -R testuser:testuser "$GITHUB_WORKSPACE" "$(dirname "$GITHUB_WORKSPACE")"
+      - name: Test and build on native Debian
+        run: runuser -u testuser -- ./scripts/ci-target.sh debian13 '${{ matrix.arch }}'
+      - name: Verify Debian package installation and removal
+        run: |
+          apt-get install -y ./artifacts/*_debian13_all.deb
+          dpkg-query -W super-v-ubuntu
+          test -f /usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local/ocr.js
+          apt-get remove -y super-v-ubuntu
+          test ! -f /usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local/extension.js
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deb-debian13-${{ matrix.arch }}
+          path: artifacts/*.deb
+          if-no-files-found: error
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: log-debian13-${{ matrix.arch }}
+          path: shell-*.log
           if-no-files-found: ignore
   publish-release:
-    needs: [validate-build, shell-ui]
+    needs: [ubuntu, debian]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     runs-on: ubuntu-24.04
     timeout-minutes: 10
@@ -68,9 +100,10 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
-          name: super-v-ubuntu-deb
+          pattern: deb-*-amd64
           path: artifacts
-      - name: Publish verified installer and checksum
+          merge-multiple: true
+      - name: Publish verified installers and checksums
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -78,16 +111,15 @@ jobs:
           set -eu
           task_version=$(node -p "JSON.parse(require('node:fs').readFileSync('package.json', 'utf8')).version")
           task_tag="v$task_version"
-          task_package="super-v-ubuntu_${task_version}_all.deb"
           if gh release view "$task_tag" >/dev/null 2>&1; then
             printf '%s\n' "Release $task_tag already exists; leaving its assets unchanged."
             exit 0
           fi
-          (cd artifacts && sha256sum "$task_package" > SHA256SUMS)
-          gh release create "$task_tag" "artifacts/$task_package" artifacts/SHA256SUMS \
+          test "$(find artifacts -name '*.deb' | wc -l)" -eq 4
+          (cd artifacts && sha256sum *.deb > SHA256SUMS)
+          gh release create "$task_tag" artifacts/*.deb artifacts/SHA256SUMS \
             --target "$GITHUB_SHA" --title "Super V Ubuntu $task_version" \
             --notes-file docs/release-notes.md
           mkdir release-verify
-          gh release download "$task_tag" --dir release-verify \
-            --pattern "$task_package" --pattern SHA256SUMS
+          gh release download "$task_tag" --dir release-verify --pattern '*.deb' --pattern SHA256SUMS
           (cd release-verify && sha256sum --check SHA256SUMS)

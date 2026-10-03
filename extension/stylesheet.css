@@ -40,3 +40,8 @@
 .super-v-gif { padding: 6px; height: 84px; border-radius: 8px; }
 .super-v-empty { padding: 24px 8px; }
 .super-v-hint { font-size: 0.8em; }
+
+/* Temporary screen references stay within the selected monitor's work area. */
+.super-v-screen-pin { background-color: rgba(30, 30, 30, 0.95); border-radius: 8px; border: 1px solid rgba(255,255,255,0.3); padding: 4px; }
+.super-v-pin-controls { spacing: 4px; height: 36px; }
+.super-v-pin-button { padding: 3px 9px; min-width: 14px; }

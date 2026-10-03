@@ -348,6 +348,8 @@ async function controller() {
     const mocks = {
         'gettext': {dgettext: (_domain, message) => message},
         'gi://GLib': {default: {get_language_names: () => ['en'], PRIORITY_DEFAULT_IDLE: 0, PRIORITY_DEFAULT: 0,
+            ChecksumType: {SHA256: 1}, Bytes: class {constructor(value) { this.value = value; }},
+            compute_checksum_for_bytes: (_type, bytes) => createHash('sha256').update(bytes.value).digest('hex'),
             timeout_add(_priority, _time, callback) { const id = ++signalId + 1000; sources.set(id, callback); return id; },
             idle_add(_priority, callback) { const id = sources.size + 1; sources.set(id, callback); return id; },
             source_remove: id => sources.delete(id)}},
@@ -361,6 +363,7 @@ async function controller() {
         [mockPath('popup.js')]: {SuperVPopup: class {}},
         [mockPath('gifs.js')]: {GifLibrary: class {}},
         [mockPath('images.js')]: {ImageLibrary: class {}},
+        [mockPath('pins.js')]: {ScreenPins: class {}},
     };
     const module = await loadModule('extension/extension.js', mocks);
     const c = new module.default();

@@ -2,16 +2,20 @@
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import {imageInfo, MAX_IMAGE_BYTES} from './core/image.js';
+import {MAX_OCR_TEXT_BYTES} from './core/export.js';
+import {LineFrames} from './core/frames.js';
 
 const frameLimit = Math.ceil(MAX_IMAGE_BYTES / 3) * 4 + 256;
 
 // Image data crosses anonymous pipes, never command arguments or scratch files.
 // Keep a single editor alive, bounded output, and cancel it with the extension.
 export class EditorBridge {
-    constructor(directory, onCopy, onError) {
+    constructor(directory, onCopy, onError, {onPin = () => {}, onText = () => {}} = {}) {
         this.directory = directory;
         this.onCopy = onCopy;
         this.onError = onError;
+        this.onPin = onPin;
+        this.onText = onText;
     }
 
     open(bytes, mime) {
@@ -51,7 +55,7 @@ export class EditorBridge {
             });
         };
         write();
-        let buffer = '';
+        const frames = new LineFrames(frameLimit);
         let eof = false;
         let waited = false;
         const finish = () => {
@@ -67,28 +71,28 @@ export class EditorBridge {
             try {
                 const chunk = stream.read_bytes_finish(result).get_data();
                 if (!chunk.length) {
-                    if (buffer.length)
-                        throw new Error('Incomplete editor frame');
+                    frames.finish();
                     eof = true;
                     finish();
                     return;
                 }
-                buffer += new TextDecoder('utf-8', {fatal: true}).decode(chunk);
-                let end;
-                while ((end = buffer.indexOf('\n')) >= 0) {
-                    if (end > frameLimit)
-                        throw new Error('Oversized editor frame');
-                    const frame = JSON.parse(buffer.slice(0, end));
-                    buffer = buffer.slice(end + 1);
-                    if (typeof frame.png !== 'string' || frame.png.length > frameLimit)
+                for (const text of frames.push(chunk)) {
+                    const frame = JSON.parse(text);
+                    if (frame.action === 'copy-text') {
+                        if (typeof frame.text !== 'string' || !frame.text || frame.text.includes('\0') ||
+                            new TextEncoder().encode(frame.text).length > MAX_OCR_TEXT_BYTES)
+                            throw new Error('Invalid text frame');
+                        if (this.child === child && !cancel.is_cancelled()) this.onText(frame.text);
+                        continue;
+                    }
+                    if (![undefined, 'copy-image', 'pin'].includes(frame.action) ||
+                        typeof frame.png !== 'string' || frame.png.length > frameLimit)
                         throw new Error('Invalid editor frame');
                     const edited = GLib.base64_decode(frame.png);
                     imageInfo(edited, 'image/png');
                     if (this.child === child && !cancel.is_cancelled())
-                        this.onCopy(edited);
+                        (frame.action === 'pin' ? this.onPin : this.onCopy)(edited);
                 }
-                if (buffer.length > frameLimit)
-                    throw new Error('Oversized editor frame');
                 read();
             } catch {
                 if (!cancel.is_cancelled()) {
@@ -112,6 +116,16 @@ export class EditorBridge {
         this.cancel = null;
         const child = this.child;
         this.child = null;
-        child?.force_exit();
+        if (!child) return;
+        // Let GTK cancel its OCR subprocess before exit. Fall back to a kill
+        // if a damaged or unresponsive helper cannot handle SIGTERM.
+        child.send_signal(15);
+        let timer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+            timer = 0; child.force_exit(); return GLib.SOURCE_REMOVE;
+        });
+        child.wait_async(null, (process, result) => {
+            try { process.wait_finish(result); } catch { /* Already exiting. */ }
+            if (timer) { GLib.source_remove(timer); timer = 0; }
+        });
     }
 }

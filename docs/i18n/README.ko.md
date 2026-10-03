@@ -2,20 +2,20 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
-v0.1.7에 자르기, 화살표, 사각형, 텍스트, 강조 표시, 펜, 불투명한 검은색 가리기를 지원하는 스크린샷 편집기를 추가했습니다. 실행 취소/다시 실행, 확대/축소, PNG 복사 및 저장도 가능합니다. Super V로 캡처하면 자동으로 열리며 설정 → 데스크톱 통합에서 끌 수 있습니다. 기록의 이미지 옆 연필 버튼이나 Ctrl+E로도 열 수 있습니다. 내보내기는 원본 기록이나 GNOME이 저장한 스크린샷을 삭제하지 않습니다.
+v0.1.8에는 드래그·확대·불투명도 조절이 가능한 화면 고정 이미지, 자동 번호 마커, 선택하여 이동·크기 변경·삭제할 수 있는 주석, 로컬 OCR이 추가되었습니다. 편집기의 «화면에 고정»으로 참고 이미지를 띄우고 «이미지에서 텍스트 복사»로 설치된 인식 언어를 선택한 뒤 결과를 검토·수정하고 복사하세요. «설정 → 스크린샷 내보내기 및 OCR»에서 폴더, 파일 이름 형식, OCR 언어를 지정합니다. 영어 OCR은 패키지에 포함되며 다른 언어는 해당 Tesseract 언어 팩이 필요합니다. 화면 고정 이미지는 기록의 고정 항목과 별개이며 잠금·지우기·확장 기능 비활성화 시 닫힙니다.
 
 v0.1.6은 PNG/JPEG 이미지 기록, 미리보기, 고정 및 붙여넣기를 지원합니다. 카메라 버튼이나 Super+Shift+S로 GNOME의 영역·창·전체 화면 캡처 도구를 엽니다. 설정에서 단축키를 변경하거나 끌 수 있습니다. «종료 시 기록 지우기»를 켜면 텍스트, 이미지, 고정 항목 및 최근 이모지를 메모리에만 보관하며 종료, 다시 시작, 로그아웃 또는 확장 기능을 다시 불러올 때 지워집니다. 기존에 저장된 기록도 삭제하지만 GNOME의 스크린샷 파일은 삭제하지 않습니다.
 
 Ubuntu GNOME에서 사용하는 Windows 스타일 Super+V 선택기입니다. 클립보드 기록, 이모지, 카오모지, 기호, 즐겨찾는 로컬 GIF를 제공합니다. 모든 데이터는 이 컴퓨터에 저장되며 원격 측정이나 실행 중 네트워크 접근은 없습니다.
 
-Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
+Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Debian 13 / GNOME 48 · Wayland · x86-64 & ARM64
 
 ## 처음 설치
 
-[v0.1.7 패키지](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.7/super-v-ubuntu_0.1.7_all.deb)를 다운로드하고 파일이 있는 폴더에서 터미널을 여세요.
+[v0.1.8 패키지](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.8/super-v-ubuntu_0.1.8_all.deb)를 다운로드하고 파일이 있는 폴더에서 터미널을 여세요.
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.7_all.deb
+sudo apt install ./super-v-ubuntu_0.1.8_all.deb
 ```
 
 설치 후 **작업을 저장하고 로그아웃한 다음 다시 로그인**하세요. 다음 명령은 일반 사용자로 실행합니다(sudo 사용 안 함). 첫 번째 명령은 알림 단축키를 Super+M으로 설정하여 Super+V를 사용할 수 있게 합니다. 기존 사용자 지정 알림 단축키는 변경됩니다.
@@ -26,11 +26,11 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-**Super+V**를 누르면 제목에 **Super V 0.1.7**이 표시되어야 합니다.
+**Super+V**를 누르면 제목에 **Super V 0.1.8**이 표시되어야 합니다.
 
-## v0.1.7으로 업데이트
+## v0.1.8으로 업데이트
 
-위 패키지를 다운로드하고 해당 폴더에서 같은 apt 명령을 실행하세요. 이전 패키지를 덮어써서 업데이트하므로 먼저 제거할 필요가 없습니다. **작업을 저장하고 로그아웃한 다음 다시 로그인**한 뒤, **Super+V** 제목이 **Super V 0.1.7**인지 확인하세요. 언어와 단축키 설정은 유지되며 저장된 텍스트 기록, 고정 항목 및 최근 이모지가 이전됩니다. 로그아웃 시 삭제하도록 설정한 기록은 해당 설정에 따라 삭제됩니다.
+위 패키지를 다운로드하고 해당 폴더에서 같은 apt 명령을 실행하세요. 이전 패키지를 덮어써서 업데이트하므로 먼저 제거할 필요가 없습니다. **작업을 저장하고 로그아웃한 다음 다시 로그인**한 뒤, **Super+V** 제목이 **Super V 0.1.8**인지 확인하세요. 언어와 단축키 설정은 유지되며 저장된 텍스트 기록, 고정 항목 및 최근 이모지가 이전됩니다. 로그아웃 시 삭제하도록 설정한 기록은 해당 설정에 따라 삭제됩니다.
 
 일반 사용자로 설치된 패키지와 GNOME이 불러온 확장 기능의 버전을 확인하세요.
 
@@ -39,9 +39,9 @@ dpkg-query -W super-v-ubuntu
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-두 버전 모두 **0.1.7**이어야 합니다(확장 기능 내부 번호는 8). 패키지만 새 버전이면 먼저 로그아웃하고 다시 로그인하세요. 시스템 패키지의 Path는 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`입니다. 홈 폴더를 가리키면 해당 UUID 폴더를 백업하고 확장 기능 디렉터리 밖으로 옮긴 후 다시 로그인하세요. Super+V가 반응하지 않으면 위의 enable 명령을 실행하고, 알림을 열면 처음 설치의 알림 단축키 명령을 확인하세요. 설정을 직접 열려면 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`을 실행하세요.
+두 버전 모두 **0.1.8**이어야 합니다(확장 기능 내부 번호는 9). 패키지만 새 버전이면 먼저 로그아웃하고 다시 로그인하세요. 시스템 패키지의 Path는 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`입니다. 홈 폴더를 가리키면 해당 UUID 폴더를 백업하고 확장 기능 디렉터리 밖으로 옮긴 후 다시 로그인하세요. Super+V가 반응하지 않으면 위의 enable 명령을 실행하고, 알림을 열면 처음 설치의 알림 단축키 명령을 확인하세요. 설정을 직접 열려면 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`을 실행하세요.
 
-## v0.1.7 설정 안내
+## v0.1.8 설정 안내
 
 Super+V를 열고 제목 옆의 톱니바퀴 버튼을 눌러 설정을 여세요.
 

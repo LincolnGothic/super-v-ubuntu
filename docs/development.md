@@ -43,7 +43,7 @@ ESLint uses its unix formatter to avoid a nonessential optional chalk package.
 Expected GLib warnings for intentionally rejected out-of-range test settings
 are assertions of schema validation, not shell runtime errors.
 
-The native package version is 0.1.7, architecture all. Debhelper performs the
+The native package version is 0.1.8, architecture all. Debhelper performs the
 staging, permissions, metadata and archive build. Schemas are compiled into the
 extension's private schema directory; no root-time per-user settings changes
 or global schema install are needed. Install-local refuses root.
