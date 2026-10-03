@@ -22,15 +22,15 @@ jobs:
         run: make package
       - name: Audit package
         run: |
-          lintian --fail-on error,warning ../super-v-ubuntu_0.1.6_all.deb
-          dpkg-deb --info ../super-v-ubuntu_0.1.6_all.deb
-          dpkg-deb --contents ../super-v-ubuntu_0.1.6_all.deb
-          python3 scripts/audit-package.py ../super-v-ubuntu_0.1.6_all.deb
-          install -D -m 0644 ../super-v-ubuntu_0.1.6_all.deb artifacts/super-v-ubuntu_0.1.6_all.deb
+          lintian --fail-on error,warning ../super-v-ubuntu_0.1.7_all.deb
+          dpkg-deb --info ../super-v-ubuntu_0.1.7_all.deb
+          dpkg-deb --contents ../super-v-ubuntu_0.1.7_all.deb
+          python3 scripts/audit-package.py ../super-v-ubuntu_0.1.7_all.deb
+          install -D -m 0644 ../super-v-ubuntu_0.1.7_all.deb artifacts/super-v-ubuntu_0.1.7_all.deb
       - uses: actions/upload-artifact@v4
         with:
           name: super-v-ubuntu-deb
-          path: artifacts/super-v-ubuntu_0.1.6_all.deb
+          path: artifacts/super-v-ubuntu_0.1.7_all.deb
           if-no-files-found: error
   shell-ui:
     runs-on: ubuntu-24.04

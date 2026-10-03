@@ -474,6 +474,12 @@ class SuperVPopup extends ModalDialog.ModalDialog {
             });
             row.add_child(select);
             if (clipboard) {
+                if (image) {
+                    const edit = button('✎', () => this.controller.editImage(entry), 'button super-v-icon');
+                    edit.accessible_name = _('Edit image');
+                    this._bindTooltip(edit);
+                    row.add_child(edit);
+                }
                 row.add_child(button(entry.pinned ? '★' : '☆', () => {
                     this.controller.pin(entry.id);
                 }, 'button super-v-icon'));
@@ -533,6 +539,11 @@ class SuperVPopup extends ModalDialog.ModalDialog {
     _key(event) {
         const key = event.get_key_symbol();
         const ctrl = event.get_state() & Clutter.ModifierType.CONTROL_MASK;
+        if (ctrl && [Clutter.KEY_e, Clutter.KEY_E].includes(key) && this.tab === 'clipboard' &&
+            this.results[this.selected]?.kind === 'image') {
+            this.controller.editImage(this.results[this.selected]);
+            return Clutter.EVENT_STOP;
+        }
         if (this._toneMenu.isOpen) {
             if (key === Clutter.KEY_Escape) {
                 this._toneMenu.close();

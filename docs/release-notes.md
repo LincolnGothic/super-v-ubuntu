@@ -1,38 +1,23 @@
-Super V Ubuntu 0.1.6 adds image clipboard history, native screenshots, and a
-setting to clear history on shutdown.
+Super V Ubuntu 0.1.7 adds a local screenshot editor.
 
-- PNG/JPEG clipboard images appear alongside text with thumbnails, dimensions,
-  pin/delete controls and paste support. Limits are 8 MiB per image, 32 MiB
-  total, 8192 pixels per side and 16 megapixels. Apps must accept image paste.
-- The camera button and configurable Super+Shift+S shortcut open GNOME’s
-  screenshot controls for area, window or screen capture. Captured PNG images
-  enter history while capture is enabled. GNOME’s normal screenshot files are
-  independent of Super V history.
-- Settings → Clipboard history → Clear history on shutdown keeps text, images,
-  pins and emoji recents only in memory. This also clears on restart, logout
-  or extension reload. Turning it on removes existing saved history; current
-  memory is retained. This overrides Remember after logout.
-- Existing text history and settings are preserved when this new option is off.
-  All new controls and notifications are translated in all seven languages.
+- Crop, arrows, rectangles, text, highlights, freehand drawing and opaque black
+  covers, with undo/redo and zoom/pan.
+- Copy a flattened PNG to the clipboard or save it to a chosen PNG file.
+- Open automatically after screenshots taken through Super V, with an opt-out
+  in Settings → Desktop integration → Edit after taking a screenshot.
+- Edit PNG/JPEG images in history with the pencil button or Ctrl+E.
+- All new controls are translated into all seven supported languages.
 
-Upgrade on your Ubuntu GNOME desktop:
+The original history image and GNOME screenshot file remain separate. Covering
+pixels in an export does not delete those originals. Existing image bounds
+apply: 8 MiB per input/export, 8192 pixels per side, 16 megapixels.
+Pin-to-screen, OCR and scrolling capture are not included in this release.
 
-```sh
-sudo apt install ./super-v-ubuntu_0.1.6_all.deb
-```
+Upgrade with `sudo apt install ./super-v-ubuntu_0.1.7_all.deb`, then save your
+work, log out and log back in. The Super+V header should read **Super V 0.1.7**.
+Language, shortcuts and saved history are preserved. A user-local extension
+with the same UUID overrides the system package; see the README upgrade guide.
 
-Log out and back in after upgrading, then verify the header reads **Super V
-0.1.6**. Enable the extension as your ordinary user if needed:
-
-```sh
-gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
-```
-
-A user-local copy with the same UUID overrides the system package. Inspect the
-path with `gnome-extensions info super-v-ubuntu@super-v-ubuntu.local` if an old
-version appears. Upgrades retain text history, pins and existing settings.
-
-Release publication is gated on translation completeness, Node/GJS tests,
-private image-storage checks, package audit/lintian, and real isolated GNOME
-Wayland popup/preferences, image clipboard, image paste and screenshot tests.
+Publication is gated on logic/translation/native GJS checks, package audit and
+lintian, and isolated GNOME Wayland editor, clipboard, capture and paste tests.
 Full desktop application acceptance remains the matrix in docs/testing.md.

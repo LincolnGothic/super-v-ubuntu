@@ -1,3 +1,12 @@
+super-v-ubuntu (0.1.7) unstable; urgency=medium
+
+  * Add a GTK screenshot editor with crop, annotations, opaque covers and undo.
+  * Export edited PNG images to the clipboard or a chosen file.
+  * Open after capture by default with an opt-out setting and history editing.
+  * Translate new controls and test native drawing, export and editor lifecycle.
+
+ -- Super V Ubuntu contributors <super-v-ubuntu@users.noreply.github.com>  Sat, 03 Oct 2026 13:00:00 +0000
+
 super-v-ubuntu (0.1.6) unstable; urgency=medium
 
   * Save PNG/JPEG clipboard images with bounded thumbnails and private storage.

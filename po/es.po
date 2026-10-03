@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 msgid ""
-msgstr "Project-Id-Version: super-v-ubuntu 0.1.6\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-03 12:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: es\nLanguage: es\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
+msgstr "Project-Id-Version: super-v-ubuntu 0.1.7\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-03 12:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: es\nLanguage: es\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
 
 msgid "Activities"
 msgstr "Actividades"
@@ -842,3 +842,72 @@ msgstr "↑↓ Seleccionar · Enter Pegar · Esc Cerrar · Ctrl+Tab Cambiar"
 msgid "↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close"
 msgstr "↑↓←→ Seleccionar · Enter Pegar · Ctrl+F Buscar · Esc Cerrar"
 
+
+msgid "Annotation limit reached. Undo a mark before adding another."
+msgstr "Límite de anotaciones alcanzado. Deshaz una marca antes de añadir otra."
+
+msgid "Arrow"
+msgstr "Flecha"
+
+msgid "Color"
+msgstr "Color"
+
+msgid "Could not export the image. Crop it to reduce its size."
+msgstr "No se pudo exportar la imagen. Recórtala para reducir su tamaño."
+
+msgid "Could not open or communicate with the screenshot editor."
+msgstr "No se pudo abrir el editor de capturas o comunicarse con él."
+
+msgid "Could not save the image."
+msgstr "No se pudo guardar la imagen."
+
+msgid "Cover sensitive area"
+msgstr "Cubrir área sensible"
+
+msgid "Crop"
+msgstr "Recortar"
+
+msgid "Edit after taking a screenshot"
+msgstr "Editar después de capturar"
+
+msgid "Edit image"
+msgstr "Editar imagen"
+
+msgid "Edited image copied. Paste it into your application."
+msgstr "Imagen editada copiada. Pégala en tu aplicación."
+
+msgid "Highlight"
+msgstr "Resaltar"
+
+msgid "Image saved."
+msgstr "Imagen guardada."
+
+msgid "Move image"
+msgstr "Mover imagen"
+
+msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
+msgstr "Abre el editor tras capturar con Super V. Las imágenes del historial siempre se pueden editar."
+
+msgid "Pen"
+msgstr "Lápiz"
+
+msgid "Rectangle"
+msgstr "Rectángulo"
+
+msgid "Save image"
+msgstr "Guardar imagen"
+
+msgid "Screenshot editor"
+msgstr "Editor de capturas"
+
+msgid "Stroke width / text size"
+msgstr "Grosor / tamaño del texto"
+
+msgid "Text"
+msgstr "Texto"
+
+msgid "Text to add"
+msgstr "Texto para añadir"
+
+msgid "Zoom (%)"
+msgstr "Zoom (%)"

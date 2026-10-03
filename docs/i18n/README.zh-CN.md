@@ -2,6 +2,8 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
+v0.1.7 新增截图编辑器：裁剪、箭头、矩形、文字、高亮、画笔和不透明黑色遮盖，支持撤销/重做、缩放、复制及保存 PNG。通过 Super V 截图后默认自动打开；可在「设置 → 桌面集成 → 截图后编辑」关闭。历史图片旁的铅笔按钮或 Ctrl+E 可随时打开编辑器。导出不会删除历史中的原图或 GNOME 保存的截图。
+
 v0.1.6 支持 PNG/JPEG 图片历史、缩略图、固定和粘贴。点击标题栏的相机按钮，或按 Super+Shift+S，可使用 GNOME 的区域、窗口和全屏截图工具。快捷键可在设置中修改或禁用。启用「关机时清空历史记录」后，文本、图片、固定项目和最近使用的表情仅保存在内存中，关机、重启、注销或重新加载扩展时都会清空。启用时也会删除已有的磁盘历史记录，但不删除 GNOME 的截图文件。
 
 适用于 Ubuntu GNOME 的 Windows 风格 Super+V 选择器，提供剪贴板历史、表情符号、颜文字、符号和本地 GIF 收藏。所有内容保留在本机，无遥测或运行时网络请求。
@@ -10,10 +12,10 @@ Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
 
 ## 首次安装
 
-下载 [v0.1.6 安装包](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb)，在安装包所在文件夹中打开终端：
+下载 [v0.1.7 安装包](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.7/super-v-ubuntu_0.1.7_all.deb)，在安装包所在文件夹中打开终端：
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.6_all.deb
+sudo apt install ./super-v-ubuntu_0.1.7_all.deb
 ```
 
 安装后**保存工作、注销并重新登录**，再以普通用户运行以下命令（不使用 sudo）。第一个命令将通知快捷键设为 Super+M，为本应用释放 Super+V；它会替换自定义通知快捷键。
@@ -24,11 +26,11 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-按 **Super+V**，标题应为 **Super V 0.1.6**。
+按 **Super+V**，标题应为 **Super V 0.1.7**。
 
-## 升级到 v0.1.6
+## 升级到 v0.1.7
 
-下载上面的安装包，在安装包所在文件夹中运行同一个 apt 命令，即可覆盖升级，无须先卸载。随后**保存工作、注销并重新登录**，再按 **Super+V** 检查标题是否为 **Super V 0.1.6**。语言和快捷键设置会保留，已保存的文本历史、固定项目和最近使用的表情会迁移；设置为注销时清空的历史会按设置清空。
+下载上面的安装包，在安装包所在文件夹中运行同一个 apt 命令，即可覆盖升级，无须先卸载。随后**保存工作、注销并重新登录**，再按 **Super+V** 检查标题是否为 **Super V 0.1.7**。语言和快捷键设置会保留，已保存的文本历史、固定项目和最近使用的表情会迁移；设置为注销时清空的历史会按设置清空。
 
 以普通用户检查安装包和 GNOME 当前加载的版本：
 
@@ -37,9 +39,9 @@ dpkg-query -W super-v-ubuntu
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-两个版本都应为 **0.1.6**（扩展内部编号为 7）。若安装包为新版而 GNOME 仍加载旧版，请先注销并重新登录。系统安装的 Path 应为 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`；若指向用户目录，请备份并将该 UUID 文件夹移到扩展目录之外，再注销登录。若 Super+V 没有反应，可运行上面的 enable 命令；若打开的是通知，检查首次安装中的通知快捷键命令。设置打不开时，可运行 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`。
+两个版本都应为 **0.1.7**（扩展内部编号为 8）。若安装包为新版而 GNOME 仍加载旧版，请先注销并重新登录。系统安装的 Path 应为 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`；若指向用户目录，请备份并将该 UUID 文件夹移到扩展目录之外，再注销登录。若 Super+V 没有反应，可运行上面的 enable 命令；若打开的是通知，检查首次安装中的通知快捷键命令。设置打不开时，可运行 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`。
 
-## v0.1.6 设置速查
+## v0.1.7 设置速查
 
 按 Super+V，点击标题栏的齿轮按钮打开“设置”。
 

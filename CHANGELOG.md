@@ -1,5 +1,19 @@
 # Changelog
 
+## 0.1.7 — 2026-10-03
+
+- Add a screenshot editor with cropping, arrows, rectangles, text, highlights, freehand drawing and opaque black covers.
+- Undo/redo edits, zoom and pan, and copy or save a flattened PNG.
+- Open the editor after Super V captures by default; switch this off in Settings.
+- Edit existing PNG/JPEG history images with the pencil button or Ctrl+E.
+- Include all seven interface languages and bounded, temporary pipe communication.
+
+## 0.1.6 — 2026-10-03
+
+- Capture and paste PNG/JPEG images with thumbnail previews and private storage.
+- Open native screenshot controls with the camera button or configurable Super+Shift+S.
+- Keep history only in memory with Clear history on shutdown.
+
 ## 0.1.5 — 2026-10-02
 
 - Choose any of the seven supported languages in Settings, or follow the system.

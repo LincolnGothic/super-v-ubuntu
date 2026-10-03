@@ -2,7 +2,7 @@
 
 Super V Ubuntu runs as a GNOME Shell 46/50 ES-module extension. It adds two
 user-mode keybindings and a reusable, compact St/Clutter shell dialog. There is
-no application window, daemon, Electron runtime, X11 automation, or runtime
+a temporary GTK editor window, without a daemon, Electron runtime, X11 automation, or runtime
 network access. The Debian package installs it at
 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local/`.
 Users explicitly enable it; package scripts never change user settings.
@@ -31,6 +31,21 @@ on shutdown callbacks; no history can be restored after the session ends.
 The Screenshot button and second keybinding release the picker’s modal grab
 before opening Main.screenshotUI. The normal clipboard monitor captures its PNG.
 
+
+`editor-bridge.js` launches one temporary GJS/GTK4 process, sending validated
+image bytes on anonymous stdin and receiving bounded base64 PNG frames on stdout.
+No scratch image, argument payload, clipboard log or network request is used.
+The child exits when its window closes; clear, lock, deletion of the edited
+entry and extension disable terminate it. Natural exit drains pending Copy
+output before cleanup. Capture signal handlers and idle sources are removed
+on cancellation; epoch/serial guards discard stale clipboard transfers.
+`core/editor.js` stores original-coordinate annotations and crop bounds with
+32 undo steps, 128 annotations, 4096 total stroke points and 500 text characters.
+`editor-render.js` validates before native decode, uses Cairo/Pango for drawing,
+and exports a flattened, bounded PNG. Black covers use opaque pixels. The
+original is kept separate; the editor never rewrites history originals.
+Copy goes through Shell's clipboard owner, so it remains available after the
+editor closes. The automatic editor preference applies to Super V captures.
 
 `paste.js` creates a Mutter/Clutter virtual keyboard, returns focus, waits for
 physical shortcut modifiers to be released, rechecks the exact destination,

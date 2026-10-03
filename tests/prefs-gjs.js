@@ -43,6 +43,12 @@ function verify(language) {
     const clear = rows.find(row => row.title === _('Clear history on shutdown'));
     const remember = rows.find(row => row.title === _('Remember after logout'));
     const shortcut = rows.find(row => row.title === _('Screenshot shortcut (GTK accelerator syntax)'));
+    const autoEdit = rows.find(row => row.title === _('Edit after taking a screenshot'));
+    if (!autoEdit) throw new Error('Screenshot editor setting is missing');
+    autoEdit.active = false;
+    if (settings.get_boolean('edit-after-screenshot')) throw new Error('Automatic editor cannot be disabled');
+    autoEdit.active = true;
+    if (!settings.get_boolean('edit-after-screenshot')) throw new Error('Automatic editor cannot be enabled');
     if (!clear || !remember || !shortcut)
         throw new Error('Image/screenshot/privacy preferences missing');
     clear.active = true;

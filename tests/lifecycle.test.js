@@ -338,11 +338,17 @@ async function controller() {
     const emoji = JSON.parse(readFileSync('extension/data/emoji.json', 'utf8'));
     const mockPath = name => resolve(`extension/${name}`);
     const sources = new Map();
+    const signals = new Map();
+    let signalId = 0;
     const main = {notify() {}, sessionMode: {isLocked: false, isGreeter: false},
-        screenshotUI: {open: async () => { main.opened = (main.opened ?? 0) + 1; }}};
+        screenshotUI: {connect(name, handler) { signals.set(++signalId, {name, handler}); return signalId; },
+            disconnect(id) { signals.delete(id); },
+            emit(name) { for (const signal of [...signals.values()]) if (signal.name === name) signal.handler(); },
+            open: async () => { main.opened = (main.opened ?? 0) + 1; }}};
     const mocks = {
         'gettext': {dgettext: (_domain, message) => message},
-        'gi://GLib': {default: {get_language_names: () => ['en'], PRIORITY_DEFAULT_IDLE: 0,
+        'gi://GLib': {default: {get_language_names: () => ['en'], PRIORITY_DEFAULT_IDLE: 0, PRIORITY_DEFAULT: 0,
+            timeout_add(_priority, _time, callback) { const id = ++signalId + 1000; sources.set(id, callback); return id; },
             idle_add(_priority, callback) { const id = sources.size + 1; sources.set(id, callback); return id; },
             source_remove: id => sources.delete(id)}},
         'gi://Gio': {default: {}}, 'gi://Meta': {default: {}}, 'gi://Shell': {default: {}},
@@ -372,11 +378,15 @@ async function controller() {
     c.popup = {close() {}, refresh() {}};
     const writes = [];
     const pastes = [];
-    c.clipboard = {generation: 1, readText: async () => 'old', write: x => writes.push(x),
+    c.clipboard = {invalidate() {}, generation: 1, readText: async () => 'old', write: x => writes.push(x),
         writeGif: x => writes.push(x), writeImage: (bytes, mime) => writes.push({bytes, mime})};
     c.gifs = {read: async () => new Uint8Array([1, 2, 3])};
     c.pasteBackend = {paste: x => pastes.push(x), cancel() {}};
-    return {c, writes, pastes, main, sources};
+    const editors = [];
+    c.editor = {open: (bytes, mime) => editors.push({bytes, mime}), close() {}};
+    c.clipboard.readImage = async () => ({bytes: pngBytes, mime: 'image/png'});
+    const tick = () => { for (const [id, callback] of [...sources]) { sources.delete(id); callback(); } };
+    return {c, writes, pastes, main, sources, tick, editors};
 }
 
 test('image history choice copies original binary data and preserves its paste target', async () => {
@@ -550,4 +560,56 @@ test('unreadable GIF leaves the clipboard and paste target untouched', async () 
     await c.selectGif({path: '/tmp/missing.gif'});
     assert.deepEqual(writes, []);
     assert.deepEqual(pastes, []);
+});
+
+for (const outcome of ['capture', 'cancel', 'disabled setting', 'clear', 'lock']) {
+    test(`screenshot editor respects ${outcome}`, async () => {
+        const {c, main, tick, editors} = await controller();
+        c.takeScreenshot();
+        tick();
+        if (outcome !== 'cancel') main.screenshotUI.emit('screenshot-taken');
+        if (outcome === 'disabled setting') c.settings.get_boolean = key => key !== 'edit-after-screenshot';
+        main.screenshotUI.emit('closed');
+        if (outcome === 'clear') c.clear(true);
+        if (outcome === 'lock') { main.sessionMode.isLocked = true; c._cancelScreenshot(); }
+        tick();
+        await settle();
+        assert.equal(editors.length, outcome === 'capture' ? 1 : 0);
+    });
+}
+test('clear during screenshot transfer prevents the editor reopening', async () => {
+    const {c, main, tick, editors} = await controller();
+    let resolve;
+    c.clipboard.readImage = () => new Promise(done => { resolve = done; });
+    c.takeScreenshot(); tick();
+    main.screenshotUI.emit('screenshot-taken'); main.screenshotUI.emit('closed'); tick();
+    c.clear(true);
+    resolve({bytes: pngBytes, mime: 'image/png'});
+    await settle();
+    assert.equal(editors.length, 0);
+});
+test('editing a history image opens its original without pasting or replacing it', async () => {
+    const {c, editors, writes, pastes} = await controller();
+    const entry = c.history.addImage({kind: 'image', mime: 'image/png', digest: 'a'.repeat(64),
+        bytes: pngBytes.length, width: 64, height: 48});
+    c.images = {get: () => ({bytes: pngBytes})};
+    c.editImage(entry);
+    assert.deepEqual(editors, [{bytes: pngBytes, mime: 'image/png'}]);
+    assert.deepEqual(writes, []); assert.deepEqual(pastes, []);
+    assert.equal(c.history.entries[0], entry);
+});
+
+test('GNOME 46 closed-before-saved ordering still opens the editor', async () => {
+    const {c, main, tick, editors} = await controller();
+    c.takeScreenshot(); tick();
+    main.screenshotUI.emit('closed');
+    main.screenshotUI.emit('screenshot-taken'); tick();
+    await settle(); assert.equal(editors.length, 1);
+});
+test('cancelled capture cannot adopt a later native screenshot', async () => {
+    const {c, main, tick, editors} = await controller();
+    c.takeScreenshot(); tick(); main.screenshotUI.emit('closed');
+    main.screenshotUI.visible = true; main.screenshotUI.emit('notify::visible');
+    main.screenshotUI.emit('screenshot-taken'); tick(); await settle();
+    assert.equal(editors.length, 0);
 });

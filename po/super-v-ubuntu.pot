@@ -33,10 +33,16 @@ msgstr ""
 msgid "Animals & Nature"
 msgstr ""
 
+msgid "Annotation limit reached. Undo a mark before adding another."
+msgstr ""
+
 msgid "Appearance"
 msgstr ""
 
 msgid "Apps using Ctrl+Shift+V (comma-separated)"
+msgstr ""
+
+msgid "Arrow"
 msgstr ""
 
 msgid "Arrows"
@@ -84,13 +90,22 @@ msgstr ""
 msgid "Collects copied text and PNG/JPEG images. Images: up to 8 MiB each, 32 MiB total, 8192 pixels per side and 16 megapixels."
 msgstr ""
 
+msgid "Color"
+msgstr ""
+
 msgid "Copied to clipboard. Use your application’s paste shortcut."
 msgstr ""
 
 msgid "Copy text or an image to start your history."
 msgstr ""
 
+msgid "Could not export the image. Crop it to reduce its size."
+msgstr ""
+
 msgid "Could not initialize the extension. Disable and re-enable it."
+msgstr ""
+
+msgid "Could not open or communicate with the screenshot editor."
 msgstr ""
 
 msgid "Could not open the screenshot tool. Try Print Screen."
@@ -99,7 +114,16 @@ msgstr ""
 msgid "Could not read that GIF. Re-add it in Settings or choose another file."
 msgstr ""
 
+msgid "Could not save the image."
+msgstr ""
+
 msgid "Could not update local history storage. Check directory permissions."
+msgstr ""
+
+msgid "Cover sensitive area"
+msgstr ""
+
+msgid "Crop"
 msgstr ""
 
 msgid "Currency"
@@ -115,6 +139,15 @@ msgid "Delete entry"
 msgstr ""
 
 msgid "Desktop integration"
+msgstr ""
+
+msgid "Edit after taking a screenshot"
+msgstr ""
+
+msgid "Edit image"
+msgstr ""
+
+msgid "Edited image copied. Paste it into your application."
 msgstr ""
 
 msgid "Emoji"
@@ -151,6 +184,9 @@ msgstr ""
 msgid "Happy"
 msgstr ""
 
+msgid "Highlight"
+msgstr ""
+
 msgid "History exceeds the storage limit."
 msgstr ""
 
@@ -164,6 +200,9 @@ msgid "History, pinned items and emoji recents stay in memory only. Also clears 
 msgstr ""
 
 msgid "Image"
+msgstr ""
+
+msgid "Image saved."
 msgstr ""
 
 #, javascript-format
@@ -203,6 +242,9 @@ msgstr ""
 msgid "Medium light"
 msgstr ""
 
+msgid "Move image"
+msgstr ""
+
 msgid "Near mouse pointer"
 msgstr ""
 
@@ -218,10 +260,16 @@ msgstr ""
 msgid "Objects"
 msgstr ""
 
+msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
+msgstr ""
+
 msgid "Paste automatically"
 msgstr ""
 
 msgid "Paste overrides (JSON)"
+msgstr ""
+
+msgid "Pen"
 msgstr ""
 
 msgid "People & Body"
@@ -259,6 +307,9 @@ msgstr ""
 msgid "Recent"
 msgstr ""
 
+msgid "Rectangle"
+msgstr ""
+
 msgid "Remember after logout"
 msgstr ""
 
@@ -271,7 +322,13 @@ msgstr ""
 msgid "Sad"
 msgstr ""
 
+msgid "Save image"
+msgstr ""
+
 msgid "Screenshot"
+msgstr ""
+
+msgid "Screenshot editor"
 msgstr ""
 
 msgid "Screenshot shortcut (GTK accelerator syntax)"
@@ -317,6 +374,9 @@ msgstr ""
 msgid "Stored history could not be read. It has been removed."
 msgstr ""
 
+msgid "Stroke width / text size"
+msgstr ""
+
 msgid "Super V"
 msgstr ""
 
@@ -327,6 +387,12 @@ msgid "Surprised"
 msgstr ""
 
 msgid "Symbols"
+msgstr ""
+
+msgid "Text"
+msgstr ""
+
+msgid "Text to add"
 msgstr ""
 
 #, javascript-format
@@ -361,6 +427,9 @@ msgid "You can pin up to 100 entries."
 msgstr ""
 
 msgid "Your recently used emoji will appear here."
+msgstr ""
+
+msgid "Zoom (%)"
 msgstr ""
 
 msgid "adoration"

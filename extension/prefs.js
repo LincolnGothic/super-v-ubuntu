@@ -95,6 +95,10 @@ export default class SuperVPreferences extends ExtensionPreferences {
         const integration = new Adw.PreferencesGroup({title: _('Desktop integration'),
             description: _('Use exact desktop application IDs (including .desktop where present) or WM classes. Clipboard origin cannot always be identified.')});
         page.add(integration);
+        const editScreenshot = new Adw.SwitchRow({title: _('Edit after taking a screenshot'),
+            subtitle: _('Open the editor after screenshots taken through Super V. Images in history can always be edited.')});
+        settings.bind('edit-after-screenshot', editScreenshot, 'active', Gio.SettingsBindFlags.DEFAULT);
+        integration.add(editScreenshot);
         const position = new Adw.ComboRow({title: _('Picker position'),
             subtitle: _('Super+V opens near the mouse pointer, or in the center of the focused screen.'),
             model: Gtk.StringList.new([_('Near mouse pointer'), _('Center of screen')]),

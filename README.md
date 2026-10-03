@@ -1,7 +1,7 @@
 # Super V Ubuntu
 
 A Windows-style **Super+V** picker for Ubuntu GNOME, with text and image clipboard history,
-screenshots, emoji, kaomoji, symbols, and local GIF favorites. Open the popup, search, and
+screenshot editing, emoji, kaomoji, symbols, and local GIF favorites. Open the popup, search, and
 insert a selection using the keyboard or mouse. Everything stays on your computer.
 GPL-3.0-or-later; Unicode data uses Unicode-3.0.
 
@@ -10,15 +10,15 @@ GPL-3.0-or-later; Unicode data uses Unicode-3.0.
 [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) ·
 [한국어](docs/i18n/README.ko.md)
 
-**Current release: [v0.1.6](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6)** ·
-[Download installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb) ·
+**Current release: [v0.1.7](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.7)** ·
+[Download installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.7/super-v-ubuntu_0.1.7_all.deb) ·
 [First installation](#install-the-debian-package) · [Upgrade](#upgrade-from-an-older-version) ·
-[Feature guide](#use-v016) · [Troubleshooting](#troubleshooting)
+[Feature guide](#use-v017) · [Troubleshooting](#troubleshooting)
 
 **Release status:** automated logic, package, and isolated GNOME Wayland checks
 are available. Image capture, native screenshot capture, and GTK image paste
 are covered by the isolated tests. Full application and desktop acceptance is
-tracked in [testing](docs/testing.md). See [v0.1.6 validation](docs/verification-v0.1.6.md).
+tracked in [testing](docs/testing.md). See [v0.1.7 validation](docs/verification-v0.1.7.md).
 
 ## Target platform
 
@@ -31,14 +31,16 @@ No `xdotool`, Electron, or background daemon is
 used. GNOME extensions run inside the shell; use the desktop test procedure
 before relying on this implementation.
 
-## Use v0.1.6
+## Use v0.1.7
 
 Open **Super+V**, then click the gear button in the header to open Settings.
 
 | Task | How to do it |
 | --- | --- |
 | Paste text or an image from history | Copy text or PNG/JPEG image pixels, open Super+V, and choose an entry. The receiving app must support the selected content. |
-| Take a screenshot | Click the camera button or press **Super+Shift+S**, then select an area, window, or screen. Reopen Super+V to find the captured image. |
+| Take a screenshot | Click the camera button or press **Super+Shift+S**, then select an area, window, or screen. The editor opens automatically after capture. |
+| Edit an image | Use the pencil button beside an image in history, or select it and press **Ctrl+E**. |
+| Choose whether the editor opens automatically | **Settings → Desktop integration → Edit after taking a screenshot** (on by default). |
 | Change the screenshot shortcut | **Settings → Desktop integration → Screenshot shortcut (GTK accelerator syntax)**. Enter a shortcut such as `<Super><Shift>s` and apply it; an empty field disables the shortcut. |
 | Clear history when the computer shuts down | Turn on **Settings → Clipboard history → Clear history on shutdown**. It is off by default and also clears on restart, logout, or extension reload. |
 | Choose a language | **Settings → Appearance → Language**. All seven languages are included in the same installer and apply immediately. |
@@ -80,12 +82,12 @@ clipboard items and bundled emoji. Full desktop acceptance is tracked in
 
 Already using Super V? Follow [Upgrade from an older version](#upgrade-from-an-older-version).
 
-Download [`super-v-ubuntu_0.1.6_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb)
-from [release v0.1.6](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6),
+Download [`super-v-ubuntu_0.1.7_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.7/super-v-ubuntu_0.1.7_all.deb)
+from [release v0.1.7](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.7),
 then open a terminal in the folder containing the downloaded file and run:
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.6_all.deb
+sudo apt install ./super-v-ubuntu_0.1.7_all.deb
 ```
 
 **Save your work, log out, and log back in** so GNOME discovers the system
@@ -104,7 +106,7 @@ It replaces any custom notification shortcut. To restore GNOME's defaults,
 run `gsettings reset org.gnome.shell.keybindings toggle-message-tray` after
 disabling this extension.
 
-Press **Super+V**; the header should show **Super V 0.1.6**. Capture begins after
+Press **Super+V**; the header should show **Super V 0.1.7**. Capture begins after
 extension initialization, with a default
 100-entry limit and persistent history. Change preferences to pause capture,
 disable persistence or automatic paste, and choose another shortcut.
@@ -113,17 +115,17 @@ Enabling this extension grants it access to clipboard text and images; read
 
 ## Upgrade from an older version
 
-1. Download the [v0.1.6 installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb).
+1. Download the [v0.1.7 installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.7/super-v-ubuntu_0.1.7_all.deb).
 2. Open a terminal in the download's folder and run the command below. Installing
    it over the previous package upgrades Super V; no uninstall is needed.
 
    ```sh
-   sudo apt install ./super-v-ubuntu_0.1.6_all.deb
+   sudo apt install ./super-v-ubuntu_0.1.7_all.deb
    ```
 
 3. **Save your work, log out, and log back in.** On Wayland, GNOME keeps the
    extension's previous code loaded until you start a new session.
-4. Press **Super+V** and check that the header shows **Super V 0.1.6**. Your
+4. Press **Super+V** and check that the header shows **Super V 0.1.7**. Your
    language and shortcut settings remain. Saved text history, pins, and emoji
    recents migrate; history configured to clear at logout is erased as requested.
 
@@ -135,8 +137,8 @@ dpkg-query -W super-v-ubuntu
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-The package should report **0.1.6**; the extension's **Version** should also
-report **0.1.6** (the internal extension number is 7). If the package is new but
+The package should report **0.1.7**; the extension's **Version** should also
+report **0.1.7** (the internal extension number is 8). If the package is new but
 GNOME still reports an old version, log out/in before reinstalling.
 
 The extension's **Path** should be
@@ -239,6 +241,31 @@ GNOME also saves screenshots in **Pictures/Screenshots**, following its normal
 settings. Clearing Super V history removes Super V’s stored copies; it does not
 delete GNOME’s screenshot files or overwrite the system clipboard.
 
+## Edit a screenshot
+
+Screenshots taken with Super V open a separate editor automatically. Turn off
+**Settings → Desktop integration → Edit after taking a screenshot** to keep
+capture without opening it. Images in history always have an **Edit image**
+pencil button; select an image and press **Ctrl+E** for the same action.
+
+Choose a tool and drag on the preview: **Crop**, **Arrow**, **Rectangle**,
+**Highlight**, **Pen**, or **Cover sensitive area**. For **Text**, type into the
+text field and click the image. Color and size controls apply to annotations.
+Zoom is relative to fitting the image in the window; **Move image** pans it.
+Use Undo/Redo, **Ctrl+Z**, or **Ctrl+Shift+Z** to revise edits.
+
+**Copy image** (**Ctrl+C**) exports a flattened PNG to the system clipboard;
+paste it in your chosen application. With history capture enabled, the edited
+image is also added as a separate entry. **Save image** (**Ctrl+S**) asks for a
+PNG destination. Closing the editor or pressing Escape discards unsaved edits.
+
+Black covers are opaque in exported pixels; they do not erase the original
+history image or GNOME's separate screenshot file. Inspect the exported image
+before sharing it. Editing is temporary, without an on-disk project or scratch
+image. The editor accepts the same bounded PNG/JPEG inputs as image history
+and exports PNG only. Pin-to-screen, OCR, automatic window detection and
+scrolling capture are not included in this release.
+
 ## Clear history on shutdown
 
 Open **Settings → Clipboard history → Clear history on shutdown**. This option
@@ -315,7 +342,7 @@ sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 gettext
     gir1.2-gtk-4.0 gir1.2-adw-1 gir1.2-gdkpixbuf-2.0 lintian git gh
 make test
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.6_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.7_all.deb
 ```
 
 No npm dependencies or runtime downloads are required. Debian's build invokes
@@ -387,7 +414,7 @@ performed before initial publication, not current GitHub publication status.
 This checkout includes `scripts/publish.sh`. After committing on main, run
 `gh auth login`, then `./scripts/publish.sh`. It creates a PUBLIC
 `<authenticated-account>/super-v-ubuntu` repository, pushes source, waits for
-successful CI, builds from a clean checkout, checks lintian, creates `v0.1.6`,
+successful CI, builds from a clean checkout, checks lintian, creates `v0.1.7`,
 uploads the `.deb` and SHA256SUMS, and downloads the release asset to verify it.
 It refuses a different origin or an existing private repository. Actual remote
 publication is recorded separately from local build success.

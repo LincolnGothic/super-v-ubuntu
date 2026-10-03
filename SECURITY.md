@@ -35,6 +35,14 @@ GNOME’s screenshot UI saves its own files in Pictures/Screenshots and copies a
 PNG to the system clipboard. Super V does not remove those separate files or
 clear another application’s system clipboard when history is erased.
 
+The temporary screenshot editor receives images through anonymous pipes and
+keeps drawing/undo state in memory, without a scratch image. Locking, clearing
+history, deleting its source entry or disabling Super V closes it. Copy exports
+flattened PNG pixels through Shell; Save writes only to the chosen destination.
+Opaque black covers affect exported pixels. The original history image and
+GNOME's screenshot file remain separate and may still contain sensitive data.
+Saved exports are independent files and are not cleared with clipboard history.
+
 Password-manager MIME hints `x-kde-passwordManagerHint`,
 `application/x-keepassxc`, `application/x-keepass`, `x-gtk-password` and
 `application/x-bitwarden` are rejected. Defaults also exclude common password

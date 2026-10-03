@@ -55,7 +55,7 @@ export async function run() {
     const controller = {settings, metadata: JSON.parse(read('extension/metadata.json')),
         history: new History(), emoji: new EmojiIndex(JSON.parse(read('extension/data/emoji.json')).emoji, [], annotations),
         gifs: new GifLibrary(settings), images: new ImageLibrary(), select: entry => calls.push(entry.text),
-        selectGif() {}, takeScreenshot() {}, pin() {}, deleteEntry() {}, clear() {}, restoreClipboard() {}, openPreferences() {}};
+        selectGif() {}, editImage() {}, takeScreenshot() {}, pin() {}, deleteEntry() {}, clear() {}, restoreClipboard() {}, openPreferences() {}};
     controller.dir = Gio.File.new_for_path(`${base}/extension`);
     controller._active = true;
     controller._epoch = 1;
@@ -84,13 +84,22 @@ export async function run() {
     keyboard.notify_keyval(GLib.get_monotonic_time(), Clutter.KEY_Control_L, Clutter.KeyState.RELEASED);
     pointer.notify_absolute_motion(GLib.get_monotonic_time(), 900, 650);
     await Scripting.sleep(100);
+    const editorDriver = launcher.spawnv(['gjs', '-m', `${base}/tests/editor-gjs.js`]);
+    const editorOutput = await new Promise((resolve, reject) => {
+        editorDriver.communicate_utf8_async(null, null, (process, result) => {
+            try { resolve(process.communicate_utf8_finish(result)); } catch (error) { reject(error); }
+        });
+    });
+    if (!editorDriver.get_successful())
+        throw new Error(`Editor check failed: ${editorOutput[2]}`);
+    check('actual localized GTK screenshot editor draws and exports images', editorDriver.get_successful());
     const popup = new SuperVPopup(controller);
     controller.popup = popup;
     try {
         check('popup opens', popup.showPanel());
         popup._setTab('emoji');
         await Scripting.sleep(300);
-        check('loaded version is visible', popup._title.text === 'Super V 0.1.6');
+        check('loaded version is visible', popup._title.text === 'Super V 0.1.7');
         check('six equally sized emoji per row', popup._rows.length === 60 &&
             popup.list.get_first_child().get_n_children() === 6);
         const cells = popup._rows.slice(0, 7).map(rectangle);
@@ -311,6 +320,45 @@ export async function run() {
         await waitFor(() => extension.history.entries.some(entry => entry.kind === 'image' && entry.width === 1280));
         check('native screenshot automatically becomes an image history entry',
             extension.history.entries.some(entry => entry.kind === 'image' && entry.width === 1280 && entry.height === 960));
+        await waitFor(() => global.get_window_actors().some(actor => actor.meta_window.get_title() === _('Screenshot editor')));
+        check('Super V capture opens the editor automatically', !!extension.editor.child);
+        const editorWindow = global.get_window_actors().find(actor => actor.meta_window.get_title() === _('Screenshot editor')).meta_window;
+        const editorScreenshot = GLib.getenv('SUPER_V_EDITOR_SCREENSHOT');
+        if (editorScreenshot) {
+            await Scripting.sleep(200);
+            const frame = editorWindow.get_frame_rect();
+            const output = Gio.File.new_for_path(editorScreenshot).replace(null, false, Gio.FileCreateFlags.PRIVATE, null);
+            await new Shell.Screenshot().screenshot_area(frame.x, frame.y, frame.width, frame.height, output);
+            output.close(null);
+        }
+        let copied = 0;
+        const copy = extension.editor.onCopy;
+        extension.editor.onCopy = bytes => { copy(bytes); copied++; };
+        extension.settings.set_boolean('history-enabled', false);
+        const pausedCount = extension.history.entries.length;
+        editorWindow.activate(global.get_current_time());
+        await Scripting.sleep(200);
+        for (const key of [Clutter.KEY_Control_L, Clutter.KEY_c])
+            keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.PRESSED);
+        for (const key of [Clutter.KEY_c, Clutter.KEY_Control_L])
+            keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.RELEASED);
+        await waitFor(() => copied === 1);
+        check('editor Copy transfers a full screenshot through Shell while history is paused',
+            (await extension.clipboard.readImage())?.mime === 'image/png' && extension.history.entries.length === pausedCount);
+        keyboard.notify_keyval(GLib.get_monotonic_time(), Clutter.KEY_Escape, Clutter.KeyState.PRESSED);
+        keyboard.notify_keyval(GLib.get_monotonic_time(), Clutter.KEY_Escape, Clutter.KeyState.RELEASED);
+        await waitFor(() => !extension.editor.child);
+        check('closing the editor keeps the copied image available', (await extension.clipboard.readImage())?.mime === 'image/png');
+        extension.settings.set_boolean('history-enabled', true);
+        await waitFor(() => !global.get_window_actors().some(actor => actor.meta_window.get_title() === _('Screenshot editor')));
+        extension.settings.set_boolean('edit-after-screenshot', false);
+        extension.takeScreenshot();
+        await waitFor(() => Main.screenshotUI.visible && Main.screenshotUI.opacity === 255);
+        Main.screenshotUI._screenButton.checked = true;
+        await Main.screenshotUI._onCaptureButtonClicked();
+        await Scripting.sleep(300);
+        check('disabled automatic editor leaves native capture available', !extension.editor.child);
+        extension.settings.set_boolean('edit-after-screenshot', true);
         const countBeforeCancel = extension.history.entries.length;
         extension.popup.showPanel();
         await Scripting.sleep(100);
@@ -340,6 +388,7 @@ export async function run() {
             output.close(null);
             extension.popup.close();
         }
+        const imageCount = extension.history.entries.filter(entry => entry.kind === 'image').length;
         await extension.store.save(extension.history.toJSON(), extension.images.snapshot());
         extension.history.add('Retained through an immediate extension reload.');
         extension.changed();
@@ -348,7 +397,7 @@ export async function run() {
         await waitFor(() => extension._ready);
         check('pending text/image saves survive immediate disable and re-enable',
             extension.history.entries.some(entry => entry.text === 'Retained through an immediate extension reload.') &&
-            extension.history.entries.filter(entry => entry.kind === 'image').length === 3);
+            extension.history.entries.filter(entry => entry.kind === 'image').length === imageCount);
         settings.set_boolean('clear-on-shutdown', true);
         await extension.store.erase();
         check('live shutdown setting removes saved state while retaining session entries',

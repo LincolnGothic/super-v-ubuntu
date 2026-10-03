@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 msgid ""
-msgstr "Project-Id-Version: super-v-ubuntu 0.1.6\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-03 12:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: ja\nLanguage: ja\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+msgstr "Project-Id-Version: super-v-ubuntu 0.1.7\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-03 12:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: ja\nLanguage: ja\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
 
 msgid "Activities"
 msgstr "アクティビティ"
@@ -842,3 +842,72 @@ msgstr "↑↓ 選択 · Enter 貼り付け · Esc 閉じる · Ctrl+Tab 切替"
 msgid "↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close"
 msgstr "↑↓←→ 選択 · Enter 貼り付け · Ctrl+F 検索 · Esc 閉じる"
 
+
+msgid "Annotation limit reached. Undo a mark before adding another."
+msgstr "注釈の上限に達しました。注釈を元に戻してから追加してください。"
+
+msgid "Arrow"
+msgstr "矢印"
+
+msgid "Color"
+msgstr "色"
+
+msgid "Could not export the image. Crop it to reduce its size."
+msgstr "画像を書き出せません。切り抜いてサイズを小さくしてください。"
+
+msgid "Could not open or communicate with the screenshot editor."
+msgstr "スクリーンショットエディターを開けないか、通信できません。"
+
+msgid "Could not save the image."
+msgstr "画像を保存できませんでした。"
+
+msgid "Cover sensitive area"
+msgstr "機密部分を覆う"
+
+msgid "Crop"
+msgstr "切り抜き"
+
+msgid "Edit after taking a screenshot"
+msgstr "撮影後に編集"
+
+msgid "Edit image"
+msgstr "画像を編集"
+
+msgid "Edited image copied. Paste it into your application."
+msgstr "編集した画像をコピーしました。アプリに貼り付けてください。"
+
+msgid "Highlight"
+msgstr "ハイライト"
+
+msgid "Image saved."
+msgstr "画像を保存しました。"
+
+msgid "Move image"
+msgstr "画像を移動"
+
+msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
+msgstr "Super V で撮影した後にエディターを開きます。履歴の画像はいつでも編集できます。"
+
+msgid "Pen"
+msgstr "ペン"
+
+msgid "Rectangle"
+msgstr "四角形"
+
+msgid "Save image"
+msgstr "画像を保存"
+
+msgid "Screenshot editor"
+msgstr "スクリーンショットエディター"
+
+msgid "Stroke width / text size"
+msgstr "線の太さ／文字サイズ"
+
+msgid "Text"
+msgstr "文字"
+
+msgid "Text to add"
+msgstr "追加する文字"
+
+msgid "Zoom (%)"
+msgstr "ズーム（%）"
