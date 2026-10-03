@@ -298,6 +298,7 @@ async function controller() {
     c._epoch = 1;
     c._selectionEpoch = 0;
     c._stateRevision = 0;
+    c._languageRevision = 0;
     c._ready = true;
     c._target = {};
     c.history = new History();
@@ -313,6 +314,44 @@ async function controller() {
     c.pasteBackend = {paste: x => pastes.push(x)};
     return {c, writes, pastes};
 }
+
+test('live language updates preserve recents and reject an older catalog read', async () => {
+    const {c} = await controller();
+    const pending = [];
+    let language = 'es';
+    c._emojiRecords = JSON.parse(readFileSync('extension/data/emoji.json', 'utf8')).emoji;
+    c.emoji.setRecent(['😀']);
+    c.settings.get_string = () => language;
+    let refreshes = 0;
+    c.popup.retranslate = () => refreshes++;
+    const directory = (parts = []) => ({
+        get_path: () => '/test/language-race',
+        get_child: name => directory([...parts, name]),
+        load_contents: () => [true, new Uint8Array(readFileSync(`extension/${parts.join('/')}`))],
+        load_contents_async(cancel, callback) { pending.push(() => callback(this, null)); },
+        load_contents_finish: () => [true, new Uint8Array(readFileSync(`extension/${parts.join('/')}`))],
+    });
+    c.dir = directory();
+    const spanish = c._updateLanguage();
+    language = 'ja';
+    const japanese = c._updateLanguage();
+    pending[1]();
+    await japanese;
+    const name = c.emoji.byText.get('😀').name;
+    assert.equal(name, JSON.parse(readFileSync('extension/data/emoji-locales/ja.json', 'utf8')).annotations['😀'].name);
+    pending[0]();
+    await spanish;
+    assert.equal(c.emoji.byText.get('😀').name, name);
+    assert.deepEqual(Array.from(c.emoji.recent), ['😀']);
+    assert.equal(refreshes, 1);
+    language = 'fr';
+    const disabled = c._updateLanguage();
+    c._active = false;
+    c.settings = null;
+    pending[2]();
+    await disabled;
+    assert.equal(refreshes, 1);
+});
 test('emoji retains prior text in memory and supports guarded explicit restore', async () => {
     const {c, writes} = await controller();
     await c.select({text: '😀'}, true);

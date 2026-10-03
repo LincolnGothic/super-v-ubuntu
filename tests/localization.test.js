@@ -3,11 +3,25 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {EmojiIndex} from '../extension/core/emoji.js';
-import {emojiLocale, format} from '../extension/core/localization.js';
+import {annotationLocale, catalogTranslator, emojiLocale, format, resolveLanguage} from '../extension/core/localization.js';
 import {CatalogIndex, symbols} from '../extension/core/catalog.js';
 
 const records = JSON.parse(readFileSync('extension/data/emoji.json', 'utf8')).emoji;
 const load = locale => JSON.parse(readFileSync(`extension/data/emoji-locales/${locale}.json`, 'utf8'));
+
+test('explicit language overrides the system and missing messages use English', () => {
+    for (const language of ['en', 'zh_CN', 'zh_TW', 'ja', 'es', 'fr', 'ko'])
+        assert.equal(resolveLanguage(language, ['fr_FR']), language);
+    assert.equal(resolveLanguage('system', ['zh_HK', 'en']), 'zh_TW');
+    assert.equal(resolveLanguage('unknown', ['ja_JP']), 'ja');
+    assert.equal(annotationLocale('zh_CN'), 'zh');
+    assert.equal(annotationLocale('zh_TW'), 'zh_Hant');
+    const translate = catalogTranslator({Settings: '设置', Empty: ''});
+    assert.equal(translate('Settings'), '设置');
+    assert.equal(translate('Empty'), 'Empty');
+    assert.equal(translate('missing'), 'missing');
+    assert.equal(translate('constructor'), 'constructor');
+});
 
 test('system locale selects regional and script-specific Chinese before language fallbacks', () => {
     for (const language of ['zh_TW.UTF-8', 'zh_HK', 'zh-MO', 'zh_Hant', 'zh-Hant-CN'])

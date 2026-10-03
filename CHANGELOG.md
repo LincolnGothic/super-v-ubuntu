@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.5 — 2026-10-02
+
+- Choose any of the seven supported languages in Settings, or follow the system.
+- Update the interface, preferences and localized search without logging out.
+- Select emoji, kaomoji and symbol categories directly in horizontal bars.
+- Add category tooltips, horizontal scrolling, keyboard navigation and a compact skin-tone menu.
+
 ## 0.1.4 — 2026-10-02
 
 - Follow the desktop language: English, Simplified Chinese, Traditional Chinese,

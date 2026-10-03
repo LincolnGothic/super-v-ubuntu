@@ -3,6 +3,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {resolve} from 'node:path';
 import {loadModule} from './helpers/load-module.js';
 import {EmojiIndex} from '../extension/core/emoji.js';
 import {History} from '../extension/core/history.js';
@@ -38,6 +39,8 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
         remove_style_pseudo_class(name) { this.pseudoClasses.delete(name); }
         grab_key_focus() { focus = this; this.emit('key-focus-in'); }
         set_style(style) { this.style = style; }
+        hide() { this.visible = false; }
+        destroy() { this.emit('destroy'); }
         has_allocation() { return Boolean(this.box); }
         get_allocation_box() { assert.ok(this.box, 'must wait for layout'); return this.box; }
         get_transformed_position() { return [this.translation_x || 0, this.translation_y || 0]; }
@@ -63,6 +66,19 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
     }
     class ScrollView extends Actor {
         get_vadjustment() { return adjustment; }
+        get_hadjustment() { return categoryAdjustment; }
+    }
+    class PopupMenu {
+        constructor() { this.actor = new Actor(); this.items = []; this.isOpen = false; }
+        addMenuItem(item) { this.items.push(item); }
+        removeAll() { this.items = []; }
+        toggle() { this.isOpen = !this.isOpen; }
+        close() { this.isOpen = false; }
+        destroy() { this.close(); }
+    }
+    class PopupMenuItem extends Actor {
+        constructor(label) { super({label}); }
+        setOrnament(value) { this.ornament = value; }
     }
     class ModalDialog extends Actor {
         _init() {
@@ -80,6 +96,7 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
         close() { this.closed = true; this.state = 0; }
     }
     const adjustment = new Actor({value: 0, page_size: 150});
+    const categoryAdjustment = new Actor({value: 0, page_size: 200});
     let scrollValue = 0;
     adjustment.upper = Infinity;
     Object.defineProperty(adjustment, 'value', {
@@ -89,10 +106,10 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
     const clutter = {ActorAlign: {CENTER: 1, FILL: 0, START: 2}, ModifierType: {CONTROL_MASK: 1},
         EventType: {BUTTON_PRESS: 1, KEY_PRESS: 2}, EVENT_STOP: true, EVENT_PROPAGATE: false};
     for (const key of ['Escape', 'Tab', 'ISO_Left_Tab', 'f', 'F', 'Up', 'Down', 'Left', 'Right',
-        'Return', 'KP_Enter', 'Delete'])
+        'Return', 'KP_Enter', 'Delete', 'Home', 'End'])
         clutter[`KEY_${key}`] = key;
     const st = {BoxLayout, Button: Actor, Label, Entry, ScrollView, Widget: Actor, Icon: Actor,
-        PolicyType: {NEVER: 0, AUTOMATIC: 1}, ThemeContext: {get_for_stage: () => ({scale_factor: scale})}};
+        Side: {TOP: 0}, PolicyType: {NEVER: 0, AUTOMATIC: 1}, ThemeContext: {get_for_stage: () => ({scale_factor: scale})}};
     const calls = [];
     const stage = Object.assign(new Actor(), {get_key_focus: () => focus});
     const controller = {history: new History(), emoji: new EmojiIndex(data.slice(0, count)),
@@ -106,9 +123,12 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
         'gi://Pango': {default: {EllipsizeMode: {NONE: 0, END: 1}, WrapMode: {WORD_CHAR: 1}}},
         'gi://Gio': {default: {FileIcon: {new: file => ({file})}, File: {new_for_path: path => path}}},
         'gi://Shell': {default: {ActionMode: {POPUP: 1}}}, 'gi://St': {default: st},
-        'gettext': {dgettext: (_domain, message) => translate(message)},
+        [resolve('extension/translations.js')]: {gettext: translate},
+        'gi://GLib': {default: {}},
+        'resource:///org/gnome/shell/ui/popupMenu.js': {PopupMenu, PopupMenuItem,
+            PopupMenuManager: class { addMenu() {} }, Ornament: {DOT: 1, NONE: 0}},
         'resource:///org/gnome/shell/ui/modalDialog.js': {ModalDialog, State: {OPENED: 1, OPENING: 2}},
-        'resource:///org/gnome/shell/ui/main.js': {layoutManager: {
+        'resource:///org/gnome/shell/ui/main.js': {uiGroup: new Actor(), layoutManager: {
             focusMonitor: {x: 0, y: 0, width, height: 1080, index: 0},
             primaryMonitor: {x: 0, y: 0, width, height: 1080, index: 0},
             monitors: [{x: 0, y: 0, width, height: 1080, index: 0}],
@@ -346,14 +366,49 @@ test('clipboard keeps text rows, pin/delete buttons and one-item Up/Down navigat
 
 // Translated labels must not become filter IDs or alter keyboard navigation.
 test('translated category and tone labels preserve filtering and accessibility', async () => {
-    const labels = {'Category: %s': '类别：%s', 'People & Body': '人物与身体',
+    const labels = {'People & Body': '人物与身体',
         'Tone: %s': '肤色：%s', Medium: '中等', Settings: '设置', 'Pin entry': '固定条目'};
     const {popup} = await fixture({count: data.length, translate: message => labels[message] ?? message});
     popup.group = 'People & Body';
     popup.tone = 'medium';
     popup.search.set_text('scientist');
-    assert.equal(popup._groupButton.label, '类别：人物与身体');
-    assert.equal(popup._toneButton.label, '肤色：中等');
+    assert.equal(popup._categoryButtons.get('People & Body').accessible_name, '人物与身体');
+    assert.equal(popup._toneButton.accessible_name, '肤色：中等');
     assert.ok(popup.results.some(x => x.text === '👩🏽‍🔬'));
     assert.equal(popup.group, 'People & Body');
+});
+
+test('categories select directly and keyboard focus reaches the end of the horizontal bar', async () => {
+    const {popup, press, focus} = await fixture({count: data.length});
+    const animals = popup._categoryButtons.get('Animals & Nature');
+    animals.emit('clicked');
+    assert.equal(popup.group, 'Animals & Nature');
+    assert.ok(popup.results.every(record => record.group === 'Animals & Nature'));
+    assert.ok(animals.pseudoClasses.has('checked'));
+    animals.grab_key_focus();
+    press('End');
+    assert.equal(focus(), popup._categoryButtons.get('Flags'));
+    press('Left');
+    assert.equal(focus(), popup._categoryButtons.get('Symbols'));
+    press('Home');
+    assert.equal(focus(), popup._categoryButtons.get('All'));
+    press('Down');
+    assert.equal(focus(), popup._rows[0]);
+    popup._setTab('symbols');
+    popup._categoryButtons.get('Currency').emit('clicked');
+    assert.ok(popup.results.every(record => record.group === 'Currency'));
+    assert.equal(popup._toneButton.visible, false);
+});
+
+test('skin tones select directly from a menu and Escape closes only that menu', async () => {
+    const {popup, press} = await fixture({count: data.length});
+    popup._toneButton.emit('clicked');
+    assert.equal(popup._toneMenu.isOpen, true);
+    popup._toneItems.get('dark').emit('activate');
+    assert.equal(popup.tone, 'dark');
+    assert.ok(popup._toneButton.label.includes('✋🏿'));
+    assert.equal(popup._toneItems.get('dark').ornament, 1);
+    press('Escape');
+    assert.equal(popup._toneMenu.isOpen, false);
+    assert.equal(popup.closed, undefined);
 });

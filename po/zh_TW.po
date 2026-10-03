@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Super V Ubuntu interface and character names.
 msgid ""
 msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: zh_TW\nLanguage: zh_TW\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
 
@@ -33,6 +32,9 @@ msgstr "動物"
 msgid "Animals & Nature"
 msgstr "動物與自然"
 
+msgid "Appearance"
+msgstr "外觀"
+
 msgid "Apps using Ctrl+Shift+V (comma-separated)"
 msgstr "使用 Ctrl+Shift+V 的應用程式（以逗號分隔）"
 
@@ -42,12 +44,11 @@ msgstr "箭頭"
 msgid "Capture clipboard history"
 msgstr "記錄剪貼簿歷史"
 
-#, javascript-format
-msgid "Category: %s"
-msgstr "類別：%s"
-
 msgid "Center of screen"
 msgstr "螢幕中央"
+
+msgid "Changes Super V immediately. Language names stay in their native form."
+msgstr "立即變更 Super V 的語言。語言名稱始終以原文顯示。"
 
 msgid "Choose files"
 msgstr "選擇檔案"
@@ -122,6 +123,9 @@ msgstr "已略過 %d 個檔案：檔案無效、過大或收藏已滿。"
 msgid "Flags"
 msgstr "旗幟"
 
+msgid "Follow system"
+msgstr "跟隨系統"
+
 msgid "Food & Drink"
 msgstr "食物與飲料"
 
@@ -152,6 +156,9 @@ msgstr "已刪除無效的歷史記錄。"
 msgid "Kaomoji and text emoticons"
 msgstr "顏文字與文字表情"
 
+msgid "Language"
+msgstr "語言"
+
 msgid "Light"
 msgstr "淺色"
 
@@ -178,6 +185,9 @@ msgstr "中淺色"
 
 msgid "Near mouse pointer"
 msgstr "滑鼠游標附近"
+
+msgid "Next categories"
+msgstr "後面的類別"
 
 msgid "No items in this filter."
 msgstr "此篩選條件下沒有項目。"
@@ -219,6 +229,9 @@ msgstr "明文歷史記錄：%s。目錄權限 0700；檔案權限 0600。密碼
 
 msgid "Playful"
 msgstr "俏皮"
+
+msgid "Previous categories"
+msgstr "前面的類別"
 
 msgid "Punctuation"
 msgstr "標點"

@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Super V Ubuntu interface and character names.
 msgid ""
 msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: ko\nLanguage: ko\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
 
@@ -33,6 +32,9 @@ msgstr "동물"
 msgid "Animals & Nature"
 msgstr "동물과 자연"
 
+msgid "Appearance"
+msgstr "외관"
+
 msgid "Apps using Ctrl+Shift+V (comma-separated)"
 msgstr "Ctrl+Shift+V를 사용하는 앱(쉼표로 구분)"
 
@@ -42,12 +44,11 @@ msgstr "화살표"
 msgid "Capture clipboard history"
 msgstr "클립보드 기록 수집"
 
-#, javascript-format
-msgid "Category: %s"
-msgstr "카테고리: %s"
-
 msgid "Center of screen"
 msgstr "화면 중앙"
+
+msgid "Changes Super V immediately. Language names stay in their native form."
+msgstr "Super V의 언어가 즉시 변경됩니다. 언어 이름은 각 언어의 원래 표기로 표시됩니다."
 
 msgid "Choose files"
 msgstr "파일 선택"
@@ -122,6 +123,9 @@ msgstr "건너뛴 파일: %d개. 유효하지 않거나 너무 크거나 즐겨�
 msgid "Flags"
 msgstr "깃발"
 
+msgid "Follow system"
+msgstr "시스템 설정 따르기"
+
 msgid "Food & Drink"
 msgstr "음식과 음료"
 
@@ -152,6 +156,9 @@ msgstr "유효하지 않은 저장 기록을 삭제했습니다."
 msgid "Kaomoji and text emoticons"
 msgstr "카오모지와 텍스트 이모티콘"
 
+msgid "Language"
+msgstr "언어"
+
 msgid "Light"
 msgstr "밝은색"
 
@@ -178,6 +185,9 @@ msgstr "약간 밝은색"
 
 msgid "Near mouse pointer"
 msgstr "마우스 포인터 근처"
+
+msgid "Next categories"
+msgstr "다음 카테고리"
 
 msgid "No items in this filter."
 msgstr "이 필터에 해당하는 항목이 없습니다."
@@ -219,6 +229,9 @@ msgstr "평문 기록: %s. 디렉터리 권한 0700, 파일 권한 0600. 비밀�
 
 msgid "Playful"
 msgstr "장난"
+
+msgid "Previous categories"
+msgstr "이전 카테고리"
 
 msgid "Punctuation"
 msgstr "문장 부호"

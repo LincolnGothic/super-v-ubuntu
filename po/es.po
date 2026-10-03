@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Super V Ubuntu interface and character names.
 msgid ""
 msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: es\nLanguage: es\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n != 1);\n"
 
@@ -33,6 +32,9 @@ msgstr "Animales"
 msgid "Animals & Nature"
 msgstr "Animales y naturaleza"
 
+msgid "Appearance"
+msgstr "Apariencia"
+
 msgid "Apps using Ctrl+Shift+V (comma-separated)"
 msgstr "Aplicaciones que usan Ctrl+Shift+V (separadas por comas)"
 
@@ -42,12 +44,11 @@ msgstr "Flechas"
 msgid "Capture clipboard history"
 msgstr "Registrar historial del portapapeles"
 
-#, javascript-format
-msgid "Category: %s"
-msgstr "Categoría: %s"
-
 msgid "Center of screen"
 msgstr "Centro de la pantalla"
+
+msgid "Changes Super V immediately. Language names stay in their native form."
+msgstr "Cambia el idioma de Super V inmediatamente. Los nombres de los idiomas se muestran en su forma nativa."
 
 msgid "Choose files"
 msgstr "Elegir archivos"
@@ -122,6 +123,9 @@ msgstr "Archivos omitidos: %d. No válidos, demasiado grandes o favoritos comple
 msgid "Flags"
 msgstr "Banderas"
 
+msgid "Follow system"
+msgstr "Seguir el sistema"
+
 msgid "Food & Drink"
 msgstr "Comida y bebida"
 
@@ -152,6 +156,9 @@ msgstr "Se ha eliminado el historial guardado no válido."
 msgid "Kaomoji and text emoticons"
 msgstr "Kaomoji y emoticonos de texto"
 
+msgid "Language"
+msgstr "Idioma"
+
 msgid "Light"
 msgstr "Claro"
 
@@ -178,6 +185,9 @@ msgstr "Medio claro"
 
 msgid "Near mouse pointer"
 msgstr "Cerca del puntero"
+
+msgid "Next categories"
+msgstr "Categorías siguientes"
 
 msgid "No items in this filter."
 msgstr "No hay elementos con este filtro."
@@ -219,6 +229,9 @@ msgstr "Historial en texto sin cifrar: %s. Directorio 0700; archivo 0600. Las pi
 
 msgid "Playful"
 msgstr "Divertidos"
+
+msgid "Previous categories"
+msgstr "Categorías anteriores"
 
 msgid "Punctuation"
 msgstr "Puntuación"

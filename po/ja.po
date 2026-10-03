@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Super V Ubuntu interface and character names.
 msgid ""
 msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: ja\nLanguage: ja\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
 
@@ -33,6 +32,9 @@ msgstr "動物"
 msgid "Animals & Nature"
 msgstr "動物と自然"
 
+msgid "Appearance"
+msgstr "外観"
+
 msgid "Apps using Ctrl+Shift+V (comma-separated)"
 msgstr "Ctrl+Shift+V を使うアプリ（カンマ区切り）"
 
@@ -42,12 +44,11 @@ msgstr "矢印"
 msgid "Capture clipboard history"
 msgstr "クリップボード履歴を記録"
 
-#, javascript-format
-msgid "Category: %s"
-msgstr "カテゴリ：%s"
-
 msgid "Center of screen"
 msgstr "画面中央"
+
+msgid "Changes Super V immediately. Language names stay in their native form."
+msgstr "Super V の言語がすぐに変わります。言語名は各言語の表記で表示されます。"
 
 msgid "Choose files"
 msgstr "ファイルを選択"
@@ -122,6 +123,9 @@ msgstr "%d 件のファイルをスキップしました。無効、サイズ超
 msgid "Flags"
 msgstr "旗"
 
+msgid "Follow system"
+msgstr "システムに従う"
+
 msgid "Food & Drink"
 msgstr "食べ物と飲み物"
 
@@ -152,6 +156,9 @@ msgstr "無効な保存履歴を削除しました。"
 msgid "Kaomoji and text emoticons"
 msgstr "顔文字とテキストの表情"
 
+msgid "Language"
+msgstr "言語"
+
 msgid "Light"
 msgstr "明るい"
 
@@ -178,6 +185,9 @@ msgstr "やや明るい"
 
 msgid "Near mouse pointer"
 msgstr "マウスポインターの近く"
+
+msgid "Next categories"
+msgstr "次のカテゴリー"
 
 msgid "No items in this filter."
 msgstr "この絞り込み条件に該当する項目はありません。"
@@ -219,6 +229,9 @@ msgstr "平文の履歴：%s。ディレクトリ権限 0700、ファイル権�
 
 msgid "Playful"
 msgstr "おちゃめ"
+
+msgid "Previous categories"
+msgstr "前のカテゴリー"
 
 msgid "Punctuation"
 msgstr "句読点"

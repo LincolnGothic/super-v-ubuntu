@@ -4,15 +4,23 @@ import {format, groupLabels, toneLabels} from './core/localization.js';
 import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
+import GLib from 'gi://GLib';
 import Pango from 'gi://Pango';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
+import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {getEventActor, verticalBoxProperties, horizontalBoxProperties} from './shell-compat.js';
 import {moveGridSelection} from './core/grid.js';
 import {CatalogIndex, kaomoji, symbols} from './core/catalog.js';
 import {placeNearPointer, pointInRect} from './core/placement.js';
+
+const categoryIcons = {All: '⊞', Recent: '🕘', 'Smileys & Emotion': '🙂',
+    'People & Body': '👋', 'Animals & Nature': '🐾', 'Food & Drink': '🍔',
+    'Travel & Places': '🚗', Activities: '⚽', Objects: '💡', Symbols: '🔣', Flags: '🏁'};
+const toneIcons = {all: '✋', default: '✋', light: '✋🏻', 'medium-light': '✋🏼',
+    medium: '✋🏽', 'medium-dark': '✋🏾', dark: '✋🏿'};
 
 function button(label, action, style = 'button') {
     const actor = new St.Button({label, style_class: style,
@@ -49,10 +57,11 @@ class SuperVPopup extends ModalDialog.ModalDialog {
             style_class: 'super-v-title',
             x_expand: true, y_align: Clutter.ActorAlign.CENTER});
         header.add_child(this._title);
-        header.add_child(button(_('Settings'), () => {
+        this._settingsButton = button(_('Settings'), () => {
             this.close();
             controller.openPreferences();
-        }));
+        });
+        header.add_child(this._settingsButton);
         this.contentLayout.add_child(header);
         const tabs = new St.BoxLayout({...horizontal, style_class: 'super-v-tabs'});
         this._clipboardTab = button(_('Clipboard'), () => this._setTab('clipboard'));
@@ -76,23 +85,34 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         });
         this.contentLayout.add_child(this.search);
         const vertical = verticalBoxProperties(St.BoxLayout, Clutter);
-        this._emojiControls = new St.BoxLayout({...vertical, style_class: 'super-v-tabs'});
-        this._groupButton = button(format(_('Category: %s'), _('All')), () => {
-            const groups = this.tab === 'emoji' ? ['All', 'Recent', ...controller.emoji.groups]
-                : ['All', ...this.catalogs[this.tab].groups];
-            this.group = groups[(groups.indexOf(this.group) + 1) % groups.length];
-            this.selected = 0;
-            this._visibleCount = this.pageSize;
-            this.refresh();
-        });
-        this._toneButton = button(format(_('Tone: %s'), _('All')), () => {
-            const tones = ['all', 'default', 'light', 'medium-light', 'medium', 'medium-dark', 'dark'];
-            this.tone = tones[(tones.indexOf(this.tone) + 1) % tones.length];
-            this.selected = 0;
-            this._visibleCount = this.pageSize;
-            this.refresh();
-        });
-        this._emojiControls.add_child(this._groupButton);
+        this._tooltip = new St.Label({style_class: 'dash-label', visible: false, reactive: false});
+        Main.uiGroup.add_child(this._tooltip);
+        this._emojiControls = new St.BoxLayout({...horizontal, style_class: 'super-v-categories'});
+        this._categoryBack = button('‹', () => this._scrollCategories(-140), 'button super-v-category-arrow');
+        this._categoryForward = button('›', () => this._scrollCategories(140), 'button super-v-category-arrow');
+        this._categoryScroll = new St.ScrollView({style_class: 'super-v-category-scroll', x_expand: true,
+            hscrollbar_policy: St.PolicyType.AUTOMATIC, vscrollbar_policy: St.PolicyType.NEVER,
+            overlay_scrollbars: true});
+        this._categoryBar = new St.BoxLayout({...horizontal, style_class: 'super-v-category-bar'});
+        this._categoryScroll.set_child(this._categoryBar);
+        this._categoryButtons = new Map();
+        this._categoryScroll.get_hadjustment().connectObject(
+            'notify::upper', () => this._ensureCategoryVisible(this._categoryButtons.get(this.group)),
+            'notify::page-size', () => this._ensureCategoryVisible(this._categoryButtons.get(this.group)), this);
+        this._toneButton = button('✋ ▾', () => {
+            this._hideTooltip();
+            this._toneMenu.toggle();
+        }, 'button super-v-tone');
+        this._toneMenu = new PopupMenu.PopupMenu(this._toneButton, 0.5, St.Side.TOP);
+        Main.uiGroup.add_child(this._toneMenu.actor);
+        this._toneMenu.actor.hide();
+        this._toneMenuManager = new PopupMenu.PopupMenuManager(this);
+        this._toneMenuManager.addMenu(this._toneMenu);
+        this._buildToneMenu();
+        this._bindTooltip(this._toneButton);
+        this._emojiControls.add_child(this._categoryBack);
+        this._emojiControls.add_child(this._categoryScroll);
+        this._emojiControls.add_child(this._categoryForward);
         this._emojiControls.add_child(this._toneButton);
         this.contentLayout.add_child(this._emojiControls);
         this.scroll = new St.ScrollView({style_class: 'super-v-scroll', x_expand: true,
@@ -132,6 +152,139 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         global.stage.connectObject('captured-event', (_stage, event) => this._outsideEvent(event), this);
         this.connect('opened', () => this.positionPanel());
         this._panel.connect('notify::allocation', () => this.positionPanel());
+        this.connect('closed', () => {
+            this._toneMenu.close();
+            this._hideTooltip();
+        });
+        this.connect('destroy', () => {
+            this._hideTooltip();
+            this._tooltip.destroy();
+            this._toneMenu.destroy();
+        });
+    }
+
+    retranslate() {
+        this.catalogs = {kaomoji: new CatalogIndex(kaomoji, _), symbols: new CatalogIndex(symbols, _)};
+        for (const [actor, label] of [[this._settingsButton, _('Settings')],
+            [this._clipboardTab, _('Clipboard')], [this._emojiTab, _('Emoji')],
+            [this._clear, _('Clear unpinned')], [this._restore, _('Restore clipboard')],
+            [this._manageGifs, _('Add / manage GIFs')]]) {
+            actor.label = label;
+            actor.accessible_name = label;
+        }
+        this._tabs.get('kaomoji').accessible_name = _('Kaomoji and text emoticons');
+        this._tabs.get('symbols').accessible_name = _('Symbols');
+        this._tabs.get('gifs').accessible_name = _('GIF favorites');
+        this.search.accessible_name = _('Search');
+        this._buildToneMenu();
+        this._categoryTab = null;
+        this.refresh();
+    }
+
+    _buildToneMenu() {
+        this._toneMenu.close();
+        this._toneMenu.removeAll();
+        this._toneItems = new Map();
+        for (const [tone, label] of Object.entries(toneLabels)) {
+            const item = new PopupMenu.PopupMenuItem(`${toneIcons[tone]}  ${_(label)}`);
+            item.connect('activate', () => {
+                this.tone = tone;
+                this.selected = 0;
+                this._visibleCount = this.pageSize;
+                this.refresh();
+                this.search.grab_key_focus();
+            });
+            this._toneMenu.addMenuItem(item);
+            this._toneItems.set(tone, item);
+        }
+    }
+
+    _buildCategories() {
+        this._hideTooltip();
+        this._categoryBar.destroy_all_children();
+        this._categoryButtons.clear();
+        this._categoryTab = this.tab;
+        const groups = this.tab === 'emoji' ? ['All', 'Recent', ...this.controller.emoji.groups]
+            : ['All', ...this.catalogs[this.tab].groups];
+        for (const group of groups) {
+            const label = _(groupLabels[group] ?? group);
+            const actor = button(this.tab === 'emoji' ? categoryIcons[group] : label,
+                () => this._setGroup(group), `button super-v-category${this.tab === 'emoji' ? ' super-v-category-emoji' : ''}`);
+            actor.accessible_name = label;
+            const text = actor.get_child().clutter_text ?? actor.get_child();
+            text.line_wrap = false;
+            this._bindTooltip(actor);
+            actor.connect('key-focus-in', () => this._ensureCategoryVisible(actor));
+            actor.connect('notify::allocation', () => {
+                if (global.stage.get_key_focus() === actor)
+                    this._ensureCategoryVisible(actor);
+            });
+            this._categoryBar.add_child(actor);
+            this._categoryButtons.set(group, actor);
+        }
+        this._categoryScroll.get_hadjustment().value = 0;
+    }
+
+    _setGroup(group) {
+        this.group = group;
+        this.selected = 0;
+        this._visibleCount = this.pageSize;
+        this.refresh();
+        this._ensureCategoryVisible(this._categoryButtons.get(group));
+    }
+
+    _scrollCategories(distance) {
+        this._hideTooltip();
+        const adjustment = this._categoryScroll.get_hadjustment();
+        adjustment.value += distance;
+    }
+
+    _ensureCategoryVisible(actor) {
+        if (!actor?.has_allocation())
+            return;
+        const box = actor.get_allocation_box();
+        const adjustment = this._categoryScroll.get_hadjustment();
+        if (box.x1 < adjustment.value)
+            adjustment.value = box.x1;
+        else if (box.x2 > adjustment.value + adjustment.page_size)
+            adjustment.value = box.x2 - adjustment.page_size;
+    }
+
+    _bindTooltip(actor) {
+        actor.track_hover = true;
+        actor.connect('notify::hover', () => {
+            this._hideTooltip();
+            if (actor.hover) {
+                this._tooltipSource = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 350, () => {
+                    this._tooltipSource = 0;
+                    this._showTooltip(actor);
+                    return GLib.SOURCE_REMOVE;
+                });
+            }
+        });
+        actor.connect('key-focus-in', () => this._showTooltip(actor));
+        actor.connect('key-focus-out', () => this._hideTooltip());
+    }
+
+    _showTooltip(actor) {
+        if (!actor.has_allocation() || !this._monitor)
+            return;
+        this._tooltip.text = actor.accessible_name;
+        this._tooltip.visible = true;
+        const [, width] = this._tooltip.get_preferred_width(-1);
+        const [, height] = this._tooltip.get_preferred_height(width);
+        const [x, y] = actor.get_transformed_position();
+        const [actorWidth] = actor.get_transformed_size();
+        const area = Main.layoutManager.getWorkAreaForMonitor(this._monitor.index);
+        this._tooltip.set_position(Math.max(area.x, Math.min(x + (actorWidth - width) / 2,
+            area.x + area.width - width)), Math.max(area.y, y - height - 6));
+    }
+
+    _hideTooltip() {
+        if (this._tooltipSource)
+            GLib.source_remove(this._tooltipSource);
+        this._tooltipSource = 0;
+        this._tooltip.visible = false;
     }
 
     showPanel() {
@@ -187,6 +340,9 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         if (![ModalDialog.State.OPENED, ModalDialog.State.OPENING].includes(this.state) ||
             event.type() !== Clutter.EventType.BUTTON_PRESS)
             return Clutter.EVENT_PROPAGATE;
+        if (this._toneMenu.isOpen && pointInRect(event.get_coords(),
+            this._toneMenu.actor.get_transformed_position(), this._toneMenu.actor.get_transformed_size()))
+            return Clutter.EVENT_PROPAGATE;
         const inside = this._panel.has_allocation()
             ? pointInRect(event.get_coords(), this._panel.get_transformed_position(),
                 this._panel.get_transformed_size())
@@ -199,6 +355,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
     }
 
     _setTab(tab) {
+        this._toneMenu.close();
         this.tab = tab;
         this.group = 'All';
         this.selected = 0;
@@ -220,8 +377,20 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this._clear.visible = clipboard;
         this._manageGifs.visible = gif;
         this._restore.visible = Boolean(this.controller.pendingRestore);
-        this._groupButton.label = format(_('Category: %s'), _(groupLabels[this.group] ?? this.group));
-        this._toneButton.label = format(_('Tone: %s'), _(toneLabels[this.tone]));
+        if (!clipboard && !gif && this._categoryTab !== this.tab)
+            this._buildCategories();
+        for (const [group, actor] of this._categoryButtons) {
+            if (group === this.group)
+                actor.add_style_pseudo_class('checked');
+            else
+                actor.remove_style_pseudo_class('checked');
+        }
+        this._categoryBack.accessible_name = _('Previous categories');
+        this._categoryForward.accessible_name = _('Next categories');
+        this._toneButton.label = `${toneIcons[this.tone]} ▾`;
+        this._toneButton.accessible_name = format(_('Tone: %s'), _(toneLabels[this.tone]));
+        for (const [tone, item] of this._toneItems)
+            item.setOrnament(tone === this.tone ? PopupMenu.Ornament.DOT : PopupMenu.Ornament.NONE);
         this.search.hint_text = clipboard ? _('Search clipboard') : gif ? _('Search GIF filenames')
             : emoji ? _('Search emoji') : this.tab === 'kaomoji' ? _('Search kaomoji') : _('Search symbols');
         this._hint.text = clipboard ? _('↑↓ Select · Enter Paste · Esc Close · Ctrl+Tab Switch')
@@ -345,6 +514,14 @@ class SuperVPopup extends ModalDialog.ModalDialog {
     _key(event) {
         const key = event.get_key_symbol();
         const ctrl = event.get_state() & Clutter.ModifierType.CONTROL_MASK;
+        if (this._toneMenu.isOpen) {
+            if (key === Clutter.KEY_Escape) {
+                this._toneMenu.close();
+                this._toneButton.grab_key_focus();
+                return Clutter.EVENT_STOP;
+            }
+            return Clutter.EVENT_PROPAGATE;
+        }
         if (key === Clutter.KEY_Escape) {
             this.close();
             return Clutter.EVENT_STOP;
@@ -360,11 +537,27 @@ class SuperVPopup extends ModalDialog.ModalDialog {
             return Clutter.EVENT_STOP;
         }
         const focus = global.stage.get_key_focus();
+        const categories = [...this._categoryButtons.values()];
+        const categoryIndex = categories.indexOf(focus);
+        if (categoryIndex >= 0) {
+            if ([Clutter.KEY_Left, Clutter.KEY_Right, Clutter.KEY_Home, Clutter.KEY_End].includes(key)) {
+                const index = key === Clutter.KEY_Home ? 0 : key === Clutter.KEY_End ? categories.length - 1
+                    : Math.max(0, Math.min(categories.length - 1, categoryIndex + (key === Clutter.KEY_Left ? -1 : 1)));
+                categories[index].grab_key_focus();
+                return Clutter.EVENT_STOP;
+            }
+            if (key === Clutter.KEY_Down) {
+                this._rows[0]?.grab_key_focus();
+                return Clutter.EVENT_STOP;
+            }
+            return Clutter.EVENT_PROPAGATE;
+        }
         const itemFocused = this._rows.includes(focus);
         const emoji = this.tab !== 'clipboard';
         // Left/Right keep editing the query until focus has moved into the grid.
         const horizontal = emoji && itemFocused && [Clutter.KEY_Left, Clutter.KEY_Right].includes(key);
-        if ([Clutter.KEY_Up, Clutter.KEY_Down].includes(key) || horizontal) {
+        if ((itemFocused || focus === this.search.clutter_text) &&
+            ([Clutter.KEY_Up, Clutter.KEY_Down].includes(key) || horizontal)) {
             const direction = key === Clutter.KEY_Up ? 'up' : key === Clutter.KEY_Down ? 'down'
                 : key === Clutter.KEY_Left ? 'left' : 'right';
             this.selected = moveGridSelection(this.selected, this.results.length,

@@ -4,6 +4,14 @@
 .super-v-header, .super-v-tabs, .super-v-footer { spacing: 8px; }
 .super-v-title { font-size: 1.15em; font-weight: bold; }
 .super-v-tabs .button { padding: 6px 8px; min-width: 0; }
+.super-v-categories { spacing: 3px; }
+.super-v-category-bar { spacing: 3px; }
+.super-v-category-scroll { min-width: 0; height: 42px; }
+.super-v-category { padding: 6px; min-width: 22px; border-radius: 8px; }
+.super-v-category-emoji { font-size: 18px; }
+.super-v-category-arrow { padding: 6px 3px; min-width: 12px; font-size: 20px; }
+.super-v-tone { padding: 6px 4px; min-width: 28px; font-size: 18px; }
+.super-v-category:checked { background-color: rgba(128, 128, 128, 0.35); }
 .super-v-list { spacing: 5px; }
 .super-v-row { spacing: 4px; }
 .super-v-item { padding: 10px 8px; text-align: left; }

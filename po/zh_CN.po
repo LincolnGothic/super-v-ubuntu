@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Super V Ubuntu interface and character names.
 msgid ""
 msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: zh_CN\nLanguage: zh_CN\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
 
@@ -33,6 +32,9 @@ msgstr "动物"
 msgid "Animals & Nature"
 msgstr "动物与自然"
 
+msgid "Appearance"
+msgstr "外观"
+
 msgid "Apps using Ctrl+Shift+V (comma-separated)"
 msgstr "使用 Ctrl+Shift+V 的应用（用逗号分隔）"
 
@@ -42,12 +44,11 @@ msgstr "箭头"
 msgid "Capture clipboard history"
 msgstr "记录剪贴板历史"
 
-#, javascript-format
-msgid "Category: %s"
-msgstr "类别：%s"
-
 msgid "Center of screen"
 msgstr "屏幕中央"
+
+msgid "Changes Super V immediately. Language names stay in their native form."
+msgstr "立即更改 Super V 的语言。语言名称始终以其原文显示。"
 
 msgid "Choose files"
 msgstr "选择文件"
@@ -122,6 +123,9 @@ msgstr "已跳过 %d 个文件：文件无效、过大或收藏已满。"
 msgid "Flags"
 msgstr "旗帜"
 
+msgid "Follow system"
+msgstr "跟随系统"
+
 msgid "Food & Drink"
 msgstr "食物与饮料"
 
@@ -152,6 +156,9 @@ msgstr "已删除无效的历史记录。"
 msgid "Kaomoji and text emoticons"
 msgstr "颜文字与文字表情"
 
+msgid "Language"
+msgstr "语言"
+
 msgid "Light"
 msgstr "浅色"
 
@@ -178,6 +185,9 @@ msgstr "中浅色"
 
 msgid "Near mouse pointer"
 msgstr "鼠标指针附近"
+
+msgid "Next categories"
+msgstr "后面的类别"
 
 msgid "No items in this filter."
 msgstr "此筛选条件下没有项目。"
@@ -219,6 +229,9 @@ msgstr "明文历史记录：%s。目录权限 0700；文件权限 0600。密码
 
 msgid "Playful"
 msgstr "俏皮"
+
+msgid "Previous categories"
+msgstr "前面的类别"
 
 msgid "Punctuation"
 msgstr "标点"

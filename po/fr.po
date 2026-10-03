@@ -1,5 +1,4 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
-# Super V Ubuntu interface and character names.
 msgid ""
 msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: fr\nLanguage: fr\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n > 1);\n"
 
@@ -33,6 +32,9 @@ msgstr "Animaux"
 msgid "Animals & Nature"
 msgstr "Animaux et nature"
 
+msgid "Appearance"
+msgstr "Apparence"
+
 msgid "Apps using Ctrl+Shift+V (comma-separated)"
 msgstr "Applications utilisant Ctrl+Shift+V (séparées par des virgules)"
 
@@ -42,12 +44,11 @@ msgstr "Flèches"
 msgid "Capture clipboard history"
 msgstr "Enregistrer l’historique du presse-papiers"
 
-#, javascript-format
-msgid "Category: %s"
-msgstr "Catégorie : %s"
-
 msgid "Center of screen"
 msgstr "Centre de l’écran"
+
+msgid "Changes Super V immediately. Language names stay in their native form."
+msgstr "Change immédiatement la langue de Super V. Les noms des langues restent dans leur forme native."
 
 msgid "Choose files"
 msgstr "Choisir des fichiers"
@@ -122,6 +123,9 @@ msgstr "Fichiers ignorés : %d. Invalides, trop volumineux ou favoris complets."
 msgid "Flags"
 msgstr "Drapeaux"
 
+msgid "Follow system"
+msgstr "Suivre le système"
+
 msgid "Food & Drink"
 msgstr "Nourriture et boissons"
 
@@ -152,6 +156,9 @@ msgstr "L’historique enregistré invalide a été supprimé."
 msgid "Kaomoji and text emoticons"
 msgstr "Kaomoji et émoticônes textuelles"
 
+msgid "Language"
+msgstr "Langue"
+
 msgid "Light"
 msgstr "Clair"
 
@@ -178,6 +185,9 @@ msgstr "Moyen clair"
 
 msgid "Near mouse pointer"
 msgstr "Près du pointeur"
+
+msgid "Next categories"
+msgstr "Catégories suivantes"
 
 msgid "No items in this filter."
 msgstr "Aucun élément pour ce filtre."
@@ -219,6 +229,9 @@ msgstr "Historique en texte clair : %s. Dossier 0700 ; fichier 0600. Les indices
 
 msgid "Playful"
 msgstr "Espiègles"
+
+msgid "Previous categories"
+msgstr "Catégories précédentes"
 
 msgid "Punctuation"
 msgstr "Ponctuation"
