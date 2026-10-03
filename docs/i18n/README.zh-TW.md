@@ -8,15 +8,15 @@ v0.1.6 支援 PNG/JPEG 圖片歷史、縮圖、釘選和貼上。點選標題列
 
 Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
 
-## 安裝與升級
+## 初次安裝
 
-下載 [v0.1.6 安裝套件](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6)，儲存到「下載」目錄：
+下載 [v0.1.6 安裝套件](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb)，在套件所在資料夾中開啟終端機：
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
+sudo apt install ./super-v-ubuntu_0.1.6_all.deb
 ```
 
-安裝後登出並重新登入，再以一般使用者執行以下命令（不使用 sudo）。第一個命令將通知快捷鍵設為 Super+M，讓本應用程式使用 Super+V；它會取代自訂通知快捷鍵。
+安裝後**儲存工作、登出並重新登入**，再以一般使用者執行以下命令（不使用 sudo）。第一個命令將通知快捷鍵設為 Super+M，讓本應用程式使用 Super+V；它會取代自訂通知快捷鍵。
 
 ```sh
 gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>m']"
@@ -24,7 +24,33 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-升級後再次登出並登入，標題應為 **Super V 0.1.6**。若仍顯示舊版，請檢查上方 info 命令輸出的路徑；使用者目錄中相同 UUID 的擴充功能會覆蓋系統安裝。
+按 **Super+V**，標題應為 **Super V 0.1.6**。
+
+## 升級到 v0.1.6
+
+下載上方的套件，在套件所在資料夾中執行同一個 apt 命令，即可覆蓋升級，無須先解除安裝。接著**儲存工作、登出並重新登入**，再按 **Super+V** 確認標題為 **Super V 0.1.6**。語言與快捷鍵設定會保留，已儲存的文字歷史、釘選項目和最近使用的表情會遷移；設定為登出時清空的歷史會依設定清空。
+
+以一般使用者檢查套件及 GNOME 目前載入的版本：
+
+```sh
+dpkg-query -W super-v-ubuntu
+gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
+```
+
+兩個版本都應為 **0.1.6**（擴充功能內部編號為 7）。若套件為新版而 GNOME 仍載入舊版，請先登出並重新登入。系統安裝的 Path 應為 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`；若指向使用者目錄，請備份並將該 UUID 資料夾移到擴充功能目錄之外，再登出登入。若 Super+V 沒有反應，可執行上方的 enable 命令；若開啟通知，檢查初次安裝中的通知快捷鍵命令。設定無法開啟時，可執行 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`。
+
+## v0.1.6 設定速查
+
+按 Super+V，點選標題列的齒輪按鈕開啟「設定」。
+
+| 功能 | 操作或設定位置 |
+| --- | --- |
+| 截圖 | 相機按鈕或 **Super+Shift+S**；截圖後重新開啟 Super+V 查看圖片歷史。需啟用剪貼簿歷史收集。 |
+| 修改截圖快捷鍵 | **設定 → 桌面整合 → 截圖快捷鍵（GTK 格式）**；例如 `<Super><Shift>s`，套用修改，留空可停用。 |
+| 關機清空歷史 | **設定 → 剪貼簿歷史 → 關機時清空歷史記錄**。預設關閉，也會在重新啟動、登出或重新載入擴充功能時清空。 |
+| 切換語言 | **設定 → 外觀 → 語言**；立即生效。 |
+
+啟用關機清空後，現有磁碟歷史會刪除，目前項目只保留在記憶體中；GNOME 在 Pictures/Screenshots 另存的截圖檔案不會刪除。
 
 ## 使用與語言
 

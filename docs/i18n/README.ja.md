@@ -8,15 +8,15 @@ Ubuntu GNOME 向けの Windows 風 Super+V パネルです。クリップボー�
 
 Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
 
-## インストールと更新
+## 初回インストール
 
-[v0.1.6 のパッケージ](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6)をダウンロードフォルダーに保存します。
+[v0.1.6 のパッケージ](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb)をダウンロードし、そのファイルがあるフォルダーで端末を開きます。
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
+sudo apt install ./super-v-ubuntu_0.1.6_all.deb
 ```
 
-インストール後にログアウトして再度ログインし、一般ユーザーで次のコマンドを実行します（sudo は使いません）。最初のコマンドは通知のショートカットを Super+M に設定し、Super+V をこの拡張機能に割り当てられるようにします。独自の通知ショートカットは置き換えられます。
+インストール後に**作業を保存してログアウトし、再度ログイン**します。一般ユーザーで次のコマンドを実行します（sudo は使いません）。最初のコマンドは通知のショートカットを Super+M に設定し、Super+V をこの拡張機能に割り当てられるようにします。独自の通知ショートカットは置き換えられます。
 
 ```sh
 gsettings set org.gnome.shell.keybindings toggle-message-tray "['<Super>m']"
@@ -24,7 +24,33 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-更新後もログアウトして再度ログインしてください。タイトルは **Super V 0.1.6** になります。古いバージョンが表示される場合は info のパスを確認してください。同じ UUID のユーザー用拡張機能はシステムのインストールより優先されます。
+**Super+V** を押すと、タイトルに **Super V 0.1.6** が表示されます。
+
+## v0.1.6 への更新
+
+上記のパッケージをダウンロードし、そのフォルダーで同じ apt コマンドを実行します。以前のパッケージに上書きして更新できるので、アンインストールは不要です。**作業を保存し、ログアウトして再度ログイン**した後、**Super+V** のタイトルが **Super V 0.1.6** になっていることを確認します。言語とショートカットの設定は保持され、保存済みのテキスト履歴、ピン留め項目、最近使った絵文字は引き継がれます。ログアウト時に消去する設定の履歴は、その設定に従って消去されます。
+
+一般ユーザーで、インストール済みパッケージと GNOME が読み込んでいるバージョンを確認します。
+
+```sh
+dpkg-query -W super-v-ubuntu
+gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
+```
+
+どちらも **0.1.6** と表示される必要があります（拡張機能の内部番号は 7）。パッケージだけが新版の場合は、まずログアウトして再度ログインしてください。システム版の Path は `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local` です。ホーム内のパスなら、その UUID のフォルダーをバックアップして拡張機能ディレクトリーの外へ移し、再度ログインします。Super+V が反応しなければ上記の enable コマンドを実行し、通知が開く場合は初回インストールの通知ショートカットを確認します。設定を開けない場合は `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local` を実行します。
+
+## v0.1.6 の設定ガイド
+
+Super+V を開き、タイトル横の歯車ボタンから設定を開きます。
+
+| 操作 | 使い方・設定場所 |
+| --- | --- |
+| スクリーンショット | カメラボタンまたは **Super+Shift+S**。撮影後に Super+V を開くと画像履歴を確認できます。履歴の収集を有効にしてください。 |
+| 撮影ショートカットの変更 | **設定 → デスクトップ連携 → スクリーンショットのショートカット（GTK形式）**。例：`<Super><Shift>s`。変更を適用し、空欄で無効化できます。 |
+| 終了時の履歴消去 | **設定 → クリップボード履歴 → シャットダウン時に履歴を消去**。初期設定はオフ。再起動、ログアウト、拡張機能の再読み込み時にも消去されます。 |
+| 言語の変更 | **設定 → 外観 → 言語**。すぐに反映されます。 |
+
+終了時の消去を有効にすると保存済みの履歴を削除し、現在の項目はメモリーにのみ保持します。GNOME が Pictures/Screenshots に別途保存する撮影ファイルは削除されません。
 
 ## 使い方と言語
 
