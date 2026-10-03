@@ -119,7 +119,13 @@ export async function run() {
     const probe = Gio.File.new_for_path(`${GLib.getenv('XDG_STATE_HOME')}/text-probe.json`);
     await waitFor(() => probe.query_exists(null));
     const target = global.get_window_actors().find(actor => actor.meta_window.get_title() === _('Screenshot editor')).meta_window;
-    target.activate(global.get_current_time()); await Scripting.sleep(100);
+    if (GLib.getenv('SUPER_V_TEST_OVERVIEW_RACE') === '1') {
+        Main.overview.show(); await Scripting.sleep(200);
+    }
+    print(`TEXT TEST BEFORE FOCUS: overview=${Main.overview.visible}, focus=${global.display.focus_window?.get_title()}`);
+    Main.activateWindow(target);
+    await waitFor(() => !Main.overview.visible && global.display.focus_window === target);
+    await Scripting.sleep(100);
     const type = async keys => {
         for (const key of keys) {
             keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.PRESSED);
@@ -404,8 +410,14 @@ export async function run() {
             check('native OCR runs in a separate process', /^\d+$/u.test(pid));
             slowBridge.close();
             const processState = Gio.File.new_for_path(`/proc/${pid}/stat`);
-            await waitFor(() => !processState.query_exists(null) ||
-                new TextDecoder().decode(processState.load_contents(null)[1]).includes(') Z'));
+            await waitFor(() => {
+                try { return new TextDecoder().decode(processState.load_contents(null)[1]).includes(') Z'); }
+                catch (error) {
+                    // The child can exit between an existence check and read.
+                    if (error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.NOT_FOUND)) return true;
+                    throw error;
+                }
+            });
             check('terminating the editor stops in-flight OCR without copying its result', !unexpectedCopy);
             await waitFor(() => !global.get_window_actors().some(actor => actor.meta_window.get_title() === _('Screenshot editor')));
         } finally { slowBridge.close(); }

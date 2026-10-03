@@ -37,6 +37,13 @@ removes duplicate draft painting underneath the native entry, bounds input box
 placement/font size, provides contrast for light text colors, and hides completed
 drafts. Large mosaic widths do not become unexpected large text sizes.
 
+CI also exposed a native keyboard-driver focus issue on GNOME 50 and a race
+reading `/proc/PID/stat` after a slow OCR child exits. The test driver now uses
+GNOME’s official `Main.activateWindow`, leaves Overview, and waits for actual
+window focus before typing. The OCR termination assertion reads process state
+once and treats an already removed process as exited. These changes preserve the
+physical-input and child-termination assertions; they do not change runtime code.
+
 The mosaic is a fully opaque light pattern, independent of source pixel colors.
 Small repeating Cairo tiles keep rendering work bounded for large diagonal brush
 paths. Undo snapshots hold state, not source pixel copies. Grayscale pixbufs use
