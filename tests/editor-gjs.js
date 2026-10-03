@@ -5,6 +5,10 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk?version=4.0';
 import GdkPixbuf from 'gi://GdkPixbuf';
+import Gdk from 'gi://Gdk?version=4.0';
+import Cairo from 'cairo';
+import Pango from 'gi://Pango';
+import PangoCairo from 'gi://PangoCairo';
 import {runProcess} from '../extension/process.js';
 import {EditorDocument} from '../extension/core/editor.js';
 import {LineFrames} from '../extension/core/frames.js';
@@ -26,6 +30,22 @@ function pixel(pixbuf, x, y) {
     const bytes = pixbuf.get_pixels();
     const offset = y * pixbuf.rowstride + x * pixbuf.n_channels;
     return [...bytes.slice(offset, offset + 3)];
+}
+function ocrSample(text, language) {
+    // Keep OCR fixture pixels independent of the interface locale's fallback font.
+    const families = {chi_sim: 'SC', chi_tra: 'TC', jpn: 'JP', kor: 'KR', spa: 'JP', fra: 'JP'};
+    const surface = new Cairo.ImageSurface(Cairo.Format.ARGB32, 640, 140);
+    const cr = new Cairo.Context(surface);
+    try {
+        cr.setSourceRGB(1, 1, 1); cr.paint(); cr.setSourceRGB(0, 0, 0);
+        const layout = PangoCairo.create_layout(cr);
+        const locales = {chi_sim: 'zh-CN', chi_tra: 'zh-TW', jpn: 'ja', kor: 'ko', spa: 'es', fra: 'fr'};
+        layout.get_context().set_language(Pango.Language.from_string(locales[language]));
+        const font = Pango.FontDescription.from_string(`Noto Sans CJK ${families[language]}`);
+        font.set_absolute_size(48 * Pango.SCALE); layout.set_font_description(font);
+        layout.set_text(text, -1); cr.moveTo(20, 60); PangoCairo.show_layout(cr, layout);
+        return Gdk.pixbuf_get_from_surface(surface, 0, 0, 640, 140).save_to_bufferv('png', [], [])[1];
+    } finally { cr.$dispose(); surface.finish(); }
 }
 const loop = new GLib.MainLoop(null, false);
 let status = 0;
@@ -126,9 +146,7 @@ GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
                 ['spa', 'Texto español', 'español'], ['fra', 'Texte français', 'français'],
             ]) {
                 if (!installed.includes(language)) continue;
-                const sample = new EditorDocument(640, 140);
-                sample.add({type: 'text', x: 20, y: 60, x2: 20, y2: 60, color: '#000000', width: 48, text});
-                const result = await ocrEditor.ocr.recognize(exportPng(white, sample.state), language, installed, null);
+                const result = await ocrEditor.ocr.recognize(ocrSample(text, language), language, installed, null);
                 check(result.replace(/\s/gu, '').includes(expected), `${language}: synthetic recognition failed (${result})`);
             }
             ocrEditor.ocrDialog.close();
