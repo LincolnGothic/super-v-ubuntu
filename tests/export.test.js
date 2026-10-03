@@ -8,7 +8,7 @@ const png = new Uint8Array(Buffer.from(JSON.parse(readFileSync('tests/fixtures/i
 test('export names substitute only known tokens and remain a single PNG basename', () => {
     assert.equal(exportFilename('{date}-{time}-{width}x{height}.png', {date: '2026-10-03', time: '10-00-00', width: 64, height: 48}),
         '2026-10-03-10-00-00-64x48.png');
-    for (const value of ['', '../data', '/etc/file', 'x\\file', '\0', 'a'.repeat(121), '{unknown}', '{date'])
+    for (const value of ['', '../data', '/etc/file', 'x\\file', '\0', 'a'.repeat(121), '图'.repeat(90), '{unknown}', '{date'])
         assert.throws(() => validateExportPattern(value));
     assert.equal(validateExportPattern('截图 {width}'), '截图 {width}');
 });

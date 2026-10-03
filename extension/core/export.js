@@ -10,6 +10,10 @@ export function validateExportPattern(pattern) {
     if (typeof pattern !== 'string' || !pattern.trim() || pattern.length > 120 || /[\\/\r\n\0]/u.test(pattern) ||
         /[{}]/u.test(pattern.replace(/\{(date|time|width|height)\}/gu, '')))
         throw new Error('Invalid export filename');
+    const longest = {date: '2000-12-31', time: '23-59-59', width: '8192', height: '8192'};
+    const preview = pattern.trim().replace(/\{(date|time|width|height)\}/gu, (_token, name) => longest[name])
+        .replace(/\.png$/iu, '') + '.png';
+    if (new TextEncoder().encode(preview).length > 255) throw new Error('Export filename too long');
     return pattern.trim();
 }
 export function exportFilename(pattern, {date, time, width, height}) {

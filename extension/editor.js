@@ -400,7 +400,8 @@ export class ImageEditor {
         };
         run.connect('clicked', recognize);
         dialog.connect('close-request', () => {
-            this.ocrCancel.cancel(); this.ocrDialog = null; this.ocrBuffer = null;
+            this.ocrCancel.cancel(); view.buffer.set_text('', -1);
+            this.ocrDialog = this.ocrBuffer = this.ocrCopy = this.ocrRun = this.ocrLanguage = this.ocrStatus = null;
             return false;
         });
         dialog.present();
