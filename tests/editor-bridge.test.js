@@ -13,11 +13,12 @@ async function fixture() {
         read_bytes_finish: value => ({get_data: () => value})};
     const child = {get_stdin_pipe: () => input, get_stdout_pipe: () => output,
         wait_async(cancel, callback) { wait = callback; }, wait_finish() {}, get_successful: () => true,
-        force_exit() { exited++; }};
+        force_exit() { exited++; }, send_signal() { exited++; }};
     const gio = {SubprocessFlags: {STDIN_PIPE: 1, STDOUT_PIPE: 2, STDERR_SILENCE: 4},
         SubprocessLauncher: class {spawnv() { return child; }},
         Cancellable: class {cancel() { this.cancelled = true; } is_cancelled() { return this.cancelled; }}};
-    const glib = {Bytes: class {constructor(value) { this.bytes = value; }}, PRIORITY_DEFAULT: 0, base64_decode: text => new Uint8Array(Buffer.from(text, 'base64'))};
+    const glib = {Bytes: class {constructor(value) { this.bytes = value; }}, PRIORITY_DEFAULT: 0,
+        timeout_add: () => 1, source_remove() {}, base64_decode: text => new Uint8Array(Buffer.from(text, 'base64'))};
     const {EditorBridge} = await loadModule('extension/editor-bridge.js', {
         'gi://Gio': {default: gio}, 'gi://GLib': {default: glib}});
     const bridge = new EditorBridge({get_child: () => ({get_path: () => '/editor.js'})}, value => copies.push(value), () => errors++, {onPin: value => pins.push(value), onText: text => texts.push(text)});

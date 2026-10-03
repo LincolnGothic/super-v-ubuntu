@@ -53,7 +53,9 @@ jobs:
           - {runner: ubuntu-24.04, arch: amd64}
           - {runner: ubuntu-24.04-arm, arch: arm64}
     runs-on: ${{ matrix.runner }}
-    container: debian:13
+    container:
+      image: debian:13
+      options: --volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
@@ -62,8 +64,6 @@ jobs:
           apt-get update
           DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential debhelper libglib2.0-bin nodejs python3 gettext locales eslint lintian gnome-shell gjs gir1.2-gtk-4.0 gir1.2-gdkpixbuf-2.0 gir1.2-adw-1 dbus-x11 libgl1-mesa-dri fonts-noto-color-emoji fonts-noto-cjk ripgrep tesseract-ocr tesseract-ocr-eng
           localedef -i en_US -f UTF-8 en_US.UTF-8
-          mkdir -p /run/dbus
-          dbus-daemon --system --fork
           useradd -m -u 1001 testuser
           chown -R testuser:testuser "$GITHUB_WORKSPACE" "$(dirname "$GITHUB_WORKSPACE")"
       - name: Test and build on native Debian

@@ -116,6 +116,16 @@ export class EditorBridge {
         this.cancel = null;
         const child = this.child;
         this.child = null;
-        child?.force_exit();
+        if (!child) return;
+        // Let GTK cancel its OCR subprocess before exit. Fall back to a kill
+        // if a damaged or unresponsive helper cannot handle SIGTERM.
+        child.send_signal(15);
+        let timer = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 500, () => {
+            timer = 0; child.force_exit(); return GLib.SOURCE_REMOVE;
+        });
+        child.wait_async(null, (process, result) => {
+            try { process.wait_finish(result); } catch { /* Already exiting. */ }
+            if (timer) { GLib.source_remove(timer); timer = 0; }
+        });
     }
 }

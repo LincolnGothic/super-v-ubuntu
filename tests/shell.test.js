@@ -21,6 +21,14 @@ import {getDefaultSeat} from '../extension/shell-compat.js';
 import SuperVExtension from '../extension/extension.js';
 
 export const METRICS = {};
+export function init() {
+    print('SHELL TEST INITIALIZED');
+    const background = new Gio.Settings({schema_id: 'org.gnome.desktop.background'});
+    background.set_string('picture-uri', '');
+    background.set_string('picture-uri-dark', '');
+    new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}).set_boolean('enable-animations', false);
+}
+
 function check(name, condition) {
     if (!condition)
         throw new Error(name);

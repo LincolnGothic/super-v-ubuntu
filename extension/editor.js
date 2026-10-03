@@ -495,6 +495,12 @@ async function readInput() {
 if (ARGV[0] === '--pipe') {
     const application = new Adw.Application({application_id: 'org.gnome.Shell.Extensions.SuperV.Editor',
         flags: Gio.ApplicationFlags.NON_UNIQUE});
+    let activeEditor = null;
+    GLib.unix_signal_add(GLib.PRIORITY_DEFAULT, 15, () => {
+        activeEditor?.window.close();
+        application.quit();
+        return GLib.SOURCE_REMOVE;
+    });
     application.connect('activate', () => {
         application.hold();
         readInput().then(bytes => {
@@ -510,6 +516,7 @@ if (ARGV[0] === '--pipe') {
                     onPin: png => send({action: 'pin', png: GLib.base64_encode(png)}),
                     onText: text => send({action: 'copy-text', text}),
                 });
+            activeEditor = editor;
             editor.window.present();
             application.release();
         }).catch(() => System.exit(1));
