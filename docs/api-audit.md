@@ -70,3 +70,18 @@ on Ubuntu 24.04, Ubuntu 26.04, and Debian 13, for native amd64 and arm64. Source
 inspection is distinct from these runtime checks and interactive desktop acceptance;
 executed results are recorded in verification-v0.1.8.md. GNOME 47, 49, 51+, X11,
 and other desktops are not declared supported.
+
+## v0.1.9 fresh area selection
+
+Super V imports the exported `SelectArea` from GNOME’s screenshot module, constructs
+one per request and awaits `selectAsync()`. The rubberband starts hidden, Escape
+cancels, and the selector becomes transparent and schedules destruction before
+returning its rectangle. The caller waits an idle before `Shell.Screenshot.screenshot_area`
+and writes to a `Gio.MemoryOutputStream`. `SelectArea` and its GrabHelper field were
+inspected in the official [46.0](https://github.com/GNOME/gnome-shell/blob/46.0/js/ui/screenshot.js),
+[48.0](https://github.com/GNOME/gnome-shell/blob/48.0/js/ui/screenshot.js) and
+[50.0](https://github.com/GNOME/gnome-shell/blob/50.0/js/ui/screenshot.js) source.
+Version 50 uses a native pan gesture; older versions use pointer event methods.
+CI exercises actual native pointer input on every supported version and CPU.
+The extension cancels an active selector through its existing GrabHelper, without
+patching the shared screenshot UI or changing Print Screen behavior.

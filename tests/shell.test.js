@@ -69,6 +69,14 @@ export async function run() {
     const theme = St.ThemeContext.get_for_stage(global.stage).get_theme();
     const stylesheet = Gio.File.new_for_path(`${base}/extension/stylesheet.css`);
     theme.load_stylesheet(stylesheet);
+    const waitFor = async condition => {
+        for (let count = 0; count < 60; count++) {
+            if (condition())
+                return;
+            await Scripting.sleep(50);
+        }
+        throw new Error('Native clipboard/screenshot wait timed out');
+    };
     const calls = [];
     const controller = {settings, metadata: JSON.parse(read('extension/metadata.json')),
         history: new History(), emoji: new EmojiIndex(JSON.parse(read('extension/data/emoji.json')).emoji, [], annotations),
@@ -103,11 +111,45 @@ export async function run() {
     pointer.notify_absolute_motion(GLib.get_monotonic_time(), 900, 650);
     await Scripting.sleep(100);
     const editorDriver = launcher.spawnv(['gjs', '-m', `${base}/tests/editor-gjs.js`]);
-    const editorOutput = await new Promise((resolve, reject) => {
+    const editorPending = new Promise((resolve, reject) => {
         editorDriver.communicate_utf8_async(null, null, (process, result) => {
             try { resolve(process.communicate_utf8_finish(result)); } catch (error) { reject(error); }
         });
     });
+    const probe = Gio.File.new_for_path(`${GLib.getenv('XDG_STATE_HOME')}/text-probe.json`);
+    await waitFor(() => probe.query_exists(null));
+    const target = global.get_window_actors().find(actor => actor.meta_window.get_title() === _('Screenshot editor')).meta_window;
+    if (GLib.getenv('SUPER_V_TEST_OVERVIEW_RACE') === '1') {
+        Main.overview.show(); await Scripting.sleep(200);
+    }
+    print(`TEXT TEST BEFORE FOCUS: overview=${Main.overview.visible}, focus=${global.display.focus_window?.get_title()}`);
+    Main.activateWindow(target);
+    await waitFor(() => !Main.overview.visible && global.display.focus_window === target);
+    await Scripting.sleep(100);
+    const type = async keys => {
+        for (const key of keys) {
+            keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.PRESSED);
+            keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.RELEASED);
+            await Scripting.sleep(30);
+        }
+    };
+    await type([Clutter.KEY_a, Clutter.KEY_b, Clutter.KEY_c]);
+    const point = JSON.parse(new TextDecoder().decode(probe.load_contents(null)[1]));
+    const frame = target.get_frame_rect();
+    pointer.notify_absolute_motion(GLib.get_monotonic_time(), frame.x + point.x, frame.y + point.y);
+    await Scripting.sleep(80);
+    pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+    pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+    await Scripting.sleep(100); await type([Clutter.KEY_d]);
+    const textPreview = GLib.getenv('SUPER_V_TEXT_SCREENSHOT');
+    if (textPreview && locale === 'en') {
+        const stream = Gio.File.new_for_path(textPreview).replace(null, false, Gio.FileCreateFlags.PRIVATE, null);
+        await new Shell.Screenshot().screenshot_area(frame.x, frame.y, frame.width, frame.height, stream);
+        stream.close(null);
+    }
+    Gio.File.new_for_path(`${GLib.getenv('XDG_STATE_HOME')}/text-probe-done`).replace_contents('done', null, false,
+        Gio.FileCreateFlags.PRIVATE, null);
+    const editorOutput = await editorPending;
     if (!editorDriver.get_successful())
         throw new Error(`Editor check failed: ${editorOutput[2]}`);
     check('actual localized GTK screenshot editor draws and exports images', editorDriver.get_successful());
@@ -117,7 +159,7 @@ export async function run() {
         check('popup opens', popup.showPanel());
         popup._setTab('emoji');
         await Scripting.sleep(300);
-        check('loaded version is visible', popup._title.text === 'Super V 0.1.8');
+        check('loaded version is visible', popup._title.text === 'Super V 0.1.9');
         check('six equally sized emoji per row', popup._rows.length === 60 &&
             popup.list.get_first_child().get_n_children() === 6);
         const cells = popup._rows.slice(0, 7).map(rectangle);
@@ -280,14 +322,6 @@ export async function run() {
     }
     const metadata = {...controller.metadata, dir: controller.dir, path: controller.dir.get_path()};
     const extension = new SuperVExtension(metadata);
-    const waitFor = async condition => {
-        for (let count = 0; count < 60; count++) {
-            if (condition())
-                return;
-            await Scripting.sleep(50);
-        }
-        throw new Error('Native clipboard/screenshot wait timed out');
-    };
     try {
         extension.enable();
         await waitFor(() => extension._ready);
@@ -376,21 +410,40 @@ export async function run() {
             check('native OCR runs in a separate process', /^\d+$/u.test(pid));
             slowBridge.close();
             const processState = Gio.File.new_for_path(`/proc/${pid}/stat`);
-            await waitFor(() => !processState.query_exists(null) ||
-                new TextDecoder().decode(processState.load_contents(null)[1]).includes(') Z'));
+            await waitFor(() => {
+                try { return new TextDecoder().decode(processState.load_contents(null)[1]).includes(') Z'); }
+                catch (error) {
+                    // The child can exit between an existence check and read.
+                    if (error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.NOT_FOUND)) return true;
+                    throw error;
+                }
+            });
             check('terminating the editor stops in-flight OCR without copying its result', !unexpectedCopy);
             await waitFor(() => !global.get_window_actors().some(actor => actor.meta_window.get_title() === _('Screenshot editor')));
         } finally { slowBridge.close(); }
         const pictures = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES);
         check('native screenshot output stays in the disposable session',
             pictures.startsWith(GLib.getenv('XDG_CONFIG_HOME').replace(/\/config$/u, '/')));
+        const dragArea = async () => {
+            await waitFor(() => extension._areaCapture?.visible);
+            check('fresh capture has a crosshair and no previous selection frame',
+                !extension._areaCapture._rubberband.visible && extension._areaCapture._startX === -1);
+            pointer.notify_absolute_motion(GLib.get_monotonic_time(), 0, 0);
+            await Scripting.sleep(80);
+            pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+            await Scripting.sleep(80);
+            pointer.notify_absolute_motion(GLib.get_monotonic_time(), 640, 480);
+            await Scripting.sleep(80);
+            pointer.notify_absolute_motion(GLib.get_monotonic_time(), 1279, 959);
+            await Scripting.sleep(80);
+            pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+            await waitFor(() => !extension._areaCapture);
+        };
         extension.popup.showPanel();
         await Scripting.sleep(100);
         extension.popup._screenshotButton.emit('clicked', 1);
-        await waitFor(() => Main.screenshotUI.visible && Main.screenshotUI.opacity === 255);
-        check('Screenshot button closes picker before native capture UI', extension.popup.state === ModalDialog.State.CLOSED);
-        Main.screenshotUI._screenButton.checked = true;
-        await Main.screenshotUI._onCaptureButtonClicked();
+        await dragArea();
+        check('Screenshot button closes picker before manual selection', extension.popup.state === ModalDialog.State.CLOSED);
         await waitFor(() => extension.history.entries.some(entry => entry.kind === 'image' && entry.width === 1280));
         check('native screenshot automatically becomes an image history entry',
             extension.history.entries.some(entry => entry.kind === 'image' && entry.width === 1280 && entry.height === 960));
@@ -431,9 +484,7 @@ export async function run() {
         check('deleting an automatic screenshot source closes its screen pins by digest', !extension.screenPins.items.size);
         extension.settings.set_boolean('edit-after-screenshot', false);
         extension.takeScreenshot();
-        await waitFor(() => Main.screenshotUI.visible && Main.screenshotUI.opacity === 255);
-        Main.screenshotUI._screenButton.checked = true;
-        await Main.screenshotUI._onCaptureButtonClicked();
+        await dragArea();
         await Scripting.sleep(300);
         check('disabled automatic editor leaves native capture available', !extension.editor.child);
         extension.settings.set_boolean('edit-after-screenshot', true);
@@ -448,9 +499,11 @@ export async function run() {
             keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.PRESSED);
         for (const key of [Clutter.KEY_s, Clutter.KEY_Shift_L, Clutter.KEY_Super_L])
             keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.RELEASED);
-        await waitFor(() => Main.screenshotUI.visible && Main.screenshotUI.opacity === 255);
-        check('actual Super+Shift+S opens native screenshot controls', Main.screenshotUI.visible);
-        Main.screenshotUI.close();
+        await waitFor(() => extension._areaCapture?.visible);
+        check('actual Super+Shift+S opens a fresh crosshair selector', !extension._areaCapture._rubberband.visible);
+        keyboard.notify_keyval(GLib.get_monotonic_time(), Clutter.KEY_Escape, Clutter.KeyState.PRESSED);
+        keyboard.notify_keyval(GLib.get_monotonic_time(), Clutter.KEY_Escape, Clutter.KeyState.RELEASED);
+        await waitFor(() => !extension._areaCapture);
         await Scripting.sleep(300);
         check('cancelling screenshot adds no history item', extension.history.entries.length === countBeforeCancel);
         const clipboardScreenshot = GLib.getenv('SUPER_V_CLIPBOARD_SCREENSHOT');

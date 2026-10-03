@@ -120,10 +120,11 @@ Record any custom notification bindings first; the command replaces them.
     text/image order, limits, malformed images and excluded sources. Copying a
     file path is not image capture. Reload with persistence enabled and confirm
     image bytes return; missing/corrupt image files must not erase text history.
-15. Open the camera button and Super+Shift+S. Capture an area, a window and the
-    screen; the picker must not cover the capture. Escape should cancel without
+15. Open the camera button and Super+Shift+S. Drag a fresh area twice, including over the former selection;
+    confirm only a crosshair is present before each drag. Use Print Screen for
+    GNOME’s separate window/screen controls; the picker must not cover the capture. Escape should cancel without
     a new entry. Change and disable the screenshot shortcut in Settings. With
-    history paused, GNOME still copies the screenshot but no history is added.
+    history paused, Super V still copies the screenshot but no history is added.
 16. Enable Clear history on shutdown with text, images, pins and emoji recents
     present. Confirm JSON and managed image files disappear and current items
     remain in memory. Copy more items and verify no files return. Restart or
@@ -132,8 +133,8 @@ Record any custom notification bindings first; the command replaces them.
 
 17. Capture through Super V and verify the editor opens automatically. Turn off
     Edit after taking a screenshot and repeat. Open a history image with its
-    pencil button and Ctrl+E. Exercise all tools, multilingual text, fractional
-    black-cover edges, repeated/nested crops, undo/redo, zoom/pan and PNG export.
+    pencil button and Ctrl+E. Exercise all tools, multilingual inline text and caret input, click-to-reposition before Enter, light mosaic dabs/freehand paths, tile and brush thickness,
+    black-and-white filter and undo, repeated/nested crops, undo/redo, zoom/pan and PNG export.
     Paste after closing the editor; test paused history, cancelled save, file
     overwrite confirmation, lock/clear/delete/disable cleanup, HiDPI and narrow
     editor windows. Inspect the exported pixels and confirm originals are kept

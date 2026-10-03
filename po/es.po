@@ -32,14 +32,23 @@ msgstr "Animales"
 msgid "Animals & Nature"
 msgstr "Animales y naturaleza"
 
+msgid "Annotation limit reached. Undo a mark before adding another."
+msgstr "Límite de anotaciones alcanzado. Deshaz una marca antes de añadir otra."
+
 msgid "Appearance"
 msgstr "Apariencia"
 
 msgid "Apps using Ctrl+Shift+V (comma-separated)"
 msgstr "Aplicaciones que usan Ctrl+Shift+V (separadas por comas)"
 
+msgid "Arrow"
+msgstr "Flecha"
+
 msgid "Arrows"
 msgstr "Flechas"
+
+msgid "Black and white"
+msgstr "Blanco y negro"
 
 msgid "Capture clipboard history"
 msgstr "Registrar historial del portapapeles"
@@ -50,8 +59,14 @@ msgstr "Centro de la pantalla"
 msgid "Changes Super V immediately. Language names stay in their native form."
 msgstr "Cambia el idioma de Super V inmediatamente. Los nombres de los idiomas se muestran en su forma nativa."
 
+msgid "Choose a folder, or use the last saved location."
+msgstr "Elige una carpeta o usa la última ubicación guardada."
+
 msgid "Choose files"
 msgstr "Elegir archivos"
+
+msgid "Choose folder"
+msgstr "Elegir carpeta"
 
 msgid "Classic"
 msgstr "Clásicos"
@@ -71,6 +86,9 @@ msgstr "Borrar no fijados"
 msgid "Clear unpinned history"
 msgstr "Borrar historial no fijado"
 
+msgid "Click the image to move the text box. Press Enter to finish."
+msgstr "Haz clic en la imagen para mover el cuadro de texto. Pulsa Intro para terminar."
+
 msgid "Clipboard"
 msgstr "Portapapeles"
 
@@ -80,26 +98,65 @@ msgstr "El portapapeles ha cambiado; se ha conservado el contenido más reciente
 msgid "Clipboard history"
 msgstr "Historial del portapapeles"
 
+msgid "Close pinned image"
+msgstr "Cerrar imagen fijada"
+
 msgid "Collects copied text and PNG/JPEG images. Images: up to 8 MiB each, 32 MiB total, 8192 pixels per side and 16 megapixels."
 msgstr "Recopila el texto y las imágenes PNG/JPEG copiados. Límites: 8 MiB por imagen, 32 MiB en total, 8192 píxeles por lado y 16 megapíxeles."
+
+msgid "Color"
+msgstr "Color"
 
 msgid "Copied to clipboard. Use your application’s paste shortcut."
 msgstr "Copiado al portapapeles. Usa el atajo de pegar de tu aplicación."
 
+msgid "Copy image"
+msgstr "Copiar imagen"
+
+msgid "Copy text"
+msgstr "Copiar texto"
+
+msgid "Copy text from image"
+msgstr "Copiar texto de la imagen"
+
 msgid "Copy text or an image to start your history."
 msgstr "Copia texto o una imagen para iniciar el historial."
+
+msgid "Could not copy the text."
+msgstr "No se pudo copiar el texto."
+
+msgid "Could not export the image. Crop it to reduce its size."
+msgstr "No se pudo exportar la imagen. Recórtala para reducir su tamaño."
 
 msgid "Could not initialize the extension. Disable and re-enable it."
 msgstr "No se pudo iniciar la extensión. Desactívala y vuelve a activarla."
 
+msgid "Could not load OCR language packs."
+msgstr "No se pudieron cargar los paquetes de idiomas OCR."
+
+msgid "Could not open or communicate with the screenshot editor."
+msgstr "No se pudo abrir el editor de capturas o comunicarse con él."
+
 msgid "Could not open the screenshot tool. Try Print Screen."
 msgstr "No se pudo abrir la herramienta de captura. Prueba Impr Pant."
+
+msgid "Could not pin this image."
+msgstr "No se pudo fijar esta imagen."
+
+msgid "Could not pin this image. Close a pinned image or use a smaller image."
+msgstr "No se pudo fijar. Cierra una imagen fijada o usa una más pequeña."
 
 msgid "Could not read that GIF. Re-add it in Settings or choose another file."
 msgstr "No se pudo leer ese GIF. Vuelve a añadirlo en Ajustes o elige otro archivo."
 
+msgid "Could not save the image."
+msgstr "No se pudo guardar la imagen."
+
 msgid "Could not update local history storage. Check directory permissions."
 msgstr "No se pudo actualizar el historial local. Comprueba los permisos del directorio."
+
+msgid "Crop"
+msgstr "Recortar"
 
 msgid "Currency"
 msgstr "Monedas"
@@ -110,11 +167,26 @@ msgstr "Oscuro"
 msgid "Default"
 msgstr "Predeterminado"
 
+msgid "Default save folder"
+msgstr "Carpeta de guardado predeterminada"
+
+msgid "Delete annotation"
+msgstr "Eliminar anotación"
+
 msgid "Delete entry"
 msgstr "Eliminar elemento"
 
 msgid "Desktop integration"
 msgstr "Integración con el escritorio"
+
+msgid "Edit after taking a screenshot"
+msgstr "Editar después de capturar"
+
+msgid "Edit image"
+msgstr "Editar imagen"
+
+msgid "Edited image copied. Paste it into your application."
+msgstr "Imagen editada copiada. Pégala en tu aplicación."
 
 msgid "Emoji"
 msgstr "Emojis"
@@ -125,6 +197,10 @@ msgstr "Eliminar todos los elementos guardados"
 msgid "Excluded apps (comma-separated)"
 msgstr "Aplicaciones excluidas (separadas por comas)"
 
+msgid "Filename pattern"
+msgstr "Formato del nombre de archivo"
+
+#, javascript-format
 msgid "Files skipped: %d. Invalid, too large, or favorites full."
 msgstr "Archivos omitidos: %d. No válidos, demasiado grandes o favoritos completos."
 
@@ -149,6 +225,9 @@ msgstr "Letras griegas"
 msgid "Happy"
 msgstr "Alegría"
 
+msgid "Highlight"
+msgstr "Resaltar"
+
 msgid "History exceeds the storage limit."
 msgstr "El historial supera el límite de almacenamiento."
 
@@ -164,8 +243,15 @@ msgstr "El historial, los elementos fijados y los emojis recientes solo se guard
 msgid "Image"
 msgstr "Imagen"
 
+msgid "Image saved."
+msgstr "Imagen guardada."
+
+#, javascript-format
 msgid "Image · %d × %d"
 msgstr "Imagen · %d × %d"
+
+msgid "Install Tesseract OCR to recognize text."
+msgstr "Instala Tesseract OCR para reconocer texto."
 
 msgid "Invalid stored history was removed."
 msgstr "Se ha eliminado el historial guardado no válido."
@@ -178,6 +264,12 @@ msgstr "Idioma"
 
 msgid "Light"
 msgstr "Claro"
+
+msgid "Light mosaic"
+msgstr "Mosaico claro"
+
+msgid "Loading OCR languages…"
+msgstr "Cargando idiomas OCR…"
 
 msgid "Local storage"
 msgstr "Almacenamiento local"
@@ -200,11 +292,23 @@ msgstr "Medio oscuro"
 msgid "Medium light"
 msgstr "Medio claro"
 
+msgid "Mosaic brush thickness"
+msgstr "Grosor del pincel de mosaico"
+
+msgid "Mosaic tile size"
+msgstr "Tamaño de los bloques"
+
+msgid "Move image"
+msgstr "Mover imagen"
+
 msgid "Near mouse pointer"
 msgstr "Cerca del puntero"
 
 msgid "Next categories"
 msgstr "Categorías siguientes"
+
+msgid "No OCR language packs are installed."
+msgstr "No hay paquetes de idiomas OCR instalados."
 
 msgid "No items in this filter."
 msgstr "No hay elementos con este filtro."
@@ -212,14 +316,42 @@ msgstr "No hay elementos con este filtro."
 msgid "No matching items."
 msgstr "No hay elementos coincidentes."
 
+msgid "No text was recognized."
+msgstr "No se reconoció texto."
+
+msgid "Numbered marker"
+msgstr "Marcador numerado"
+
+msgid "OCR failed. Check the language packs or crop a smaller area."
+msgstr "Falló el OCR. Comprueba los idiomas o recorta un área menor."
+
+msgid "OCR language"
+msgstr "Idioma OCR"
+
+msgid "OCR runs locally. Install the corresponding Tesseract language packs."
+msgstr "El OCR se ejecuta localmente. Instala los paquetes de idiomas de Tesseract correspondientes."
+
 msgid "Objects"
 msgstr "Objetos"
+
+msgid "Opacity"
+msgstr "Opacidad"
+
+#, javascript-format
+msgid "Opacity: %d percent"
+msgstr "Opacidad: %d por ciento"
+
+msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
+msgstr "Abre el editor tras capturar con Super V. Las imágenes del historial siempre se pueden editar."
 
 msgid "Paste automatically"
 msgstr "Pegar automáticamente"
 
 msgid "Paste overrides (JSON)"
 msgstr "Atajos de pegado personalizados (JSON)"
+
+msgid "Pen"
+msgstr "Lápiz"
 
 msgid "People & Body"
 msgstr "Personas y cuerpo"
@@ -230,15 +362,20 @@ msgstr "Posición del selector"
 msgid "Pin entry"
 msgstr "Fijar elemento"
 
+msgid "Pin to screen"
+msgstr "Fijar en pantalla"
+
 msgid "Pinned entries are kept."
 msgstr "Se conservan los elementos fijados."
 
 msgid "Pinned entries have a separate maximum of 100. Total text is limited to 2 MiB."
 msgstr "Los elementos fijados tienen un máximo independiente de 100. El texto total se limita a 2 MiB."
 
+#, javascript-format
 msgid "Pinned: %s"
 msgstr "Fijado: %s"
 
+#, javascript-format
 msgid "Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access."
 msgstr "Historial en texto sin cifrar: %s. Directorio 0700; archivo 0600. Las pistas MIME de gestores de contraseñas y las exclusiones de aplicaciones activas no son infalibles. Sin telemetría ni acceso a la red durante el uso."
 
@@ -254,20 +391,53 @@ msgstr "Puntuación"
 msgid "Recent"
 msgstr "Recientes"
 
+msgid "Recognize text"
+msgstr "Reconocer texto"
+
+msgid "Recognizing text…"
+msgstr "Reconociendo texto…"
+
+msgid "Rectangle"
+msgstr "Rectángulo"
+
+msgid "Redo"
+msgstr "Rehacer"
+
 msgid "Remember after logout"
 msgstr "Conservar tras cerrar sesión"
 
 msgid "Remove favorite (keep file)"
 msgstr "Quitar de favoritos (conservar archivo)"
 
+msgid "Reset"
+msgstr "Restablecer"
+
+msgid "Reset export preferences"
+msgstr "Restablecer ajustes de exportación"
+
 msgid "Restore clipboard"
 msgstr "Restaurar portapapeles"
+
+msgid "Review the recognized text before copying."
+msgstr "Revisa el texto reconocido antes de copiarlo."
 
 msgid "Sad"
 msgstr "Tristeza"
 
+msgid "Save image"
+msgstr "Guardar imagen"
+
 msgid "Screenshot"
 msgstr "Captura de pantalla"
+
+msgid "Screenshot editor"
+msgstr "Editor de capturas"
+
+msgid "Screenshot export and OCR"
+msgstr "Exportación de capturas y OCR"
+
+msgid "Screenshot is too large. Select a smaller area."
+msgstr "La captura es demasiado grande. Selecciona un área más pequeña."
 
 msgid "Screenshot shortcut (GTK accelerator syntax)"
 msgstr "Atajo de captura (sintaxis GTK)"
@@ -290,6 +460,9 @@ msgstr "Buscar kaomoji"
 msgid "Search symbols"
 msgstr "Buscar símbolos"
 
+msgid "Select annotation"
+msgstr "Seleccionar anotación"
+
 msgid "Settings"
 msgstr "Ajustes"
 
@@ -299,6 +472,7 @@ msgstr "Atajo (sintaxis de aceleradores GTK)"
 msgid "Shortcuts: ctrl-v, ctrl-shift-v, shift-insert, manual."
 msgstr "Atajos: ctrl-v, ctrl-shift-v, shift-insert, manual."
 
+#, javascript-format
 msgid "Show more (%d)"
 msgstr "Mostrar más (%d)"
 
@@ -310,6 +484,9 @@ msgstr "Se eliminaron algunas imágenes guardadas que no se pudieron leer."
 
 msgid "Stored history could not be read. It has been removed."
 msgstr "No se pudo leer el historial guardado y se ha eliminado."
+
+msgid "Stroke width / text size"
+msgstr "Grosor / tamaño del texto"
 
 msgid "Super V"
 msgstr "Super V"
@@ -323,6 +500,19 @@ msgstr "Sorpresa"
 msgid "Symbols"
 msgstr "Símbolos"
 
+msgid "Text"
+msgstr "Texto"
+
+msgid "Text copied. Paste it into your application."
+msgstr "Texto copiado. Pégalo en tu aplicación."
+
+msgid "Text is empty or exceeds the copy limit."
+msgstr "El texto está vacío o supera el límite de copia."
+
+msgid "Text to add"
+msgstr "Texto para añadir"
+
+#, javascript-format
 msgid "Tone: %s"
 msgstr "Tono: %s"
 
@@ -334,6 +524,9 @@ msgstr "Desactívalo para copiar selecciones sin enviar un atajo de pegar."
 
 msgid "Turning this off removes saved text and images; current memory is retained. Clear history on shutdown takes priority."
 msgstr "Al desactivarlo se borran el texto y las imágenes guardados; se conserva el historial en memoria. Borrar al apagar tiene prioridad."
+
+msgid "Undo"
+msgstr "Deshacer"
 
 msgid "Units"
 msgstr "Unidades"
@@ -350,11 +543,23 @@ msgstr "Usa un atajo como <Super>v o <Control><Alt>v."
 msgid "Use exact desktop application IDs (including .desktop where present) or WM classes. Clipboard origin cannot always be identified."
 msgstr "Usa los identificadores exactos de aplicaciones (incluido .desktop cuando corresponda) o clases WM. No siempre se puede identificar el origen del portapapeles."
 
+msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
+msgstr "Usa {date}, {time}, {width} y {height}; evita las barras."
+
 msgid "You can pin up to 100 entries."
 msgstr "Puedes fijar hasta 100 elementos."
 
 msgid "Your recently used emoji will appear here."
 msgstr "Tus emojis recientes aparecerán aquí."
+
+msgid "Zoom (%)"
+msgstr "Zoom (%)"
+
+msgid "Zoom in"
+msgstr "Acercar"
+
+msgid "Zoom out"
+msgstr "Alejar"
 
 msgid "adoration"
 msgstr "adoración"
@@ -841,189 +1046,3 @@ msgstr "↑↓ Seleccionar · Enter Pegar · Esc Cerrar · Ctrl+Tab Cambiar"
 
 msgid "↑↓←→ Select · Enter Paste · Ctrl+F Search · Esc Close"
 msgstr "↑↓←→ Seleccionar · Enter Pegar · Ctrl+F Buscar · Esc Cerrar"
-
-
-msgid "Annotation limit reached. Undo a mark before adding another."
-msgstr "Límite de anotaciones alcanzado. Deshaz una marca antes de añadir otra."
-
-msgid "Arrow"
-msgstr "Flecha"
-
-msgid "Color"
-msgstr "Color"
-
-msgid "Could not export the image. Crop it to reduce its size."
-msgstr "No se pudo exportar la imagen. Recórtala para reducir su tamaño."
-
-msgid "Could not open or communicate with the screenshot editor."
-msgstr "No se pudo abrir el editor de capturas o comunicarse con él."
-
-msgid "Could not save the image."
-msgstr "No se pudo guardar la imagen."
-
-msgid "Cover sensitive area"
-msgstr "Cubrir área sensible"
-
-msgid "Crop"
-msgstr "Recortar"
-
-msgid "Edit after taking a screenshot"
-msgstr "Editar después de capturar"
-
-msgid "Edit image"
-msgstr "Editar imagen"
-
-msgid "Edited image copied. Paste it into your application."
-msgstr "Imagen editada copiada. Pégala en tu aplicación."
-
-msgid "Highlight"
-msgstr "Resaltar"
-
-msgid "Image saved."
-msgstr "Imagen guardada."
-
-msgid "Move image"
-msgstr "Mover imagen"
-
-msgid "Open the editor after screenshots taken through Super V. Images in history can always be edited."
-msgstr "Abre el editor tras capturar con Super V. Las imágenes del historial siempre se pueden editar."
-
-msgid "Pen"
-msgstr "Lápiz"
-
-msgid "Rectangle"
-msgstr "Rectángulo"
-
-msgid "Save image"
-msgstr "Guardar imagen"
-
-msgid "Screenshot editor"
-msgstr "Editor de capturas"
-
-msgid "Stroke width / text size"
-msgstr "Grosor / tamaño del texto"
-
-msgid "Text"
-msgstr "Texto"
-
-msgid "Text to add"
-msgstr "Texto para añadir"
-
-msgid "Zoom (%)"
-msgstr "Zoom (%)"
-
-msgid "Choose a folder, or use the last saved location."
-msgstr "Elige una carpeta o usa la última ubicación guardada."
-
-msgid "Choose folder"
-msgstr "Elegir carpeta"
-
-msgid "Close pinned image"
-msgstr "Cerrar imagen fijada"
-
-msgid "Copy image"
-msgstr "Copiar imagen"
-
-msgid "Copy text"
-msgstr "Copiar texto"
-
-msgid "Copy text from image"
-msgstr "Copiar texto de la imagen"
-
-msgid "Could not copy the text."
-msgstr "No se pudo copiar el texto."
-
-msgid "Could not load OCR language packs."
-msgstr "No se pudieron cargar los paquetes de idiomas OCR."
-
-msgid "Could not pin this image."
-msgstr "No se pudo fijar esta imagen."
-
-msgid "Could not pin this image. Close a pinned image or use a smaller image."
-msgstr "No se pudo fijar. Cierra una imagen fijada o usa una más pequeña."
-
-msgid "Default save folder"
-msgstr "Carpeta de guardado predeterminada"
-
-msgid "Delete annotation"
-msgstr "Eliminar anotación"
-
-msgid "Filename pattern"
-msgstr "Formato del nombre de archivo"
-
-msgid "Install Tesseract OCR to recognize text."
-msgstr "Instala Tesseract OCR para reconocer texto."
-
-msgid "Loading OCR languages…"
-msgstr "Cargando idiomas OCR…"
-
-msgid "No OCR language packs are installed."
-msgstr "No hay paquetes de idiomas OCR instalados."
-
-msgid "No text was recognized."
-msgstr "No se reconoció texto."
-
-msgid "Numbered marker"
-msgstr "Marcador numerado"
-
-msgid "OCR failed. Check the language packs or crop a smaller area."
-msgstr "Falló el OCR. Comprueba los idiomas o recorta un área menor."
-
-msgid "OCR language"
-msgstr "Idioma OCR"
-
-msgid "OCR runs locally. Install the corresponding Tesseract language packs."
-msgstr "El OCR se ejecuta localmente. Instala los paquetes de idiomas de Tesseract correspondientes."
-
-msgid "Opacity"
-msgstr "Opacidad"
-
-#, javascript-format
-
-msgid "Opacity: %d percent"
-msgstr "Opacidad: %d por ciento"
-
-msgid "Pin to screen"
-msgstr "Fijar en pantalla"
-
-msgid "Recognize text"
-msgstr "Reconocer texto"
-
-msgid "Recognizing text…"
-msgstr "Reconociendo texto…"
-
-msgid "Redo"
-msgstr "Rehacer"
-
-msgid "Reset"
-msgstr "Restablecer"
-
-msgid "Reset export preferences"
-msgstr "Restablecer ajustes de exportación"
-
-msgid "Review the recognized text before copying."
-msgstr "Revisa el texto reconocido antes de copiarlo."
-
-msgid "Screenshot export and OCR"
-msgstr "Exportación de capturas y OCR"
-
-msgid "Select annotation"
-msgstr "Seleccionar anotación"
-
-msgid "Text copied. Paste it into your application."
-msgstr "Texto copiado. Pégalo en tu aplicación."
-
-msgid "Text is empty or exceeds the copy limit."
-msgstr "El texto está vacío o supera el límite de copia."
-
-msgid "Undo"
-msgstr "Deshacer"
-
-msgid "Use {date}, {time}, {width}, and {height}; avoid slashes."
-msgstr "Usa {date}, {time}, {width} y {height}; evita las barras."
-
-msgid "Zoom in"
-msgstr "Acercar"
-
-msgid "Zoom out"
-msgstr "Alejar"

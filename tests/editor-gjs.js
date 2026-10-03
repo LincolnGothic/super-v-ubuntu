@@ -56,6 +56,31 @@ const editor = new ImageEditor(GLib.base64_decode(fixtures.png), 'image/png', nu
 editor.window.present();
 GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
     (async () => {
+        editor.setTool('text');
+        const probe = Gio.File.new_for_path(`${GLib.getenv('XDG_STATE_HOME')}/text-probe.json`);
+        const done = Gio.File.new_for_path(`${GLib.getenv('XDG_STATE_HOME')}/text-probe-done`);
+        await new Promise(resolve => GLib.timeout_add(GLib.PRIORITY_DEFAULT, 100, () => {
+            resolve(); return GLib.SOURCE_REMOVE;
+        }));
+        const [valid, bounds] = editor.canvas.compute_bounds(editor.window);
+        check(valid, 'Canvas coordinates are unavailable for physical text input');
+        const pt = editor._transform();
+        const request = {x: bounds.origin.x + pt.x + 8 * pt.scale,
+            y: bounds.origin.y + pt.y + 32 * pt.scale};
+        probe.replace_contents(JSON.stringify(request), null, false, Gio.FileCreateFlags.PRIVATE, null);
+        await new Promise((resolve, reject) => {
+            let ticks = 0;
+            GLib.timeout_add(GLib.PRIORITY_DEFAULT, 50, () => {
+                if (done.query_exists(null)) { resolve(); return GLib.SOURCE_REMOVE; }
+                if (++ticks > 100) { reject(new Error('Physical text input timed out')); return GLib.SOURCE_REMOVE; }
+                return GLib.SOURCE_CONTINUE;
+            });
+        });
+        check(editor.text.text === 'abcd' && editor.text.get_position() === 4,
+            `Native typing/caret failed after repositioning: ${editor.text.text}`);
+        check(Math.abs(editor.textDraft.x - 8) < 1 && Math.abs(editor.textDraft.y - 32) < 1,
+            'Physical click did not move the input box');
+        probe.delete(null); done.delete(null); editor.setTool('move');
         check(editor.window.title === _('Screenshot editor'), 'Editor is not localized');
         check(editor.canvas.get_width() > 200 && editor.canvas.get_height() > 200, 'Editor canvas did not render');
         for (const type of ['arrow', 'rectangle', 'highlight', 'pen', 'text']) {
@@ -63,6 +88,57 @@ GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
                 text: '你好 日本語 한국어', points: [[3, 4], [6, 8]]});
             check(exportPng(editor.pixbuf, editor.document.state).length > 0, `${type} did not render`);
         }
+        const original = pixel(editor.pixbuf, 0, 0);
+        const mosaicDoc = new EditorDocument(64, 48);
+        mosaicDoc.add({type: 'mosaic', x: 10, y: 10, x2: 30, y2: 30, width: 16, block: 4,
+            color: '#000000', points: [[30, 10], [30, 30]]});
+        const mosaic = decodeImage(exportPng(editor.pixbuf, mosaicDoc.state), 'image/png');
+        check(pixel(mosaic, 20, 10).every(v => v >= 224), 'Mosaic is not light gray and white');
+        check(pixel(mosaic, 20, 10).every(v => v === pixel(mosaic, 20, 10)[0]), 'Mosaic palette is colored');
+        check(new Set([12, 16, 20, 24].map(x => pixel(mosaic, x, 10)[0])).size > 1, 'Mosaic has no visible square tiles');
+        check(JSON.stringify(pixel(mosaic, 0, 0)) === JSON.stringify(original), 'Mosaic changed pixels outside the brush');
+        const red = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, false, 8, 64, 48);
+        red.fill(0xe02040ff); mosaicDoc.toggleGrayscale();
+        const gray = decodeImage(exportPng(red, mosaicDoc.state), 'image/png');
+        check(pixel(gray, 0, 0).every(v => v === pixel(gray, 0, 0)[0]), 'Black and white filter did not remove color');
+        mosaicDoc.undo();
+        const restored = decodeImage(exportPng(red, mosaicDoc.state), 'image/png');
+        check(pixel(restored, 0, 0)[0] === 224 && pixel(restored, 0, 0)[1] === 32, 'Filter undo lost original colors');
+        editor.setTool('text');
+        check(editor.text.visible && (editor.text.has_focus || editor.window.get_focus()?.is_ancestor(editor.text)),
+            'Text tool did not immediately show and focus its input box');
+        editor.text.text = 'Typing 你好';
+        const textBefore = {...editor.textDraft};
+        const textTransform = editor._transform();
+        editor._begin(textTransform.x + 10 * textTransform.scale, textTransform.y + 12 * textTransform.scale);
+        editor._end(0, 0);
+        check(editor.textDraft.x !== textBefore.x && Math.abs(editor.textDraft.x - 10) < 0.000001 &&
+            Math.abs(editor.textDraft.y - 12) < 0.000001,
+            'Clicking the image did not reposition the input box');
+        check(editor.text.text === 'Typing 你好' && editor._textPreview().text === editor.text.text,
+            'Moving the text input lost typed text or its preview');
+        const textCount = editor.document.state.annotations.length;
+        editor.text.emit('activate');
+        check(editor.document.state.annotations.length === textCount + 1 &&
+            editor.document.state.annotations.at(-1).text === 'Typing 你好' && !editor.text.visible,
+            'Enter did not commit the text and dismiss its input box');
+        editor.setTool('mosaic'); editor.size.value = 128; editor.block.value = 24;
+        const mt = editor._transform();
+        editor._begin(mt.x + 10 * mt.scale, mt.y + 10 * mt.scale);
+        editor._drag(5 * mt.scale, 6 * mt.scale); editor._end(15 * mt.scale, 20 * mt.scale);
+        const stroke = editor.document.state.annotations.at(-1);
+        check(stroke.type === 'mosaic' && stroke.width === 128 && stroke.block === 24 && stroke.points.length >= 3,
+            'Mosaic gesture lost its freehand path or adjustable thickness/tile size');
+        editor.setTool('text');
+        check(editor.size.value === 24, 'Text inherited the large mosaic brush thickness');
+        editor.text.text = 'Pending text';
+        editor._commitText();
+        check(editor.document.state.annotations.at(-1).text === 'Pending text' && !editor.text.visible,
+            'Finishing an export text draft left a stale input box');
+        editor.grayscaleButton.emit('clicked');
+        check(editor.document.state.grayscale && editor.grayscaleButton.active, 'Native filter button did not turn on grayscale');
+        editor.undoButton.emit('clicked');
+        check(!editor.document.state.grayscale && !editor.grayscaleButton.active, 'Undo did not update the native filter button');
         editor.document.add({type: 'redact', x: 5, y: 5, x2: 25, y2: 25, color: '#ffffff', width: 4});
         const covered = decodeImage(exportPng(editor.pixbuf, editor.document.state), 'image/png');
         check(pixel(covered, 10, 10).every(value => value === 0), 'Redaction was not opaque black');
@@ -154,6 +230,13 @@ GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
         } finally { ocrEditor.window.close(); }
         const jpeg = decodeImage(GLib.base64_decode(fixtures.jpeg), 'image/jpeg');
         check(jpeg.width === 64 && jpeg.height === 48, 'JPEG input failed');
+        editor.document = new EditorDocument(64, 48);
+        for (let i = 0; i < 128; i++) editor.document.add({type: 'rectangle', x: 1, y: 1, x2: 5, y2: 5,
+            color: '#000000', width: 1});
+        editor.setTool('text'); editor.text.text = 'Keep this draft';
+        check(editor._commitText() === false && editor.text.visible && editor.text.text === 'Keep this draft' && editor.textDraft,
+            'Reaching the annotation limit erased the active text draft');
+        editor.textDraft = null; editor.setTool('move');
         const dialog = new Gtk.FileChooserNative({transient_for: editor.window, action: Gtk.FileChooserAction.SAVE});
         dialog.destroy();
         check(!base.get_child('extension').get_child('editor.png').query_exists(null), 'Editor created a scratch image');

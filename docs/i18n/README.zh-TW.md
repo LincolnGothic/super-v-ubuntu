@@ -2,7 +2,9 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
-v0.1.8 新增可拖曳、縮放與調整透明度的螢幕貼圖、自動編號標記、可選取並移動/縮放/刪除的標註，以及本機 OCR 文字辨識。編輯器中的「貼到螢幕」可固定參考圖；「從影像複製文字」可選擇已安裝的辨識語言，檢查並編輯結果後複製。「設定 → 螢幕截圖匯出與 OCR」可選擇儲存資料夾、檔名格式及 OCR 語言。安裝包包含英文 OCR；其他語言需安裝對應的 Tesseract 語言套件。螢幕貼圖與歷史中的固定項目不同，鎖定螢幕、清除或停用擴充功能會關閉貼圖。
+v0.1.9 修復文字輸入：點擊「文字」即可在圖片上顯示帶游標的輸入框；點擊其他位置移動輸入框，按 Enter 完成。「淺色馬賽克」可自由塗畫，分別調整畫筆粗細和方塊大小；方塊為不透明的淺灰色與白色。「黑白濾鏡」是獨立的可復原開關。Super+Shift+S 和相機按鈕每次只顯示新的十字游標，不保留舊選框；拖曳後放開即可截圖，Escape 取消。截圖進入剪貼簿和可選歷史，使用「儲存影像」選擇檔案位置；Print Screen 保留 GNOME 原有截圖介面。
+
+v0.1.9 新增可拖曳、縮放與調整透明度的螢幕貼圖、自動編號標記、可選取並移動/縮放/刪除的標註，以及本機 OCR 文字辨識。編輯器中的「貼到螢幕」可固定參考圖；「從影像複製文字」可選擇已安裝的辨識語言，檢查並編輯結果後複製。「設定 → 螢幕截圖匯出與 OCR」可選擇儲存資料夾、檔名格式及 OCR 語言。安裝包包含英文 OCR；其他語言需安裝對應的 Tesseract 語言套件。螢幕貼圖與歷史中的固定項目不同，鎖定螢幕、清除或停用擴充功能會關閉貼圖。
 
 v0.1.6 支援 PNG/JPEG 圖片歷史、縮圖、釘選和貼上。點選標題列的相機按鈕，或按 Super+Shift+S，可使用 GNOME 的區域、視窗和全螢幕截圖工具。快捷鍵可在設定中修改或停用。啟用「關機時清空歷史記錄」後，文字、圖片、釘選項目和最近使用的表情僅保存在記憶體中，關機、重新啟動、登出或重新載入擴充功能時都會清空。啟用時也會刪除現有的磁碟歷史記錄，但不刪除 GNOME 的截圖檔案。
 
@@ -12,10 +14,10 @@ Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Debian 13 / GNOME 48 · Wa
 
 ## 初次安裝
 
-下載 [v0.1.8 安裝套件](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.8/super-v-ubuntu_0.1.8_all.deb)，在套件所在資料夾中開啟終端機：
+下載 [v0.1.9 安裝套件](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.9/super-v-ubuntu_0.1.9_all.deb)，在套件所在資料夾中開啟終端機：
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.8_all.deb
+sudo apt install ./super-v-ubuntu_0.1.9_all.deb
 ```
 
 安裝後**儲存工作、登出並重新登入**，再以一般使用者執行以下命令（不使用 sudo）。第一個命令將通知快捷鍵設為 Super+M，讓本應用程式使用 Super+V；它會取代自訂通知快捷鍵。
@@ -26,11 +28,11 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-按 **Super+V**，標題應為 **Super V 0.1.8**。
+按 **Super+V**，標題應為 **Super V 0.1.9**。
 
-## 升級到 v0.1.8
+## 升級到 v0.1.9
 
-下載上方的套件，在套件所在資料夾中執行同一個 apt 命令，即可覆蓋升級，無須先解除安裝。接著**儲存工作、登出並重新登入**，再按 **Super+V** 確認標題為 **Super V 0.1.8**。語言與快捷鍵設定會保留，已儲存的文字歷史、釘選項目和最近使用的表情會遷移；設定為登出時清空的歷史會依設定清空。
+下載上方的套件，在套件所在資料夾中執行同一個 apt 命令，即可覆蓋升級，無須先解除安裝。接著**儲存工作、登出並重新登入**，再按 **Super+V** 確認標題為 **Super V 0.1.9**。語言與快捷鍵設定會保留，已儲存的文字歷史、釘選項目和最近使用的表情會遷移；設定為登出時清空的歷史會依設定清空。
 
 以一般使用者檢查套件及 GNOME 目前載入的版本：
 
@@ -39,9 +41,9 @@ dpkg-query -W super-v-ubuntu
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-兩個版本都應為 **0.1.8**（擴充功能內部編號為 8）。若套件為新版而 GNOME 仍載入舊版，請先登出並重新登入。系統安裝的 Path 應為 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`；若指向使用者目錄，請備份並將該 UUID 資料夾移到擴充功能目錄之外，再登出登入。若 Super+V 沒有反應，可執行上方的 enable 命令；若開啟通知，檢查初次安裝中的通知快捷鍵命令。設定無法開啟時，可執行 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`。
+兩個版本都應為 **0.1.9**（擴充功能內部編號為 10）。若套件為新版而 GNOME 仍載入舊版，請先登出並重新登入。系統安裝的 Path 應為 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`；若指向使用者目錄，請備份並將該 UUID 資料夾移到擴充功能目錄之外，再登出登入。若 Super+V 沒有反應，可執行上方的 enable 命令；若開啟通知，檢查初次安裝中的通知快捷鍵命令。設定無法開啟時，可執行 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`。
 
-## v0.1.8 設定速查
+## v0.1.9 設定速查
 
 按 Super+V，點選標題列的齒輪按鈕開啟「設定」。
 

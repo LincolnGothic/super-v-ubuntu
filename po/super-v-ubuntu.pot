@@ -48,6 +48,9 @@ msgstr ""
 msgid "Arrows"
 msgstr ""
 
+msgid "Black and white"
+msgstr ""
+
 msgid "Capture clipboard history"
 msgstr ""
 
@@ -82,6 +85,9 @@ msgid "Clear unpinned"
 msgstr ""
 
 msgid "Clear unpinned history"
+msgstr ""
+
+msgid "Click the image to move the text box. Press Enter to finish."
 msgstr ""
 
 msgid "Clipboard"
@@ -148,9 +154,6 @@ msgid "Could not save the image."
 msgstr ""
 
 msgid "Could not update local history storage. Check directory permissions."
-msgstr ""
-
-msgid "Cover sensitive area"
 msgstr ""
 
 msgid "Crop"
@@ -263,6 +266,9 @@ msgstr ""
 msgid "Light"
 msgstr ""
 
+msgid "Light mosaic"
+msgstr ""
+
 msgid "Loading OCR languages…"
 msgstr ""
 
@@ -285,6 +291,12 @@ msgid "Medium dark"
 msgstr ""
 
 msgid "Medium light"
+msgstr ""
+
+msgid "Mosaic brush thickness"
+msgstr ""
+
+msgid "Mosaic tile size"
 msgstr ""
 
 msgid "Move image"
@@ -423,6 +435,9 @@ msgid "Screenshot editor"
 msgstr ""
 
 msgid "Screenshot export and OCR"
+msgstr ""
+
+msgid "Screenshot is too large. Select a smaller area."
 msgstr ""
 
 msgid "Screenshot shortcut (GTK accelerator syntax)"
