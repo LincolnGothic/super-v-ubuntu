@@ -19,13 +19,20 @@ import {GifLibrary} from '../extension/gifs.js';
 import {ImageLibrary} from '../extension/images.js';
 import {getDefaultSeat} from '../extension/shell-compat.js';
 import SuperVExtension from '../extension/extension.js';
+import {EditorBridge} from '../extension/editor-bridge.js';
 
 export const METRICS = {};
 export function init() {
     print('SHELL TEST INITIALIZED');
     const background = new Gio.Settings({schema_id: 'org.gnome.desktop.background'});
-    background.set_string('picture-uri', '');
-    background.set_string('picture-uri-dark', '');
+    background.set_string('picture-options', 'none');
+    Main.layoutManager.connect('startup-prepared', () => print('SHELL STARTUP PREPARED'));
+    Main.layoutManager.connect('startup-complete', () => print('SHELL STARTUP COMPLETE'));
+    GLib.timeout_add(GLib.PRIORITY_DEFAULT, 5000, () => {
+        print('SHELL STARTUP STATE', JSON.stringify({starting: Main.layoutManager._startingUp,
+            backgrounds: Main.layoutManager._bgManagers.map(m => m.backgroundActor?.content?.background?.isLoaded ?? null)}));
+        return GLib.SOURCE_REMOVE;
+    });
     new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}).set_boolean('enable-animations', false);
 }
 
@@ -346,6 +353,31 @@ export async function run() {
         check('pin Copy preserves original PNG bytes', (await extension.clipboard.readImage())?.mime === 'image/png');
         extension.screenPins.removeSource('fixture');
         check('deleting a pin source releases its overlay and budget', !extension.screenPins.items.size && !extension.screenPins.budget.items.size);
+        let unexpectedCopy = false;
+        const slowBridge = new EditorBridge(Gio.File.new_for_path(`${base}/tests/fixtures/slow-editor`),
+            () => { unexpectedCopy = true; }, () => { throw new Error('Slow editor failed'); },
+            {onText: () => { unexpectedCopy = true; }});
+        try {
+            slowBridge.open(GLib.base64_decode(fixtures.png), 'image/png');
+            await waitFor(() => global.get_window_actors().some(actor => actor.meta_window.get_title() === _('Screenshot editor')));
+            const slowWindow = global.get_window_actors().find(actor => actor.meta_window.get_title() === _('Screenshot editor')).meta_window;
+            slowWindow.activate(global.get_current_time());
+            await Scripting.sleep(150);
+            for (const key of [Clutter.KEY_Control_L, Clutter.KEY_Shift_L, Clutter.KEY_o])
+                keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.PRESSED);
+            for (const key of [Clutter.KEY_o, Clutter.KEY_Shift_L, Clutter.KEY_Control_L])
+                keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.RELEASED);
+            const pidFile = Gio.File.new_for_path(`${GLib.getenv('XDG_STATE_HOME')}/slow-ocr.pid`);
+            await waitFor(() => pidFile.query_exists(null));
+            const pid = new TextDecoder().decode(pidFile.load_contents(null)[1]);
+            check('native OCR runs in a separate process', /^\d+$/u.test(pid));
+            slowBridge.close();
+            const processState = Gio.File.new_for_path(`/proc/${pid}/stat`);
+            await waitFor(() => !processState.query_exists(null) ||
+                new TextDecoder().decode(processState.load_contents(null)[1]).includes(') Z'));
+            check('terminating the editor stops in-flight OCR without copying its result', !unexpectedCopy);
+            await waitFor(() => !global.get_window_actors().some(actor => actor.meta_window.get_title() === _('Screenshot editor')));
+        } finally { slowBridge.close(); }
         const pictures = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES);
         check('native screenshot output stays in the disposable session',
             pictures.startsWith(GLib.getenv('XDG_CONFIG_HOME').replace(/\/config$/u, '/')));

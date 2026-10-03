@@ -145,6 +145,9 @@ export class ImageEditor {
                     return true;
                 }
                 if (!editingText && [Gdk.KEY_c, Gdk.KEY_C].includes(key)) { this.copy(); return true; }
+                if (!editingText && modifiers & Gdk.ModifierType.SHIFT_MASK && [Gdk.KEY_o, Gdk.KEY_O].includes(key)) {
+                    this.recognizeText(); return true;
+                }
                 if ([Gdk.KEY_s, Gdk.KEY_S].includes(key)) { this.save(); return true; }
             }
             if (key === Gdk.KEY_Escape) { this.window.close(); return true; }

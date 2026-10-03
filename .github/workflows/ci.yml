@@ -55,7 +55,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     container:
       image: debian:13
-      options: --volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
+      options: --security-opt apparmor=unconfined --volume /run/dbus/system_bus_socket:/run/dbus/system_bus_socket
     timeout-minutes: 25
     steps:
       - uses: actions/checkout@v4
