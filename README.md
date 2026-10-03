@@ -29,12 +29,21 @@ before relying on this implementation.
 
 ## Screenshots
 
-![Six-column emoji picker](docs/screenshots/emoji-grid.png)
+**Emoji picker — v0.1.5**
 
-v0.1.2 popup rendering in an isolated GNOME Shell 50.1 Wayland session with
-sample data. This checks the grid layout, not clipboard capture or pasting into
-desktop applications. See [emoji grid checks](docs/emoji-grid-verification.md);
-the full desktop acceptance matrix remains pending.
+The six-column grid, horizontal category bar and compact skin-tone selector.
+
+![Super V 0.1.5 emoji picker with horizontal category buttons](docs/screenshots/emoji-picker-v0.1.5.png)
+
+**Language settings — v0.1.5**
+
+Choose Follow system or any of the seven supported languages in Settings.
+
+![Super V language settings showing Follow system, English, Simplified Chinese, Traditional Chinese, Japanese, Spanish, French and Korean](docs/screenshots/language-settings-v0.1.5.png)
+
+Captured from v0.1.5 in isolated GNOME Shell 50.1 Wayland sessions with bundled
+emoji and default settings. These show the current interface; full desktop
+capture/paste acceptance is tracked in [testing](docs/testing.md).
 
 ## Install the Debian package
 
