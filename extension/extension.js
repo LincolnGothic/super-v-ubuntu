@@ -159,7 +159,7 @@ export default class SuperVExtension extends Extension {
         this.editor = new EditorBridge(this.dir, copyImage, () => {
             if (this._active)
                 Main.notify('Super V', _('Could not open or communicate with the screenshot editor.'));
-        }, {onPin: bytes => this.pinImage(bytes, 'image/png', this._editorEntryId), onText: text => {
+        }, {onPin: bytes => this.pinImage(bytes, 'image/png', this._editorEntryId, this._editorSourceDigest), onText: text => {
             if (!this._active || Main.sessionMode.isLocked || Main.sessionMode.isGreeter) return;
             this.pendingRestore = null;
             this.clipboard.write(text);
@@ -269,8 +269,9 @@ export default class SuperVExtension extends Extension {
     }
 
     deleteEntry(id) {
-        this.screenPins?.removeSource(id);
-        if (this._editorEntryId === id)
+        const digest = this.history.entries.find(entry => entry.id === id)?.digest;
+        this.screenPins?.removeSource(id, digest);
+        if (this._editorEntryId === id || digest && digest === this._editorSourceDigest)
             this.editor?.close();
         this.history.delete(id);
         this.changed();
@@ -355,9 +356,9 @@ export default class SuperVExtension extends Extension {
             this._openEditor(image.bytes, entry.mime, entry.id);
     }
 
-    pinImage(bytes, mime, sourceId = null) {
+    pinImage(bytes, mime, sourceId = null, sourceDigest = null) {
         if (!this._active || !this._ready || Main.sessionMode.isLocked || Main.sessionMode.isGreeter) return;
-        try { this.screenPins.add(bytes, mime, sourceId); }
+        try { this.screenPins.add(bytes, mime, sourceId, sourceDigest); }
         catch { Main.notify('Super V', _('Could not pin this image. Close a pinned image or use a smaller image.')); }
     }
 
@@ -369,6 +370,7 @@ export default class SuperVExtension extends Extension {
         this.pasteBackend.cancel();
         this.pendingRestore = null;
         this._editorEntryId = id;
+        this._editorSourceDigest = GLib.compute_checksum_for_bytes(GLib.ChecksumType.SHA256, new GLib.Bytes(bytes));
         try { this.editor.open(bytes, mime); }
         catch { Main.notify('Super V', _('Could not open or communicate with the screenshot editor.')); }
     }
@@ -525,6 +527,7 @@ export default class SuperVExtension extends Extension {
         this.history = this.emoji = this.store = this.pendingRestore = this._target = this.gifs = null;
         this.images = null;
         this.editor = null;
+        this._editorSourceDigest = null;
         this.screenPins = null;
         this._stateCancellable = null;
         this._emojiRecords = null;

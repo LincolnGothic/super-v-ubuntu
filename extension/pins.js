@@ -19,7 +19,7 @@ export class ScreenPins {
             for (const pin of this.items.values()) this._place(pin);
         });
     }
-    add(bytes, mime, sourceId = null) {
+    add(bytes, mime, sourceId = null, sourceDigest = null) {
         const id = this.budget.add(bytes, mime);
         let root;
         try {
@@ -52,7 +52,7 @@ export class ScreenPins {
             const image = new St.Widget({content, content_gravity: Clutter.ContentGravity.RESIZE_FILL,
                 x_align: Clutter.ActorAlign.CENTER, reactive: true});
             root.add_child(image);
-            const pin = {id, sourceId, root, image, zoom: 1, opacity: 100, width: info.width, height: info.height};
+            const pin = {id, sourceId, sourceDigest, root, image, zoom: 1, opacity: 100, width: info.width, height: info.height};
             const [x, y] = global.get_pointer();
             root.set_position(x, y);
             const button = (label, message, callback) => {
@@ -145,8 +145,10 @@ export class ScreenPins {
         Main.layoutManager.removeChrome(pin.root); pin.root.destroy();
         this.items.delete(id); this.budget.delete(id);
     }
-    removeSource(id) {
-        for (const pin of [...this.items.values()]) if (pin.sourceId === id) this.remove(pin.id);
+    removeSource(id, digest = null) {
+        for (const pin of [...this.items.values()]) {
+            if (pin.sourceId === id || digest && pin.sourceDigest === digest) this.remove(pin.id);
+        }
     }
     clear() { for (const id of [...this.items.keys()]) this.remove(id); }
     destroy() {

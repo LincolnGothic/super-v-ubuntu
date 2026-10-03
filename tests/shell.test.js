@@ -425,6 +425,10 @@ export async function run() {
         check('closing the editor keeps the copied image available', (await extension.clipboard.readImage())?.mime === 'image/png');
         extension.settings.set_boolean('history-enabled', true);
         await waitFor(() => !global.get_window_actors().some(actor => actor.meta_window.get_title() === _('Screenshot editor')));
+        const screenshotEntry = extension.history.entries.find(entry => entry.width === 1280);
+        extension.screenPins.add(GLib.base64_decode(fixtures.png), 'image/png', null, screenshotEntry.digest);
+        extension.deleteEntry(screenshotEntry.id);
+        check('deleting an automatic screenshot source closes its screen pins by digest', !extension.screenPins.items.size);
         extension.settings.set_boolean('edit-after-screenshot', false);
         extension.takeScreenshot();
         await waitFor(() => Main.screenshotUI.visible && Main.screenshotUI.opacity === 255);
