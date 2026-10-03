@@ -2,16 +2,18 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
+v0.1.6 guarda imágenes PNG/JPEG con miniaturas, fijación y pegado. El botón de cámara o Super+Shift+S abre las capturas de área, ventana o pantalla de GNOME. Puedes cambiar o desactivar el atajo en Ajustes. «Borrar el historial al apagar» mantiene el texto, las imágenes, los elementos fijados y los emojis recientes solo en memoria; también se borran al reiniciar, cerrar sesión o recargar la extensión. Al activarlo se elimina el historial guardado, pero no los archivos de captura de GNOME.
+
 Un selector al estilo de Windows con Super+V para Ubuntu GNOME: historial del portapapeles, emojis, kaomoji, símbolos y GIF locales favoritos. Los datos permanecen en tu equipo, sin telemetría ni conexiones de red durante el uso.
 
 Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
 
 ## Instalación y actualización
 
-Guarda el [paquete v0.1.5](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.5) en tu carpeta de descargas:
+Guarda el [paquete v0.1.6](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6) en tu carpeta de descargas:
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.5_all.deb"
+sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
 ```
 
 Después de instalar, cierra la sesión y vuelve a entrar. Ejecuta estos comandos como usuario normal, sin sudo. El primero asigna Super+M a las notificaciones para dejar Super+V disponible; reemplaza cualquier atajo de notificaciones personalizado.
@@ -22,7 +24,7 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-Tras actualizar, vuelve a cerrar y abrir la sesión. El título debe mostrar **Super V 0.1.5**. Si aparece una versión antigua, comprueba la ruta indicada por info: una copia de usuario con el mismo UUID tiene prioridad sobre el paquete del sistema.
+Tras actualizar, vuelve a cerrar y abrir la sesión. El título debe mostrar **Super V 0.1.6**. Si aparece una versión antigua, comprueba la ruta indicada por info: una copia de usuario con el mismo UUID tiene prioridad sobre el paquete del sistema.
 
 ## Uso e idiomas
 

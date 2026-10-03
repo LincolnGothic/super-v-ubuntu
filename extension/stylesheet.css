@@ -15,6 +15,7 @@
 .super-v-list { spacing: 5px; }
 .super-v-row { spacing: 4px; }
 .super-v-item { padding: 10px 8px; text-align: left; }
+.super-v-image-preview { spacing: 10px; min-height: 112px; }
 .super-v-emoji-row { spacing: 4px; }
 .super-v-emoji {
     background-color: transparent;

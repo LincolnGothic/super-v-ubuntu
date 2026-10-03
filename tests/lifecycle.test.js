@@ -4,6 +4,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {resolve} from 'node:path';
+import {createHash} from 'node:crypto';
 import {loadModule} from './helpers/load-module.js';
 import {History} from '../extension/core/history.js';
 import {EmojiIndex} from '../extension/core/emoji.js';
@@ -31,6 +32,8 @@ function clipboardFixture() {
             is_closed() { return this.closed; }, steal_as_bytes() { return {get_data: () => this.data}; }};
     }}};
     const glib = {PRIORITY_DEFAULT: 0, SOURCE_REMOVE: false, get_monotonic_time: () => 1_000_000,
+        ChecksumType: {SHA256: 1},
+        compute_checksum_for_bytes: (_type, data) => createHash('sha256').update(data.bytes).digest('hex'),
         timeout_add(priority, time, callback) { const id = ++counter; timers.set(id, callback); return id; },
         source_remove(id) { timers.delete(id); }};
     const binary = [];
@@ -46,7 +49,7 @@ function clipboardFixture() {
         const p = pending.splice(index, 1)[0];
         if (!p)
             return;
-        p.output.data = new TextEncoder().encode(text).slice(0, p.size);
+        p.output.data = (typeof text === 'string' ? new TextEncoder().encode(text) : text).slice(0, p.size);
         p.callback(selection, {});
     }
     return {selection, values, settings, captured, binary, pending, timers, finish,
@@ -60,7 +63,8 @@ function clipboardFixture() {
 const settle = async () => { for (let i = 0; i < 6; i++) await Promise.resolve(); };
 async function monitor(fixture, ids = () => []) {
     const module = await loadModule('extension/clipboard.js', fixture.mocks, fixture.global);
-    return new module.ClipboardMonitor(fixture.settings, ids, x => fixture.captured.push(x));
+    return new module.ClipboardMonitor(fixture.settings, ids, x => fixture.captured.push(x),
+        (bytes, mime) => fixture.captured.push({bytes, mime}));
 }
 
 test('clipboard only reads clipboard selections and caps transferred bytes', async () => {
@@ -179,6 +183,60 @@ test('lock suspension blocks collection and unlock resumes it', async () => {
     m.destroy();
 });
 
+const pngBytes = new Uint8Array(Buffer.from(JSON.parse(readFileSync('tests/fixtures/images.json', 'utf8')).png, 'base64'));
+test('PNG capture takes precedence over accompanying text and preserves bytes', async () => {
+    const f = clipboardFixture();
+    const m = await monitor(f);
+    f.selection.mimes = ['text/plain', 'image/png'];
+    f.event(1);
+    assert.equal(f.pending[0].mime, 'image/png');
+    assert.equal(f.pending[0].size, 8 * 1024 * 1024 + 1);
+    f.finish(pngBytes);
+    await settle();
+    assert.deepEqual(f.captured, [{bytes: pngBytes, mime: 'image/png'}]);
+    m.destroy();
+});
+for (const change of ['new owner', 'paused', 'lock', 'disable', 'excluded app']) {
+    test(`image read is discarded after ${change}`, async () => {
+        const f = clipboardFixture();
+        const m = await monitor(f, () => ['test.app']);
+        f.selection.mimes = ['image/png'];
+        f.event(1);
+        if (change === 'new owner') f.event(1);
+        if (change === 'paused') f.values['history-enabled'] = false;
+        if (change === 'lock') m.setSuspended(true);
+        if (change === 'disable') m.destroy();
+        if (change === 'excluded app') f.values['excluded-apps'] = ['test.app'];
+        f.finish(pngBytes);
+        await settle();
+        assert.deepEqual(f.captured, []);
+        if (change !== 'disable') m.destroy();
+    });
+}
+test('password hints and unsupported image formats are ignored', async () => {
+    const f = clipboardFixture();
+    const m = await monitor(f);
+    for (const mimes of [['image/png', 'application/x-keepassxc'], ['image/svg+xml'], ['image/gif']]) {
+        f.selection.mimes = mimes;
+        f.event(1);
+        await settle();
+        assert.equal(f.pending.length, 0);
+    }
+    m.destroy();
+});
+test('history image writes use the original MIME and suppress their own capture', async () => {
+    const f = clipboardFixture();
+    const m = await monitor(f);
+    m.writeImage(pngBytes, 'image/png');
+    assert.deepEqual(f.binary, [{type: 1, mime: 'image/png', bytes: pngBytes}]);
+    f.selection.mimes = ['image/png'];
+    f.event(1);
+    f.finish(pngBytes);
+    await settle();
+    assert.deepEqual(f.captured, []);
+    m.destroy();
+});
+
 async function pasteFixture(modern = false) {
     const timers = new Map();
     const keys = [];
@@ -279,11 +337,16 @@ test('paste adapter attempts remaining releases after a release failure', async 
 async function controller() {
     const emoji = JSON.parse(readFileSync('extension/data/emoji.json', 'utf8'));
     const mockPath = name => resolve(`extension/${name}`);
+    const sources = new Map();
+    const main = {notify() {}, sessionMode: {isLocked: false, isGreeter: false},
+        screenshotUI: {open: async () => { main.opened = (main.opened ?? 0) + 1; }}};
     const mocks = {
         'gettext': {dgettext: (_domain, message) => message},
-        'gi://GLib': {default: {get_language_names: () => ['en']}},
+        'gi://GLib': {default: {get_language_names: () => ['en'], PRIORITY_DEFAULT_IDLE: 0,
+            idle_add(_priority, callback) { const id = sources.size + 1; sources.set(id, callback); return id; },
+            source_remove: id => sources.delete(id)}},
         'gi://Gio': {default: {}}, 'gi://Meta': {default: {}}, 'gi://Shell': {default: {}},
-        'resource:///org/gnome/shell/ui/main.js': {notify() {}},
+        'resource:///org/gnome/shell/ui/main.js': main,
         'resource:///org/gnome/shell/ui/modalDialog.js': {State: {OPENED: 1, OPENING: 2}},
         'resource:///org/gnome/shell/extensions/extension.js': {Extension: class {}, gettext: message => message},
         [mockPath('storage.js')]: {StateStore: class {}},
@@ -291,6 +354,7 @@ async function controller() {
         [mockPath('paste.js')]: {PasteBackend: class {}},
         [mockPath('popup.js')]: {SuperVPopup: class {}},
         [mockPath('gifs.js')]: {GifLibrary: class {}},
+        [mockPath('images.js')]: {ImageLibrary: class {}},
     };
     const module = await loadModule('extension/extension.js', mocks);
     const c = new module.default();
@@ -303,17 +367,63 @@ async function controller() {
     c._target = {};
     c.history = new History();
     c.emoji = new EmojiIndex(emoji.emoji);
-    c.settings = {get_boolean: () => true};
+    c.settings = {get_boolean: key => key !== 'clear-on-shutdown'};
     c.store = {save() {}, erase() {}};
     c.popup = {close() {}, refresh() {}};
     const writes = [];
     const pastes = [];
     c.clipboard = {generation: 1, readText: async () => 'old', write: x => writes.push(x),
-        writeGif: x => writes.push(x)};
+        writeGif: x => writes.push(x), writeImage: (bytes, mime) => writes.push({bytes, mime})};
     c.gifs = {read: async () => new Uint8Array([1, 2, 3])};
-    c.pasteBackend = {paste: x => pastes.push(x)};
-    return {c, writes, pastes};
+    c.pasteBackend = {paste: x => pastes.push(x), cancel() {}};
+    return {c, writes, pastes, main, sources};
 }
+
+test('image history choice copies original binary data and preserves its paste target', async () => {
+    const {c, writes, pastes} = await controller();
+    const entry = c.history.addImage({kind: 'image', mime: 'image/png', digest: 'a'.repeat(64),
+        bytes: pngBytes.length, width: 64, height: 48});
+    c.images = {get: () => ({bytes: pngBytes}), retain() {}, snapshot: () => new Map()};
+    c.pendingRestore = {previous: 'old', emoji: '😀'};
+    await c.select(entry, false);
+    assert.deepEqual(writes, [{bytes: pngBytes, mime: 'image/png'}]);
+    assert.deepEqual(pastes, [c._target]);
+    assert.equal(c.pendingRestore, null);
+    assert.equal(c.history.entries[0], entry);
+});
+test('screenshot opens native controls only after the picker closes', async () => {
+    const {c, main, sources} = await controller();
+    let closed = false;
+    c.popup.close = () => { closed = true; };
+    c.takeScreenshot();
+    assert.equal(closed, true);
+    assert.equal(main.opened, undefined);
+    [...sources.values()][0]();
+    await settle();
+    assert.equal(main.opened, 1);
+});
+test('locking before queued screenshot prevents native controls from opening', async () => {
+    const {c, main, sources} = await controller();
+    c.takeScreenshot();
+    main.sessionMode.isLocked = true;
+    [...sources.values()][0]();
+    await settle();
+    assert.equal(main.opened, undefined);
+});
+test('shutdown privacy overrides persistence without discarding current memory', async () => {
+    const {c} = await controller();
+    c.history.add('keep during this session');
+    c.settings.get_boolean = () => true;
+    let erased = 0;
+    c.store.erase = () => { erased++; };
+    c._settingsChanged('clear-on-shutdown');
+    assert.equal(c.store.persist, false);
+    assert.equal(erased, 1);
+    assert.equal(c.history.entries[0].text, 'keep during this session');
+    c.settings.get_boolean = key => key !== 'clear-on-shutdown';
+    c._settingsChanged('clear-on-shutdown');
+    assert.equal(c.store.persist, true);
+});
 
 test('live language updates preserve recents and reject an older catalog read', async () => {
     const {c} = await controller();

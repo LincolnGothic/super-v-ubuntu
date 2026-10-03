@@ -74,6 +74,8 @@ export function localizeEmoji(records, annotations = {}) {
 
 // Each UI message has one placeholder; callback replacement preserves literal
 // dollar signs and percent signs in user filenames and storage paths.
-export function format(message, value) {
-    return message.replace(/%[sd]/u, () => String(value));
+export function format(message, ...values) {
+    let index = 0;
+    return message.replace(/%[sd]/gu, placeholder =>
+        index < values.length ? String(values[index++]) : placeholder);
 }

@@ -2,16 +2,18 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
+v0.1.6 は PNG/JPEG 画像の履歴、サムネイル、ピン留め、貼り付けに対応しています。カメラボタンまたは Super+Shift+S で GNOME の領域・ウィンドウ・画面の撮影ツールを開きます。ショートカットは設定で変更・無効化できます。「シャットダウン時に履歴を消去」を有効にすると、履歴、ピン留め項目、最近使った絵文字をメモリーにのみ保持し、終了・再起動・ログアウト・拡張機能の再読み込み時に消去します。既存の保存済み履歴も削除されますが、GNOME のスクリーンショットファイルは削除されません。
+
 Ubuntu GNOME 向けの Windows 風 Super+V パネルです。クリップボード履歴、絵文字、顔文字、記号、お気に入りのローカル GIF を利用できます。データはこのコンピューター内に保存され、テレメトリーや実行時のネットワーク通信はありません。
 
 Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
 
 ## インストールと更新
 
-[v0.1.5 のパッケージ](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.5)をダウンロードフォルダーに保存します。
+[v0.1.6 のパッケージ](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6)をダウンロードフォルダーに保存します。
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.5_all.deb"
+sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
 ```
 
 インストール後にログアウトして再度ログインし、一般ユーザーで次のコマンドを実行します（sudo は使いません）。最初のコマンドは通知のショートカットを Super+M に設定し、Super+V をこの拡張機能に割り当てられるようにします。独自の通知ショートカットは置き換えられます。
@@ -22,7 +24,7 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-更新後もログアウトして再度ログインしてください。タイトルは **Super V 0.1.5** になります。古いバージョンが表示される場合は info のパスを確認してください。同じ UUID のユーザー用拡張機能はシステムのインストールより優先されます。
+更新後もログアウトして再度ログインしてください。タイトルは **Super V 0.1.6** になります。古いバージョンが表示される場合は info のパスを確認してください。同じ UUID のユーザー用拡張機能はシステムのインストールより優先されます。
 
 ## 使い方と言語
 

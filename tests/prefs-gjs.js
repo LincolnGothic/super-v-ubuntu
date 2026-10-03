@@ -5,6 +5,7 @@ import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
 import System from 'system';
 import {resolveLanguage, languageOptions} from '../extension/core/localization.js';
+import {gettext as _} from '../extension/translations.js';
 
 Gio.resources_register(Gio.Resource.load('/usr/share/gnome-shell/org.gnome.Shell.Extensions.src.gresource'));
 Adw.init();
@@ -26,16 +27,38 @@ const expected = {en: 'Clipboard history', zh_CN: '剪贴板历史', zh_TW: '剪
     fr: 'Historique du presse-papiers', ko: '클립보드 기록'};
 function verify(language) {
     const groups = [];
+    const rows = [];
     let selector;
     const visit = widget => {
         if (widget instanceof Adw.PreferencesGroup)
             groups.push(widget.title);
         if (widget instanceof Adw.ComboRow && widget.model.get_n_items() === 8)
             selector = widget;
+        if (widget instanceof Adw.PreferencesRow)
+            rows.push(widget);
         for (let child = widget.get_first_child(); child; child = child.get_next_sibling())
             visit(child);
     };
     visit(window);
+    const clear = rows.find(row => row.title === _('Clear history on shutdown'));
+    const remember = rows.find(row => row.title === _('Remember after logout'));
+    const shortcut = rows.find(row => row.title === _('Screenshot shortcut (GTK accelerator syntax)'));
+    if (!clear || !remember || !shortcut)
+        throw new Error('Image/screenshot/privacy preferences missing');
+    clear.active = true;
+    if (!settings.get_boolean('clear-on-shutdown') || remember.sensitive)
+        throw new Error('Shutdown preference did not override persistence controls');
+    clear.active = false;
+    if (settings.get_boolean('clear-on-shutdown') || !remember.sensitive)
+        throw new Error('Shutdown preference did not release persistence controls');
+    shortcut.text = '';
+    shortcut.emit('apply');
+    if (settings.get_strv('take-screenshot').length)
+        throw new Error('Screenshot shortcut cannot be disabled');
+    shortcut.text = '<Super><Shift>s';
+    shortcut.emit('apply');
+    if (settings.get_strv('take-screenshot')[0] !== '<Shift><Super>s')
+        throw new Error('Screenshot shortcut change did not persist');
     if (!groups.includes(expected[language]))
         throw new Error(`${language}: localized preferences group missing`);
     if (!selector || window.get_width() < 600)

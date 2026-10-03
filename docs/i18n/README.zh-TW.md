@@ -2,16 +2,18 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
+v0.1.6 支援 PNG/JPEG 圖片歷史、縮圖、釘選和貼上。點選標題列的相機按鈕，或按 Super+Shift+S，可使用 GNOME 的區域、視窗和全螢幕截圖工具。快捷鍵可在設定中修改或停用。啟用「關機時清空歷史記錄」後，文字、圖片、釘選項目和最近使用的表情僅保存在記憶體中，關機、重新啟動、登出或重新載入擴充功能時都會清空。啟用時也會刪除現有的磁碟歷史記錄，但不刪除 GNOME 的截圖檔案。
+
 適用於 Ubuntu GNOME 的 Windows 風格 Super+V 選擇器，提供剪貼簿歷史、表情符號、顏文字、符號和本機 GIF 收藏。所有內容保留在本機，無遙測或執行時網路請求。
 
 Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Wayland
 
 ## 安裝與升級
 
-下載 [v0.1.5 安裝套件](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.5)，儲存到「下載」目錄：
+下載 [v0.1.6 安裝套件](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6)，儲存到「下載」目錄：
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.5_all.deb"
+sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
 ```
 
 安裝後登出並重新登入，再以一般使用者執行以下命令（不使用 sudo）。第一個命令將通知快捷鍵設為 Super+M，讓本應用程式使用 Super+V；它會取代自訂通知快捷鍵。
@@ -22,7 +24,7 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-升級後再次登出並登入，標題應為 **Super V 0.1.5**。若仍顯示舊版，請檢查上方 info 命令輸出的路徑；使用者目錄中相同 UUID 的擴充功能會覆蓋系統安裝。
+升級後再次登出並登入，標題應為 **Super V 0.1.6**。若仍顯示舊版，請檢查上方 info 命令輸出的路徑；使用者目錄中相同 UUID 的擴充功能會覆蓋系統安裝。
 
 ## 使用與語言
 

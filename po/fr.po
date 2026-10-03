@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 msgid ""
-msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: fr\nLanguage: fr\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n > 1);\n"
+msgstr "Project-Id-Version: super-v-ubuntu 0.1.6\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-03 12:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: fr\nLanguage: fr\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=2; plural=(n > 1);\n"
 
 msgid "Activities"
 msgstr "Activités"
@@ -59,6 +59,9 @@ msgstr "Classiques"
 msgid "Clear"
 msgstr "Effacer"
 
+msgid "Clear history on shutdown"
+msgstr "Effacer l’historique à l’arrêt"
+
 msgid "Clear requested; applied when the extension is active."
 msgstr "Effacement demandé ; il sera appliqué lorsque l’extension sera active."
 
@@ -77,14 +80,20 @@ msgstr "Le presse-papiers a changé ; son contenu le plus récent a été conser
 msgid "Clipboard history"
 msgstr "Historique du presse-papiers"
 
+msgid "Collects copied text and PNG/JPEG images. Images: up to 8 MiB each, 32 MiB total, 8192 pixels per side and 16 megapixels."
+msgstr "Enregistre le texte et les images PNG/JPEG copiés. Limites : 8 MiB par image, 32 MiB au total, 8192 pixels par côté et 16 mégapixels."
+
 msgid "Copied to clipboard. Use your application’s paste shortcut."
 msgstr "Copié dans le presse-papiers. Utilisez le raccourci de collage de votre application."
 
-msgid "Copy some text to start your history."
-msgstr "Copiez du texte pour commencer votre historique."
+msgid "Copy text or an image to start your history."
+msgstr "Copiez du texte ou une image pour commencer l’historique."
 
 msgid "Could not initialize the extension. Disable and re-enable it."
 msgstr "Impossible d’initialiser l’extension. Désactivez-la puis réactivez-la."
+
+msgid "Could not open the screenshot tool. Try Print Screen."
+msgstr "Impossible d’ouvrir l’outil de capture. Essayez Impr. écran."
 
 msgid "Could not read that GIF. Re-add it in Settings or choose another file."
 msgstr "Impossible de lire ce GIF. Ajoutez-le à nouveau dans les paramètres ou choisissez un autre fichier."
@@ -116,7 +125,6 @@ msgstr "Effacer tous les éléments enregistrés"
 msgid "Excluded apps (comma-separated)"
 msgstr "Applications exclues (séparées par des virgules)"
 
-#, javascript-format
 msgid "Files skipped: %d. Invalid, too large, or favorites full."
 msgstr "Fichiers ignorés : %d. Invalides, trop volumineux ou favoris complets."
 
@@ -147,8 +155,17 @@ msgstr "L’historique dépasse la limite de stockage."
 msgid "History is paused. Enable it in Settings."
 msgstr "L’historique est en pause. Activez-le dans les paramètres."
 
-msgid "History stays on this computer. It may contain private text. Pausing capture does not erase existing entries."
-msgstr "L’historique reste sur cet ordinateur et peut contenir du texte privé. Suspendre l’enregistrement n’efface pas les éléments existants."
+msgid "History stays on this computer. It may contain private text and images. Pausing capture does not erase existing entries."
+msgstr "L’historique reste sur cet ordinateur et peut contenir du texte et des images privés. Suspendre la capture n’efface pas les éléments existants."
+
+msgid "History, pinned items and emoji recents stay in memory only. Also clears on restart or logout. Existing saved history is removed."
+msgstr "L’historique, les éléments épinglés et les emojis récents restent uniquement en mémoire. Ils sont aussi effacés au redémarrage ou à la déconnexion. L’historique enregistré est supprimé."
+
+msgid "Image"
+msgstr "Image"
+
+msgid "Image · %d × %d"
+msgstr "Image · %d × %d"
 
 msgid "Invalid stored history was removed."
 msgstr "L’historique enregistré invalide a été supprimé."
@@ -219,11 +236,9 @@ msgstr "Les éléments épinglés sont conservés."
 msgid "Pinned entries have a separate maximum of 100. Total text is limited to 2 MiB."
 msgstr "Les éléments épinglés ont une limite distincte de 100. Le texte total est limité à 2 MiB."
 
-#, javascript-format
 msgid "Pinned: %s"
 msgstr "Épinglé : %s"
 
-#, javascript-format
 msgid "Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access."
 msgstr "Historique en texte clair : %s. Dossier 0700 ; fichier 0600. Les indices MIME des gestionnaires de mots de passe et les exclusions d’applications actives ne sont pas infaillibles. Aucune télémétrie ni accès réseau à l’exécution."
 
@@ -250,6 +265,12 @@ msgstr "Restaurer le presse-papiers"
 
 msgid "Sad"
 msgstr "Tristesse"
+
+msgid "Screenshot"
+msgstr "Capture d’écran"
+
+msgid "Screenshot shortcut (GTK accelerator syntax)"
+msgstr "Raccourci de capture (syntaxe GTK)"
 
 msgid "Search"
 msgstr "Rechercher"
@@ -278,12 +299,14 @@ msgstr "Raccourci (syntaxe des accélérateurs GTK)"
 msgid "Shortcuts: ctrl-v, ctrl-shift-v, shift-insert, manual."
 msgstr "Raccourcis : ctrl-v, ctrl-shift-v, shift-insert, manual."
 
-#, javascript-format
 msgid "Show more (%d)"
 msgstr "Afficher plus (%d)"
 
 msgid "Smileys & Emotion"
 msgstr "Visages et émotions"
+
+msgid "Some saved images could not be read and were removed."
+msgstr "Certaines images enregistrées n’ont pas pu être lues et ont été supprimées."
 
 msgid "Stored history could not be read. It has been removed."
 msgstr "L’historique enregistré n’a pas pu être lu et a été supprimé."
@@ -300,10 +323,6 @@ msgstr "Surprise"
 msgid "Symbols"
 msgstr "Symboles"
 
-msgid "Text copied after enabling the extension is collected."
-msgstr "Le texte copié après l’activation de l’extension est enregistré."
-
-#, javascript-format
 msgid "Tone: %s"
 msgstr "Teint : %s"
 
@@ -313,14 +332,17 @@ msgstr "Voyages et lieux"
 msgid "Turn off to copy selections without sending a paste shortcut."
 msgstr "Désactivez cette option pour copier les sélections sans envoyer de raccourci de collage."
 
-msgid "Turning this off removes the saved file; current memory is retained."
-msgstr "La désactivation supprime le fichier enregistré ; l’historique en mémoire est conservé."
+msgid "Turning this off removes saved text and images; current memory is retained. Clear history on shutdown takes priority."
+msgstr "La désactivation supprime le texte et les images enregistrés, en conservant l’historique en mémoire. L’effacement à l’arrêt est prioritaire."
 
 msgid "Units"
 msgstr "Unités"
 
 msgid "Unpin entry"
 msgstr "Désépingler l’élément"
+
+msgid "Use a shortcut such as <Super><Shift>s, or leave empty to disable."
+msgstr "Utilisez un raccourci comme <Super><Shift>s ou laissez vide pour le désactiver."
 
 msgid "Use a shortcut such as <Super>v or <Control><Alt>v."
 msgstr "Utilisez un raccourci tel que <Super>v ou <Control><Alt>v."

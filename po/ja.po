@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 msgid ""
-msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: ja\nLanguage: ja\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+msgstr "Project-Id-Version: super-v-ubuntu 0.1.6\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-03 12:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: ja\nLanguage: ja\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
 
 msgid "Activities"
 msgstr "アクティビティ"
@@ -59,6 +59,9 @@ msgstr "定番"
 msgid "Clear"
 msgstr "消去"
 
+msgid "Clear history on shutdown"
+msgstr "シャットダウン時に履歴を消去"
+
 msgid "Clear requested; applied when the extension is active."
 msgstr "消去を要求しました。拡張機能の有効時に適用されます。"
 
@@ -77,14 +80,20 @@ msgstr "クリップボードが変更されたため、新しい内容を保持
 msgid "Clipboard history"
 msgstr "クリップボード履歴"
 
+msgid "Collects copied text and PNG/JPEG images. Images: up to 8 MiB each, 32 MiB total, 8192 pixels per side and 16 megapixels."
+msgstr "コピーしたテキストと PNG/JPEG 画像を記録します。画像の上限は1枚8 MiB、合計32 MiB、各辺8192ピクセル、1600万画素です。"
+
 msgid "Copied to clipboard. Use your application’s paste shortcut."
 msgstr "クリップボードにコピーしました。アプリの貼り付けショートカットを使用してください。"
 
-msgid "Copy some text to start your history."
-msgstr "テキストをコピーすると履歴が記録されます。"
+msgid "Copy text or an image to start your history."
+msgstr "テキストや画像をコピーすると履歴に表示されます。"
 
 msgid "Could not initialize the extension. Disable and re-enable it."
 msgstr "拡張機能を初期化できませんでした。無効にしてから再度有効にしてください。"
+
+msgid "Could not open the screenshot tool. Try Print Screen."
+msgstr "スクリーンショットツールを開けませんでした。Print Screen をお試しください。"
 
 msgid "Could not read that GIF. Re-add it in Settings or choose another file."
 msgstr "GIF を読み込めませんでした。設定で追加し直すか、別のファイルを選択してください。"
@@ -116,7 +125,6 @@ msgstr "保存した項目をすべて削除"
 msgid "Excluded apps (comma-separated)"
 msgstr "除外するアプリ（カンマ区切り）"
 
-#, javascript-format
 msgid "Files skipped: %d. Invalid, too large, or favorites full."
 msgstr "%d 件のファイルをスキップしました。無効、サイズ超過、またはお気に入りが上限に達しています。"
 
@@ -147,8 +155,17 @@ msgstr "履歴が保存容量の上限を超えています。"
 msgid "History is paused. Enable it in Settings."
 msgstr "履歴の記録は一時停止中です。設定で有効にしてください。"
 
-msgid "History stays on this computer. It may contain private text. Pausing capture does not erase existing entries."
-msgstr "履歴はこのコンピューターに保存され、個人情報を含む場合があります。記録を一時停止しても既存の項目は消去されません。"
+msgid "History stays on this computer. It may contain private text and images. Pausing capture does not erase existing entries."
+msgstr "履歴はこのコンピューターに保存されます。個人情報を含むテキストや画像が記録される場合があります。記録を一時停止しても既存の項目は削除されません。"
+
+msgid "History, pinned items and emoji recents stay in memory only. Also clears on restart or logout. Existing saved history is removed."
+msgstr "履歴、ピン留め項目、最近使った絵文字をメモリーにのみ保持します。再起動やログアウト時にも消去されます。保存済みの履歴は削除されます。"
+
+msgid "Image"
+msgstr "画像"
+
+msgid "Image · %d × %d"
+msgstr "画像 · %d × %d"
 
 msgid "Invalid stored history was removed."
 msgstr "無効な保存履歴を削除しました。"
@@ -219,11 +236,9 @@ msgstr "固定した項目は保持されます。"
 msgid "Pinned entries have a separate maximum of 100. Total text is limited to 2 MiB."
 msgstr "固定した項目の上限は別枠で 100 件です。テキストの合計容量は 2 MiB に制限されます。"
 
-#, javascript-format
 msgid "Pinned: %s"
 msgstr "固定済み：%s"
 
-#, javascript-format
 msgid "Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access."
 msgstr "平文の履歴：%s。ディレクトリ権限 0700、ファイル権限 0600。パスワード管理アプリの MIME ヒントと使用中のアプリの除外は完全ではありません。テレメトリーや実行時のネットワークアクセスはありません。"
 
@@ -250,6 +265,12 @@ msgstr "クリップボードを復元"
 
 msgid "Sad"
 msgstr "悲しみ"
+
+msgid "Screenshot"
+msgstr "スクリーンショット"
+
+msgid "Screenshot shortcut (GTK accelerator syntax)"
+msgstr "スクリーンショットのショートカット（GTK形式）"
 
 msgid "Search"
 msgstr "検索"
@@ -278,12 +299,14 @@ msgstr "ショートカット（GTK アクセラレーター構文）"
 msgid "Shortcuts: ctrl-v, ctrl-shift-v, shift-insert, manual."
 msgstr "ショートカット：ctrl-v、ctrl-shift-v、shift-insert、manual。"
 
-#, javascript-format
 msgid "Show more (%d)"
 msgstr "さらに表示（%d）"
 
 msgid "Smileys & Emotion"
 msgstr "顔と感情"
+
+msgid "Some saved images could not be read and were removed."
+msgstr "読み込めない保存済み画像を削除しました。"
 
 msgid "Stored history could not be read. It has been removed."
 msgstr "保存した履歴を読み込めなかったため、削除しました。"
@@ -300,10 +323,6 @@ msgstr "驚き"
 msgid "Symbols"
 msgstr "記号"
 
-msgid "Text copied after enabling the extension is collected."
-msgstr "拡張機能を有効にした後にコピーしたテキストを記録します。"
-
-#, javascript-format
 msgid "Tone: %s"
 msgstr "肌の色：%s"
 
@@ -313,14 +332,17 @@ msgstr "旅行と場所"
 msgid "Turn off to copy selections without sending a paste shortcut."
 msgstr "無効にすると、選択した内容のコピーのみを行い、貼り付けショートカットは送信しません。"
 
-msgid "Turning this off removes the saved file; current memory is retained."
-msgstr "無効にすると保存ファイルを削除します。現在のメモリー内の履歴は保持されます。"
+msgid "Turning this off removes saved text and images; current memory is retained. Clear history on shutdown takes priority."
+msgstr "オフにすると保存済みのテキストと画像を削除し、現在のメモリー内の履歴は保持します。「シャットダウン時に履歴を消去」が優先されます。"
 
 msgid "Units"
 msgstr "単位"
 
 msgid "Unpin entry"
 msgstr "項目の固定を解除"
+
+msgid "Use a shortcut such as <Super><Shift>s, or leave empty to disable."
+msgstr "<Super><Shift>s などのショートカットを指定します。無効にするには空欄にしてください。"
 
 msgid "Use a shortcut such as <Super>v or <Control><Alt>v."
 msgstr "<Super>v や <Control><Alt>v などのショートカットを使用してください。"

@@ -16,6 +16,7 @@ import {SuperVPopup} from '../extension/popup.js';
 import {EmojiIndex} from '../extension/core/emoji.js';
 import {History} from '../extension/core/history.js';
 import {GifLibrary} from '../extension/gifs.js';
+import {ImageLibrary} from '../extension/images.js';
 import {getDefaultSeat} from '../extension/shell-compat.js';
 import SuperVExtension from '../extension/extension.js';
 
@@ -53,8 +54,8 @@ export async function run() {
     const calls = [];
     const controller = {settings, metadata: JSON.parse(read('extension/metadata.json')),
         history: new History(), emoji: new EmojiIndex(JSON.parse(read('extension/data/emoji.json')).emoji, [], annotations),
-        gifs: new GifLibrary(settings), select: entry => calls.push(entry.text),
-        selectGif() {}, pin() {}, deleteEntry() {}, clear() {}, restoreClipboard() {}, openPreferences() {}};
+        gifs: new GifLibrary(settings), images: new ImageLibrary(), select: entry => calls.push(entry.text),
+        selectGif() {}, takeScreenshot() {}, pin() {}, deleteEntry() {}, clear() {}, restoreClipboard() {}, openPreferences() {}};
     controller.dir = Gio.File.new_for_path(`${base}/extension`);
     controller._active = true;
     controller._epoch = 1;
@@ -76,6 +77,11 @@ export async function run() {
         throw new Error(`Preferences check failed: ${output[2]}`);
     check('actual localized GTK preferences render', preferences.get_successful());
     const pointer = getDefaultSeat(global.stage, Clutter).create_virtual_device(Clutter.InputDeviceType.POINTER_DEVICE);
+    // Headless Mutter has no physical keyboard. Advertise one before clients
+    // create their Wayland seat, as a normal desktop would already have.
+    const keyboard = getDefaultSeat(global.stage, Clutter).create_virtual_device(Clutter.InputDeviceType.KEYBOARD_DEVICE);
+    keyboard.notify_keyval(GLib.get_monotonic_time(), Clutter.KEY_Control_L, Clutter.KeyState.PRESSED);
+    keyboard.notify_keyval(GLib.get_monotonic_time(), Clutter.KEY_Control_L, Clutter.KeyState.RELEASED);
     pointer.notify_absolute_motion(GLib.get_monotonic_time(), 900, 650);
     await Scripting.sleep(100);
     const popup = new SuperVPopup(controller);
@@ -84,7 +90,7 @@ export async function run() {
         check('popup opens', popup.showPanel());
         popup._setTab('emoji');
         await Scripting.sleep(300);
-        check('loaded version is visible', popup._title.text === 'Super V 0.1.5');
+        check('loaded version is visible', popup._title.text === 'Super V 0.1.6');
         check('six equally sized emoji per row', popup._rows.length === 60 &&
             popup.list.get_first_child().get_n_children() === 6);
         const cells = popup._rows.slice(0, 7).map(rectangle);
@@ -242,9 +248,118 @@ export async function run() {
                 Math.ceil(frame.width), Math.ceil(frame.height), output);
             output.close(null);
         }
-        print('SHELL CHECKS COMPLETE');
     } finally {
         popup.destroy();
+    }
+    const metadata = {...controller.metadata, dir: controller.dir, path: controller.dir.get_path()};
+    const extension = new SuperVExtension(metadata);
+    const waitFor = async condition => {
+        for (let count = 0; count < 60; count++) {
+            if (condition())
+                return;
+            await Scripting.sleep(50);
+        }
+        throw new Error('Native clipboard/screenshot wait timed out');
+    };
+    try {
+        extension.enable();
+        await waitFor(() => extension._ready);
+        check('real extension registers both shortcuts', extension._binding && extension._screenshotBinding);
+        const fixtures = JSON.parse(read('tests/fixtures/images.json'));
+        const clipboard = St.Clipboard.get_default();
+        for (const [format, mime] of [['png', 'image/png'], ['jpeg', 'image/jpeg']]) {
+            clipboard.set_content(St.ClipboardType.CLIPBOARD, mime, new GLib.Bytes(GLib.base64_decode(fixtures[format])));
+            await waitFor(() => extension.history.entries.some(entry => entry.mime === mime));
+            check(`Mutter ${format} image capture preserves dimensions`,
+                extension.history.entries.find(entry => entry.mime === mime).width === 64);
+            const receiverLauncher = new Gio.SubprocessLauncher({flags: Gio.SubprocessFlags.STDOUT_PIPE | Gio.SubprocessFlags.STDERR_PIPE});
+            const receiver = receiverLauncher.spawnv(['gjs', '-m', `${base}/tests/image-receiver-gjs.js`]);
+            await waitFor(() => global.get_window_actors().some(actor => actor.meta_window.get_title() === 'Super V image receiver'));
+            const destination = global.get_window_actors().find(actor => actor.meta_window.get_title() === 'Super V image receiver').meta_window;
+            destination.activate(global.get_current_time());
+            await Scripting.sleep(150);
+            extension._target = destination;
+            extension.popup.showPanel();
+            await Scripting.sleep(100);
+            const imageEntry = extension.history.entries.find(entry => entry.mime === mime);
+            check('clipboard image has a native thumbnail and accessible label',
+                extension.popup._rows[0].get_child().get_n_children() === 2 &&
+                extension.popup._rows[0].accessible_name.includes('64'));
+            check('image dimension caption remains visible in a scrollable row',
+                extension.popup._rows[0].get_child().get_last_child().get_height() >= 12 &&
+                extension.popup._rows[0].get_child().get_last_child().text.includes('64 × 48'));
+            await extension.select(imageEntry, false);
+            const received = await new Promise((resolve, reject) => {
+                receiver.communicate_utf8_async(null, null, (process, result) => {
+                    try { resolve(process.communicate_utf8_finish(result)); } catch (error) { reject(error); }
+                });
+            });
+            if (!receiver.get_successful())
+                throw new Error(`Image receiver failed: ${received[2]}`);
+            check(`actual ${format} image paste reaches the original GTK window`, received[1].includes('IMAGE PASTE RECEIVED'));
+        }
+        const pictures = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES);
+        check('native screenshot output stays in the disposable session',
+            pictures.startsWith(GLib.getenv('XDG_CONFIG_HOME').replace(/\/config$/u, '/')));
+        extension.popup.showPanel();
+        await Scripting.sleep(100);
+        extension.popup._screenshotButton.emit('clicked', 1);
+        await waitFor(() => Main.screenshotUI.visible && Main.screenshotUI.opacity === 255);
+        check('Screenshot button closes picker before native capture UI', extension.popup.state === ModalDialog.State.CLOSED);
+        Main.screenshotUI._screenButton.checked = true;
+        await Main.screenshotUI._onCaptureButtonClicked();
+        await waitFor(() => extension.history.entries.some(entry => entry.kind === 'image' && entry.width === 1280));
+        check('native screenshot automatically becomes an image history entry',
+            extension.history.entries.some(entry => entry.kind === 'image' && entry.width === 1280 && entry.height === 960));
+        const countBeforeCancel = extension.history.entries.length;
+        extension.popup.showPanel();
+        await Scripting.sleep(100);
+        check('multiple image rows retain readable dimension captions', extension.popup._rows.every(row =>
+            row.get_child().get_last_child().get_height() >= 12));
+        extension.popup.close();
+        await Scripting.sleep(300);
+        for (const key of [Clutter.KEY_Super_L, Clutter.KEY_Shift_L, Clutter.KEY_s])
+            keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.PRESSED);
+        for (const key of [Clutter.KEY_s, Clutter.KEY_Shift_L, Clutter.KEY_Super_L])
+            keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.RELEASED);
+        await waitFor(() => Main.screenshotUI.visible && Main.screenshotUI.opacity === 255);
+        check('actual Super+Shift+S opens native screenshot controls', Main.screenshotUI.visible);
+        Main.screenshotUI.close();
+        await Scripting.sleep(300);
+        check('cancelling screenshot adds no history item', extension.history.entries.length === countBeforeCancel);
+        const clipboardScreenshot = GLib.getenv('SUPER_V_CLIPBOARD_SCREENSHOT');
+        if (clipboardScreenshot) {
+            extension.history.add('Copied text and images, ready to paste.');
+            extension.changed();
+            extension.popup.showPanel();
+            await Scripting.sleep(200);
+            const frame = rectangle(extension.popup._panel);
+            const output = Gio.File.new_for_path(clipboardScreenshot).replace(null, false, Gio.FileCreateFlags.PRIVATE, null);
+            await new Shell.Screenshot().screenshot_area(Math.floor(frame.x), Math.floor(frame.y),
+                Math.ceil(frame.width), Math.ceil(frame.height), output);
+            output.close(null);
+            extension.popup.close();
+        }
+        await extension.store.save(extension.history.toJSON(), extension.images.snapshot());
+        extension.history.add('Retained through an immediate extension reload.');
+        extension.changed();
+        extension.disable();
+        extension.enable();
+        await waitFor(() => extension._ready);
+        check('pending text/image saves survive immediate disable and re-enable',
+            extension.history.entries.some(entry => entry.text === 'Retained through an immediate extension reload.') &&
+            extension.history.entries.filter(entry => entry.kind === 'image').length === 3);
+        settings.set_boolean('clear-on-shutdown', true);
+        await extension.store.erase();
+        check('live shutdown setting removes saved state while retaining session entries',
+            !extension.store.persist && !extension.store.file.query_exists(null) && extension.history.entries.length >= 3);
+        extension.disable();
+        extension.enable();
+        await waitFor(() => extension._ready);
+        check('a new extension session cannot restore session-only history', extension.history.entries.length === 0);
+        print('SHELL CHECKS COMPLETE');
+    } finally {
+        extension.disable();
         theme.unload_stylesheet(stylesheet);
     }
 }

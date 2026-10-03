@@ -1,6 +1,6 @@
 # SPDX-License-Identifier: GPL-3.0-or-later
 msgid ""
-msgstr "Project-Id-Version: super-v-ubuntu 0.1.4\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-02 18:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: zh_CN\nLanguage: zh_CN\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
+msgstr "Project-Id-Version: super-v-ubuntu 0.1.6\nReport-Msgid-Bugs-To: https://github.com/LincolnGothic/super-v-ubuntu/issues\nPO-Revision-Date: 2026-10-03 12:00+0000\nLast-Translator: Super V Ubuntu contributors\nLanguage-Team: zh_CN\nLanguage: zh_CN\nMIME-Version: 1.0\nContent-Type: text/plain; charset=UTF-8\nContent-Transfer-Encoding: 8bit\nPlural-Forms: nplurals=1; plural=0;\n"
 
 msgid "Activities"
 msgstr "活动"
@@ -59,6 +59,9 @@ msgstr "经典"
 msgid "Clear"
 msgstr "清除"
 
+msgid "Clear history on shutdown"
+msgstr "关机时清空历史记录"
+
 msgid "Clear requested; applied when the extension is active."
 msgstr "已请求清除；扩展启用时生效。"
 
@@ -77,14 +80,20 @@ msgstr "剪贴板已更改；已保留较新的内容。"
 msgid "Clipboard history"
 msgstr "剪贴板历史"
 
+msgid "Collects copied text and PNG/JPEG images. Images: up to 8 MiB each, 32 MiB total, 8192 pixels per side and 16 megapixels."
+msgstr "收集复制的文本和 PNG/JPEG 图片。图片限制：每张 8 MiB、总计 32 MiB、每边 8192 像素、总像素 1600 万。"
+
 msgid "Copied to clipboard. Use your application’s paste shortcut."
 msgstr "已复制到剪贴板。请使用应用的粘贴快捷键。"
 
-msgid "Copy some text to start your history."
-msgstr "复制一些文字以开始记录历史。"
+msgid "Copy text or an image to start your history."
+msgstr "复制文本或图片即可开始记录。"
 
 msgid "Could not initialize the extension. Disable and re-enable it."
 msgstr "无法初始化扩展。请禁用后重新启用。"
+
+msgid "Could not open the screenshot tool. Try Print Screen."
+msgstr "无法打开截图工具，请尝试按 Print Screen。"
 
 msgid "Could not read that GIF. Re-add it in Settings or choose another file."
 msgstr "无法读取该 GIF。请在设置中重新添加或选择其他文件。"
@@ -116,7 +125,6 @@ msgstr "删除所有保存的项目"
 msgid "Excluded apps (comma-separated)"
 msgstr "排除的应用（用逗号分隔）"
 
-#, javascript-format
 msgid "Files skipped: %d. Invalid, too large, or favorites full."
 msgstr "已跳过 %d 个文件：文件无效、过大或收藏已满。"
 
@@ -147,8 +155,17 @@ msgstr "历史记录超出存储限制。"
 msgid "History is paused. Enable it in Settings."
 msgstr "历史记录已暂停。请在设置中启用。"
 
-msgid "History stays on this computer. It may contain private text. Pausing capture does not erase existing entries."
-msgstr "历史记录保留在此计算机上，可能包含私人文字。暂停记录不会清除现有条目。"
+msgid "History stays on this computer. It may contain private text and images. Pausing capture does not erase existing entries."
+msgstr "历史记录仅保存在此电脑，可能包含私密文本和图片。暂停收集不会删除已有内容。"
+
+msgid "History, pinned items and emoji recents stay in memory only. Also clears on restart or logout. Existing saved history is removed."
+msgstr "历史记录、固定项目和最近使用的表情仅保存在内存中，重启或注销时也会清空。已有的磁盘历史记录将被删除。"
+
+msgid "Image"
+msgstr "图片"
+
+msgid "Image · %d × %d"
+msgstr "图片 · %d × %d"
 
 msgid "Invalid stored history was removed."
 msgstr "已删除无效的历史记录。"
@@ -219,11 +236,9 @@ msgstr "保留固定条目。"
 msgid "Pinned entries have a separate maximum of 100. Total text is limited to 2 MiB."
 msgstr "固定条目的独立上限为 100 个。文字总量限制为 2 MiB。"
 
-#, javascript-format
 msgid "Pinned: %s"
 msgstr "已固定：%s"
 
-#, javascript-format
 msgid "Plaintext history: %s. Directory 0700; file 0600. Password-manager MIME hints and focused-app exclusions are best effort. No telemetry or runtime network access."
 msgstr "明文历史记录：%s。目录权限 0700；文件权限 0600。密码管理器 MIME 提示和当前应用排除仅尽力处理。不收集遥测数据，运行时不访问网络。"
 
@@ -250,6 +265,12 @@ msgstr "恢复剪贴板"
 
 msgid "Sad"
 msgstr "悲伤"
+
+msgid "Screenshot"
+msgstr "截图"
+
+msgid "Screenshot shortcut (GTK accelerator syntax)"
+msgstr "截图快捷键（GTK 格式）"
 
 msgid "Search"
 msgstr "搜索"
@@ -278,12 +299,14 @@ msgstr "快捷键（GTK 加速键语法）"
 msgid "Shortcuts: ctrl-v, ctrl-shift-v, shift-insert, manual."
 msgstr "快捷键：ctrl-v、ctrl-shift-v、shift-insert、manual。"
 
-#, javascript-format
 msgid "Show more (%d)"
 msgstr "显示更多（%d）"
 
 msgid "Smileys & Emotion"
 msgstr "笑脸与情感"
+
+msgid "Some saved images could not be read and were removed."
+msgstr "部分保存的图片无法读取，已被移除。"
 
 msgid "Stored history could not be read. It has been removed."
 msgstr "无法读取保存的历史记录，已将其删除。"
@@ -300,10 +323,6 @@ msgstr "惊讶"
 msgid "Symbols"
 msgstr "符号"
 
-msgid "Text copied after enabling the extension is collected."
-msgstr "启用扩展后复制的文字会被记录。"
-
-#, javascript-format
 msgid "Tone: %s"
 msgstr "肤色：%s"
 
@@ -313,14 +332,17 @@ msgstr "旅行与地点"
 msgid "Turn off to copy selections without sending a paste shortcut."
 msgstr "关闭后仅复制所选内容，不发送粘贴快捷键。"
 
-msgid "Turning this off removes the saved file; current memory is retained."
-msgstr "关闭后删除保存的文件；保留当前内存中的记录。"
+msgid "Turning this off removes saved text and images; current memory is retained. Clear history on shutdown takes priority."
+msgstr "关闭后会删除保存的文本和图片，但保留当前内存记录。「关机时清空历史记录」优先。"
 
 msgid "Units"
 msgstr "单位"
 
 msgid "Unpin entry"
 msgstr "取消固定条目"
+
+msgid "Use a shortcut such as <Super><Shift>s, or leave empty to disable."
+msgstr "使用 <Super><Shift>s 等快捷键，留空可禁用。"
 
 msgid "Use a shortcut such as <Super>v or <Control><Alt>v."
 msgstr "请使用 <Super>v 或 <Control><Alt>v 等快捷键。"

@@ -3,6 +3,7 @@ import {annotationLocale} from './core/localization.js';
 import Gio from 'gi://Gio';
 import Meta from 'gi://Meta';
 import Shell from 'gi://Shell';
+import GLib from 'gi://GLib';
 import * as Main from 'resource:///org/gnome/shell/ui/main.js';
 import * as ModalDialog from 'resource:///org/gnome/shell/ui/modalDialog.js';
 import {Extension} from 'resource:///org/gnome/shell/extensions/extension.js';
@@ -14,6 +15,7 @@ import {ClipboardMonitor} from './clipboard.js';
 import {PasteBackend} from './paste.js';
 import {SuperVPopup} from './popup.js';
 import {GifLibrary} from './gifs.js';
+import {ImageLibrary} from './images.js';
 
 export default class SuperVExtension extends Extension {
     enable() {
@@ -26,6 +28,7 @@ export default class SuperVExtension extends Extension {
         this.settings = this.getSettings();
         initTranslations(this.dir, this.settings.get_string('ui-language'));
         this.gifs = new GifLibrary(this.settings);
+        this.images = new ImageLibrary();
         this.history = new History(this.settings.get_int('history-limit'));
         this.pendingRestore = null;
         this._target = null;
@@ -34,7 +37,7 @@ export default class SuperVExtension extends Extension {
             if (this._active)
                 Main.notify('Super V', _(message));
         });
-        this.store.persist = this.settings.get_boolean('remember-history');
+        this.store.persist = this._shouldPersist();
         this._settingsHandler = this.settings.connect('changed', (_settings, key) => this._settingsChanged(key));
         const epoch = this._epoch;
         this._start(epoch).catch(() => {
@@ -64,6 +67,11 @@ export default class SuperVExtension extends Extension {
         if (!this._active || epoch !== this._epoch)
             return;
         const store = this.store;
+        // A rapid disable/re-enable must not let the previous instance’s
+        // pending save or erase race with this instance’s disk state.
+        await this._storageBarrier;
+        if (!this._active || epoch !== this._epoch)
+            return;
         const raw = store.persist ? await store.load(this._stateCancellable) : null;
         if (!this._active || epoch !== this._epoch)
             return;
@@ -76,6 +84,32 @@ export default class SuperVExtension extends Extension {
                 await store.erase();
                 Main.notify('Super V', _('Invalid stored history was removed.'));
             }
+            let missing = false;
+            for (const entry of [...this.history.entries]) {
+                if (entry.kind !== 'image')
+                    continue;
+                try {
+                    const bytes = await store.loadImage(entry, this._stateCancellable);
+                    if (!this._active || epoch !== this._epoch)
+                        return;
+                    if (!store.persist || revision !== this._stateRevision)
+                        break;
+                    const record = this.images.add(bytes, entry.mime);
+                    if (record.width !== entry.width || record.height !== entry.height)
+                        throw new Error('Invalid image dimensions');
+                } catch {
+                    if (!this._active || epoch !== this._epoch)
+                        return;
+                    this.history.delete(entry.id);
+                    missing = true;
+                }
+            }
+            // Persistence changes during loading must not leave unusable image
+            // entries or import more saved state after a privacy change.
+            this.history.entries = this.history.entries.filter(entry =>
+                entry.kind !== 'image' || this.images.get(entry));
+            if (missing)
+                Main.notify('Super V', _('Some saved images could not be read and were removed.'));
         } else if (!store.persist) {
             await store.erase();
         }
@@ -99,6 +133,14 @@ export default class SuperVExtension extends Extension {
             () => this.identifiers(global.display.focus_window), text => {
                 if (this.history.add(text))
                     this.changed();
+            }, (bytes, mime) => {
+                try {
+                    const image = this.images.add(bytes, mime);
+                    this.history.addImage(image);
+                    this.changed();
+                } catch {
+                    // Invalid or oversized image data is ignored without logs.
+                }
             });
         this.pasteBackend = new PasteBackend(this.settings,
             window => this.identifiers(window), () => {
@@ -118,6 +160,10 @@ export default class SuperVExtension extends Extension {
         Main.wm.addKeybinding('open-popup', this.settings, Meta.KeyBindingFlags.NONE,
             Shell.ActionMode.NORMAL | Shell.ActionMode.POPUP, () => this.toggle());
         this._binding = true;
+        Main.wm.addKeybinding('take-screenshot', this.settings, Meta.KeyBindingFlags.NONE,
+            Shell.ActionMode.NORMAL | Shell.ActionMode.POPUP, () => this.takeScreenshot());
+        this._screenshotBinding = true;
+        this.changed();
     }
 
     async _updateLanguage() {
@@ -170,8 +216,9 @@ export default class SuperVExtension extends Extension {
     }
 
     changed() {
+        this.images?.retain(this.history.entries);
         if (this.emoji && this._ready)
-            this.store.save(this.history.toJSON(this.emoji.recent));
+            this.store.save(this.history.toJSON(this.emoji.recent), this.images?.snapshot());
         this.popup?.refresh();
     }
 
@@ -202,6 +249,17 @@ export default class SuperVExtension extends Extension {
         const selectionEpoch = ++this._selectionEpoch;
         const target = this._target;
         this.popup.close();
+        if (!emoji && entry.kind === 'image') {
+            const image = this.images.get(entry);
+            if (!image || !this.history.entries.includes(entry))
+                return;
+            this.pendingRestore = null;
+            this.history.addImage(entry);
+            this.clipboard.writeImage(image.bytes, entry.mime);
+            this.changed();
+            this.pasteBackend.paste(target);
+            return;
+        }
         if (emoji) {
             const generation = this.clipboard.generation;
             const previous = await this.clipboard.readText();
@@ -259,13 +317,41 @@ export default class SuperVExtension extends Extension {
         }
     }
 
+    takeScreenshot() {
+        if (!this._active || !this._ready || Main.sessionMode.isLocked || Main.sessionMode.isGreeter)
+            return;
+        this._selectionEpoch++;
+        this.popup.close();
+        this.pasteBackend.cancel();
+        this.pendingRestore = null;
+        if (this._screenshotSource)
+            GLib.source_remove(this._screenshotSource);
+        // Release the picker modal grab and let it disappear before GNOME
+        // freezes the screen to present its native capture controls.
+        this._screenshotSource = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+            this._screenshotSource = 0;
+            if (this._active && !Main.sessionMode.isLocked && !Main.sessionMode.isGreeter) {
+                Main.screenshotUI.open().catch(() => {
+                    if (this._active)
+                        Main.notify('Super V', _('Could not open the screenshot tool. Try Print Screen.'));
+                });
+            }
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    _shouldPersist() {
+        return this.settings.get_boolean('remember-history') &&
+            !this.settings.get_boolean('clear-on-shutdown');
+    }
+
     _settingsChanged(key) {
         if (key === 'history-limit') {
             this.history.setLimit(this.settings.get_int(key));
             this.changed();
-        } else if (key === 'remember-history') {
+        } else if (key === 'remember-history' || key === 'clear-on-shutdown') {
             this._stateRevision++;
-            this.store.persist = this.settings.get_boolean(key);
+            this.store.persist = this._shouldPersist();
             if (!this.store.persist)
                 this.store.erase();
             else
@@ -299,6 +385,12 @@ export default class SuperVExtension extends Extension {
         if (this._binding)
             Main.wm.removeKeybinding('open-popup');
         this._binding = false;
+        if (this._screenshotBinding)
+            Main.wm.removeKeybinding('take-screenshot');
+        this._screenshotBinding = false;
+        if (this._screenshotSource)
+            GLib.source_remove(this._screenshotSource);
+        this._screenshotSource = 0;
         if (this._sessionHandler)
             Main.sessionMode.disconnect(this._sessionHandler);
         this._sessionHandler = 0;
@@ -307,9 +399,12 @@ export default class SuperVExtension extends Extension {
         this.pasteBackend?.destroy();
         this.popup?.destroy();
         if (this.emoji && this._ready)
-            this.store?.save(this.history.toJSON(this.emoji.recent));
+            this._storageBarrier = this.store?.save(this.history.toJSON(this.emoji.recent), this.images?.snapshot());
+        else
+            this._storageBarrier = this.store?.flush();
         this.popup = this.clipboard = this.pasteBackend = this.settings = null;
         this.history = this.emoji = this.store = this.pendingRestore = this._target = this.gifs = null;
+        this.images = null;
         this._stateCancellable = null;
         this._emojiRecords = null;
     }

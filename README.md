@@ -1,7 +1,7 @@
 # Super V Ubuntu
 
-A Windows-style **Super+V** picker for Ubuntu GNOME, with clipboard history,
-emoji, kaomoji, symbols, and local GIF favorites. Open the popup, search, and
+A Windows-style **Super+V** picker for Ubuntu GNOME, with text and image clipboard history,
+screenshots, emoji, kaomoji, symbols, and local GIF favorites. Open the popup, search, and
 insert a selection using the keyboard or mouse. Everything stays on your computer.
 GPL-3.0-or-later; Unicode data uses Unicode-3.0.
 
@@ -10,11 +10,10 @@ GPL-3.0-or-later; Unicode data uses Unicode-3.0.
 [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) ·
 [한국어](docs/i18n/README.ko.md)
 
-**Release status:** implementation and automated/package validation are
-available. This build has **not** been exercised in a real GNOME Wayland
-desktop. Do not interpret the target platform as a runtime support claim.
-See `docs/verification.md` for the actual results, and `docs/testing.md` for
-the desktop acceptance procedure.
+**Release status:** automated logic, package, and isolated GNOME Wayland checks
+are available. Image capture, native screenshot capture, and GTK image paste
+are covered by the isolated tests. Full application and desktop acceptance is
+tracked in [testing](docs/testing.md). See [v0.1.6 validation](docs/verification-v0.1.6.md).
 
 ## Target platform
 
@@ -29,30 +28,38 @@ before relying on this implementation.
 
 ## Screenshots
 
-**Emoji picker — v0.1.5**
+**Text and image history — v0.1.6**
+
+Copied images share the clipboard list with text. The camera button opens
+GNOME’s screenshot controls.
+
+![Super V 0.1.6 text and image history with thumbnail previews, dimensions and a screenshot button](docs/screenshots/clipboard-images-v0.1.6.png)
+
+**Clipboard settings — v0.1.6**
+
+Clear history on shutdown is enabled in this example, which disables persistent
+history while keeping current items in memory.
+
+![Super V 0.1.6 settings showing image capture and Clear history on shutdown](docs/screenshots/shutdown-settings-v0.1.6.png)
+
+**Emoji picker — v0.1.6**
 
 The six-column grid, horizontal category bar and compact skin-tone selector.
 
-![Super V 0.1.5 emoji picker with horizontal category buttons](docs/screenshots/emoji-picker-v0.1.5.png)
+![Super V 0.1.6 emoji picker with horizontal category buttons and a screenshot button](docs/screenshots/emoji-picker-v0.1.6.png)
 
-**Language settings — v0.1.5**
-
-Choose Follow system or any of the seven supported languages in Settings.
-
-![Super V language settings showing Follow system, English, Simplified Chinese, Traditional Chinese, Japanese, Spanish, French and Korean](docs/screenshots/language-settings-v0.1.5.png)
-
-Captured from v0.1.5 in isolated GNOME Shell 50.1 Wayland sessions with bundled
-emoji and default settings. These show the current interface; full desktop
-capture/paste acceptance is tracked in [testing](docs/testing.md).
+Captured from v0.1.6 in isolated GNOME Shell 50.1 Wayland sessions with synthetic
+clipboard items and bundled emoji. Full desktop acceptance is tracked in
+[testing](docs/testing.md).
 
 ## Install the Debian package
 
-Download [`super-v-ubuntu_0.1.5_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.5/super-v-ubuntu_0.1.5_all.deb)
-from [release v0.1.5](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.5),
+Download [`super-v-ubuntu_0.1.6_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.6/super-v-ubuntu_0.1.6_all.deb)
+from [release v0.1.6](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.6),
 save it to Downloads, then run on your Ubuntu desktop:
 
 ```sh
-sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.5_all.deb"
+sudo apt install "$HOME/Downloads/super-v-ubuntu_0.1.6_all.deb"
 ```
 
 Log out and back in so GNOME discovers the system extension. Then, as your
@@ -74,9 +81,9 @@ disabling this extension.
 Press Super+V. Capture begins after extension initialization, with a default
 100-entry limit and persistent history. Change preferences to pause capture,
 disable persistence or automatic paste, and choose another shortcut.
-Enabling this extension grants it access to clipboard text; read `SECURITY.md`.
+Enabling this extension grants it access to clipboard text and images; read `SECURITY.md`.
 
-The header must show **Super V 0.1.5** after upgrading. GNOME can keep old code
+The header must show **Super V 0.1.6** after upgrading. GNOME can keep old code
 loaded until logout/login. A user-local installation of the same UUID also
 overrides the system package: inspect the **Path** shown by `gnome-extensions
 info` above. If it points into your home directory, back up and move that UUID
@@ -129,6 +136,19 @@ history defaults to 100 entries (configurable 1–500); up to 100 pins survive
 ordinary trimming and **Clear unpinned**. A total 2 MiB text budget may trim
 ordinary entries earlier than their count limit.
 
+Copied **PNG and JPEG images** appear in the same history with a thumbnail and
+pixel dimensions. Choose an image to copy its original bytes and send your
+application’s paste shortcut; the receiving app must accept images. Images can
+be pinned and deleted just like text. Search matches “Image” in your chosen
+language, PNG/JPEG, or dimensions; it does not search text inside images.
+Copying an image file or a URL is different from copying image pixels.
+
+Images are limited to **8 MiB each and 32 MiB total**, including pins, with at
+most 8192 pixels per side and 16 megapixels. Older unpinned images are removed
+when that budget is full. PNG/JPEG data is checked before a bounded thumbnail
+is decoded. Other image formats and rich text are ignored. Existing text
+history, pins, and emoji recents migrate on upgrade.
+
 Use Up/Down to select, Enter to paste, Delete to remove the selected entry,
 Escape to close, Ctrl+F to focus search, and Ctrl+Tab to cycle through all five tabs.
 Tab navigates controls; the pin and delete buttons have accessible labels.
@@ -147,6 +167,30 @@ Allowed values are `ctrl-v`, `ctrl-shift-v`, `shift-insert`, and `manual`. If
 the destination disappears, focus changes, physical modifiers stay held, or
 injection fails, the item remains on the clipboard for manual paste. The
 extension cannot verify that a receiving application accepted the text.
+
+## Take a screenshot
+
+Click the camera button in the Super+V header or press **Super+Shift+S** to open
+GNOME’s screenshot controls. Choose an area, window, or screen and capture it.
+The picker closes before capture, and GNOME places the PNG on the clipboard;
+Super V adds it to history while capture is enabled and within the image limits.
+The normal Print Screen shortcut remains available. Change or disable the new
+shortcut in **Settings → Desktop integration → Screenshot shortcut**; an empty
+field disables only this shortcut.
+
+GNOME also saves screenshots in **Pictures/Screenshots**, following its normal
+settings. Clearing Super V history removes Super V’s stored copies; it does not
+delete GNOME’s screenshot files or overwrite the system clipboard.
+
+## Clear history on shutdown
+
+Open **Settings → Clipboard history → Clear history on shutdown**. This option
+is off by default. When enabled, all history, including images, pins and emoji
+recents, stays only in memory. It also clears on restart, logout, or extension
+reload. Enabling it removes existing saved history, after pending writes finish,
+while retaining the current session’s items in memory. It takes priority over
+**Remember after logout**. Returning to persistent history requires disabling
+this option and enabling Remember after logout.
 
 ## Emoji
 
@@ -197,9 +241,9 @@ online GIF search, account, API key or runtime network request.
 ## Privacy
 
 Everything stays local. There is no telemetry, synchronization, analytics,
-logging of copied text, or runtime network access. Persistent state is
+logging of clipboard contents, or runtime network access. Persistent state is
 plaintext at `${XDG_STATE_HOME:-$HOME/.local/state}/super-v-ubuntu/history.json`,
-with 0700 directory/0600 file modes. Common password-manager MIME hints are
+with image files in its `images/` subdirectory and 0700 directory/0600 file modes. Common password-manager MIME hints are
 rejected; focused-app exclusions are best effort because Mutter does not
 provide reliable origin identities for every copy. Private browsing and
 password fields without a hint are not automatically detected. See `SECURITY.md`
@@ -214,7 +258,7 @@ sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 gettext
     gir1.2-gtk-4.0 gir1.2-adw-1 lintian git gh
 make test
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.5_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.6_all.deb
 ```
 
 No npm dependencies or runtime downloads are required. Debian's build invokes
@@ -241,7 +285,7 @@ Alt+F2 then `r` does not restart a Wayland shell. A shortcut conflict may requir
 changing the GTK accelerator in preferences, e.g. `<Control><Alt>v`. GNOME's
 extension system cannot always detect another program claiming the same key.
 If a terminal does not paste, add its identifier or select a paste override.
-If capture is missing, check capture/exclusion settings and the 16 KiB limit.
+If capture is missing, check capture/exclusion settings, the 16 KiB text limit and the image limits.
 Corrupt state is erased with a generic notification, without copying it into
 logs or retaining backups. Report shell errors with clipboard content redacted.
 
@@ -273,7 +317,7 @@ performed before initial publication, not current GitHub publication status.
 This checkout includes `scripts/publish.sh`. After committing on main, run
 `gh auth login`, then `./scripts/publish.sh`. It creates a PUBLIC
 `<authenticated-account>/super-v-ubuntu` repository, pushes source, waits for
-successful CI, builds from a clean checkout, checks lintian, creates `v0.1.5`,
+successful CI, builds from a clean checkout, checks lintian, creates `v0.1.6`,
 uploads the `.deb` and SHA256SUMS, and downloads the release asset to verify it.
 It refuses a different origin or an existing private repository. Actual remote
 publication is recorded separately from local build success.

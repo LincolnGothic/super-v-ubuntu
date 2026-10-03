@@ -83,7 +83,7 @@ test('serialization retains pins, order, timestamps and recents', () => {
     assert.deepEqual(loaded.history.entries, h.entries);
     assert.deepEqual(loaded.recent, ['😀']);
 });
-for (const raw of ['', '{', 'null', '[]', '{"version":2,"entries":[]}',
+for (const raw of ['', '{', 'null', '[]', '{"version":3,"entries":[]}',
     '{"version":1,"entries":[{}]}', '{"version":1,"entries":"oops"}']) {
     test(`corruption recovery ${raw}`, () => {
         const result = History.deserialize(raw);

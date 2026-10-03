@@ -60,6 +60,9 @@ msgstr ""
 msgid "Clear"
 msgstr ""
 
+msgid "Clear history on shutdown"
+msgstr ""
+
 msgid "Clear requested; applied when the extension is active."
 msgstr ""
 
@@ -78,13 +81,19 @@ msgstr ""
 msgid "Clipboard history"
 msgstr ""
 
+msgid "Collects copied text and PNG/JPEG images. Images: up to 8 MiB each, 32 MiB total, 8192 pixels per side and 16 megapixels."
+msgstr ""
+
 msgid "Copied to clipboard. Use your application’s paste shortcut."
 msgstr ""
 
-msgid "Copy some text to start your history."
+msgid "Copy text or an image to start your history."
 msgstr ""
 
 msgid "Could not initialize the extension. Disable and re-enable it."
+msgstr ""
+
+msgid "Could not open the screenshot tool. Try Print Screen."
 msgstr ""
 
 msgid "Could not read that GIF. Re-add it in Settings or choose another file."
@@ -148,7 +157,17 @@ msgstr ""
 msgid "History is paused. Enable it in Settings."
 msgstr ""
 
-msgid "History stays on this computer. It may contain private text. Pausing capture does not erase existing entries."
+msgid "History stays on this computer. It may contain private text and images. Pausing capture does not erase existing entries."
+msgstr ""
+
+msgid "History, pinned items and emoji recents stay in memory only. Also clears on restart or logout. Existing saved history is removed."
+msgstr ""
+
+msgid "Image"
+msgstr ""
+
+#, javascript-format
+msgid "Image · %d × %d"
 msgstr ""
 
 msgid "Invalid stored history was removed."
@@ -252,6 +271,12 @@ msgstr ""
 msgid "Sad"
 msgstr ""
 
+msgid "Screenshot"
+msgstr ""
+
+msgid "Screenshot shortcut (GTK accelerator syntax)"
+msgstr ""
+
 msgid "Search"
 msgstr ""
 
@@ -286,6 +311,9 @@ msgstr ""
 msgid "Smileys & Emotion"
 msgstr ""
 
+msgid "Some saved images could not be read and were removed."
+msgstr ""
+
 msgid "Stored history could not be read. It has been removed."
 msgstr ""
 
@@ -301,9 +329,6 @@ msgstr ""
 msgid "Symbols"
 msgstr ""
 
-msgid "Text copied after enabling the extension is collected."
-msgstr ""
-
 #, javascript-format
 msgid "Tone: %s"
 msgstr ""
@@ -314,13 +339,16 @@ msgstr ""
 msgid "Turn off to copy selections without sending a paste shortcut."
 msgstr ""
 
-msgid "Turning this off removes the saved file; current memory is retained."
+msgid "Turning this off removes saved text and images; current memory is retained. Clear history on shutdown takes priority."
 msgstr ""
 
 msgid "Units"
 msgstr ""
 
 msgid "Unpin entry"
+msgstr ""
+
+msgid "Use a shortcut such as <Super><Shift>s, or leave empty to disable."
 msgstr ""
 
 msgid "Use a shortcut such as <Super>v or <Control><Alt>v."

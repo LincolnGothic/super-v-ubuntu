@@ -58,15 +58,19 @@ export default class SuperVPreferences extends ExtensionPreferences {
             settings.set_string('ui-language', languageOptions[language.selected]?.id ?? 'system'));
         appearance.add(language);
         const history = new Adw.PreferencesGroup({title: _('Clipboard history'),
-            description: _('History stays on this computer. It may contain private text. Pausing capture does not erase existing entries.')});
+            description: _('History stays on this computer. It may contain private text and images. Pausing capture does not erase existing entries.')});
         page.add(history);
         for (const [key, title, subtitle] of [
-            ['history-enabled', _('Capture clipboard history'), _('Text copied after enabling the extension is collected.')],
-            ['remember-history', _('Remember after logout'), _('Turning this off removes the saved file; current memory is retained.')],
+            ['history-enabled', _('Capture clipboard history'), _('Collects copied text and PNG/JPEG images. Images: up to 8 MiB each, 32 MiB total, 8192 pixels per side and 16 megapixels.')],
+            ['clear-on-shutdown', _('Clear history on shutdown'), _('History, pinned items and emoji recents stay in memory only. Also clears on restart or logout. Existing saved history is removed.')],
+            ['remember-history', _('Remember after logout'), _('Turning this off removes saved text and images; current memory is retained. Clear history on shutdown takes priority.')],
             ['auto-paste', _('Paste automatically'), _('Turn off to copy selections without sending a paste shortcut.')],
         ]) {
             const row = new Adw.SwitchRow({title, subtitle});
             settings.bind(key, row, 'active', Gio.SettingsBindFlags.DEFAULT);
+            if (key === 'remember-history')
+                settings.bind('clear-on-shutdown', row, 'sensitive',
+                    Gio.SettingsBindFlags.GET | Gio.SettingsBindFlags.INVERT_BOOLEAN);
             history.add(row);
         }
         const limit = Adw.SpinRow.new_with_range(1, 500, 1);
@@ -111,6 +115,20 @@ export default class SuperVPreferences extends ExtensionPreferences {
             }
         });
         integration.add(shortcut);
+        const screenshotShortcut = new Adw.EntryRow({title: _('Screenshot shortcut (GTK accelerator syntax)'),
+            text: settings.get_strv('take-screenshot')[0] ?? '', show_apply_button: true});
+        screenshotShortcut.connect('apply', () => {
+            const text = screenshotShortcut.text.trim();
+            const [valid, key, modifiers] = Gtk.accelerator_parse(text);
+            if (!text || valid && Gtk.accelerator_valid(key, modifiers) && modifiers !== 0) {
+                settings.set_strv('take-screenshot', text ? [Gtk.accelerator_name(key, modifiers)] : []);
+                screenshotShortcut.remove_css_class('error');
+            } else {
+                screenshotShortcut.add_css_class('error');
+                window.add_toast(new Adw.Toast({title: _('Use a shortcut such as <Super><Shift>s, or leave empty to disable.')}));
+            }
+        });
+        integration.add(screenshotShortcut);
         for (const [key, title] of [['excluded-apps', _('Excluded apps (comma-separated)')],
             ['terminal-apps', _('Apps using Ctrl+Shift+V (comma-separated)')]]) {
             const row = new Adw.EntryRow({title, text: settings.get_strv(key).join(', '),

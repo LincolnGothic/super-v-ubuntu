@@ -1,28 +1,39 @@
 # Security and privacy
 
-This extension operates inside GNOME Shell and can read clipboard text and
+This extension operates inside GNOME Shell and can read clipboard text and images and
 send input to your applications. Enable it only if you trust the source.
 There are no runtime network calls, telemetry, cloud storage or analytics.
 Developer publishing and upstream-data maintenance scripts are explicit
 network operations; they are not installed as part of the extension.
 
 Persistent history and emoji recents are stored, unencrypted, in
-`${XDG_STATE_HOME:-$HOME/.local/state}/super-v-ubuntu/history.json`. The directory
+`${XDG_STATE_HOME:-$HOME/.local/state}/super-v-ubuntu/history.json`. Image bytes
+are in its private `images/` subdirectory under validated digest filenames.
+Stored image bytes are bounded and checksum-checked before decoding a small
+thumbnail. The directory
 is mode 0700 and files are mode 0600. Atomic private replacements keep no
 backup. Symbolic links at the project state-directory path are refused, and
 symbolic links at the history-file path are removed without following them.
 An invalid JSON/version/record is treated as corrupt state and removed.
 Disk loading is bounded to 16 MiB, individual text to 16 KiB, total text to
-2 MiB, ordinary count to 500 and pins to 100. Other users cannot normally read
+2 MiB, ordinary count to 500 and pins to 100. PNG/JPEG images are limited to
+8 MiB each, 32 MiB total (including pins), 8192 pixels per side and 16 megapixels. Other users cannot normally read
 this file, but your account, administrator, malware running as you and backups
 can. File permissions do not encrypt it or securely erase storage media.
 
 Capture defaults to enabled, with persistence. Pause capture to prevent future
 automatic additions. Pausing does not delete memory or disk history. Turning
-off **Remember after logout** deletes the state file after pending writes finish
+off **Remember after logout** deletes the state file and managed images after pending writes finish
 and keeps current history only in memory. The extension does not capture copies
 while it is disabled or locked; it does not sample the existing clipboard on
 startup. Disabling without turning off persistence keeps the saved history.
+**Clear history on shutdown** overrides persistence and keeps all history, pins
+and recents only in memory. Enabling it removes existing disk state while keeping
+current memory. Restart, logout, shutdown and extension reload lose those items.
+There is no shutdown callback that can race with pending writes.
+GNOME’s screenshot UI saves its own files in Pictures/Screenshots and copies a
+PNG to the system clipboard. Super V does not remove those separate files or
+clear another application’s system clipboard when history is erased.
 
 Password-manager MIME hints `x-kde-passwordManagerHint`,
 `application/x-keepassxc`, `application/x-keepass`, `x-gtk-password` and
@@ -43,7 +54,7 @@ what you choose to paste. The extension does not run copied text as commands.
 Emoji clipboard snapshots are bounded plain text, held only in memory and
 discarded on full clear, a new history choice, disable or lock. Nontext formats
 and password-marked data are not saved. Restore is explicit and only succeeds
-if the current clipboard still equals the selected emoji. Internal writes are
+if the current clipboard still equals the selected emoji. Internal text and image writes are
 suppressed from capture for three seconds; copying exactly the same value
 yourself during that brief window may also be ignored. No timer overwrites an
 application's pending paste.
@@ -60,6 +71,7 @@ Log out and back in to ensure shell memory and pending writes are gone. Then:
 
 ```sh
 rm -f -- "${XDG_STATE_HOME:-$HOME/.local/state}/super-v-ubuntu/history.json"
+rm -rf -- "${XDG_STATE_HOME:-$HOME/.local/state}/super-v-ubuntu/images"
 ```
 
 This does not clear the system clipboard or external backups. Settings contain
