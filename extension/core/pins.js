@@ -17,9 +17,9 @@ export class PinBudget {
 export function pinGeometry(width, height, zoom, area, x, y) {
     const fit = Math.min(1, 360 / width, 280 / height);
     const scale = Math.min(fit * Math.max(0.25, Math.min(4, zoom)),
-        Math.max(1, area.width - 24) / width, Math.max(1, area.height - 70) / height);
+        Math.max(1, area.width - 34) / width, Math.max(1, area.height - 70) / height);
     const imageWidth = Math.max(1, Math.round(width * scale)), imageHeight = Math.max(1, Math.round(height * scale));
-    const rootWidth = Math.min(area.width - 24, Math.max(240, imageWidth)), rootHeight = imageHeight + 44;
+    const rootWidth = Math.min(area.width - 24, Math.max(240, imageWidth + 10)), rootHeight = imageHeight + 46;
     return {imageWidth, imageHeight, width: rootWidth, height: rootHeight,
         x: Math.max(area.x + 12, Math.min(area.x + area.width - rootWidth - 12, x)),
         y: Math.max(area.y + 12, Math.min(area.y + area.height - rootHeight - 12, y))};

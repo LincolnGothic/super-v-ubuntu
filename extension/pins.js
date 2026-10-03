@@ -98,6 +98,8 @@ export class ScreenPins {
     _place(pin, x = pin.root.x, y = pin.root.y) {
         const monitor = Main.layoutManager.monitors.find(m => x >= m.x && y >= m.y && x < m.x + m.width && y < m.y + m.height)
             ?? Main.layoutManager.primaryMonitor;
+        if (!monitor) { pin.root.hide(); return; }
+        pin.root.show();
         const area = global.workspace_manager.get_active_workspace().get_work_area_for_monitor(monitor.index);
         const g = pinGeometry(pin.width, pin.height, pin.zoom, area, x, y);
         pin.image.set_size(g.imageWidth, g.imageHeight);

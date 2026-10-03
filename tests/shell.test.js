@@ -315,6 +315,13 @@ export async function run() {
         check('pin zoom control changes its scale', pin.zoom > 1);
         pin.opacityButton.emit('clicked', 1);
         check('pin opacity changes the image while keeping controls readable', pin.image.opacity < 255 && pin.root.opacity === 255);
+        extension.screenPins._place(pin, 9999, 9999);
+        await Scripting.sleep(50);
+        const pinRect = rectangle(pin.root);
+        const pinArea = Main.layoutManager.getWorkAreaForMonitor(Main.layoutManager.primaryIndex);
+        check('pin allocation stays inside the monitor including its border and controls',
+            pinRect.x + pinRect.width <= pinArea.x + pinArea.width &&
+            pinRect.y + pinRect.height <= pinArea.y + pinArea.height);
         const oldX = pin.root.x, oldY = pin.root.y;
         const imageRect = rectangle(pin.image);
         const dragX = imageRect.x + imageRect.width / 2, dragY = imageRect.y + imageRect.height / 2;
