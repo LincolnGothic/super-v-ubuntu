@@ -23,7 +23,7 @@ jobs:
       - name: Install native build and Wayland test tools
         run: |
           sudo apt-get update
-          sudo apt-get install -y --no-install-recommends build-essential debhelper libglib2.0-bin nodejs python3 gettext locales eslint lintian gnome-shell gjs gir1.2-gtk-4.0 gir1.2-gdkpixbuf-2.0 gir1.2-adw-1 dbus-x11 libgl1-mesa-dri fonts-noto-color-emoji fonts-noto-cjk ripgrep tesseract-ocr tesseract-ocr-eng
+          sudo apt-get install -y --no-install-recommends build-essential debhelper libglib2.0-bin nodejs python3 gettext locales eslint lintian gnome-shell gjs gir1.2-gtk-4.0 gir1.2-gdkpixbuf-2.0 gir1.2-adw-1 dbus-x11 libgl1-mesa-dri fonts-noto-color-emoji fonts-noto-cjk ripgrep tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim tesseract-ocr-chi-tra tesseract-ocr-jpn tesseract-ocr-spa tesseract-ocr-fra tesseract-ocr-kor
           sudo locale-gen en_US.UTF-8
       - name: Test and build for the native target
         run: ./scripts/ci-target.sh '${{ matrix.target }}' '${{ matrix.arch }}'
@@ -62,7 +62,7 @@ jobs:
       - name: Install Debian native build and Wayland test tools
         run: |
           apt-get update
-          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential debhelper libglib2.0-bin nodejs python3 gettext locales eslint lintian gnome-shell gjs gir1.2-gtk-4.0 gir1.2-gdkpixbuf-2.0 gir1.2-adw-1 dbus-x11 libgl1-mesa-dri fonts-noto-color-emoji fonts-noto-cjk ripgrep tesseract-ocr tesseract-ocr-eng
+          DEBIAN_FRONTEND=noninteractive apt-get install -y --no-install-recommends build-essential debhelper libglib2.0-bin nodejs python3 gettext locales eslint lintian gnome-shell gjs gir1.2-gtk-4.0 gir1.2-gdkpixbuf-2.0 gir1.2-adw-1 dbus-x11 libgl1-mesa-dri fonts-noto-color-emoji fonts-noto-cjk ripgrep tesseract-ocr tesseract-ocr-eng tesseract-ocr-chi-sim tesseract-ocr-chi-tra tesseract-ocr-jpn tesseract-ocr-spa tesseract-ocr-fra tesseract-ocr-kor
           localedef -i en_US -f UTF-8 en_US.UTF-8
           useradd -m -u 1001 testuser
           chown -R testuser:testuser "$GITHUB_WORKSPACE" "$(dirname "$GITHUB_WORKSPACE")"

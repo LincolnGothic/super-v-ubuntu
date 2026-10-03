@@ -119,6 +119,18 @@ GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
             check(ocrEditor.ocrCopy.sensitive, `Local OCR failed: ${ocrEditor.ocrStatus.label}`);
             ocrEditor.ocrCopy.emit('clicked');
             check(copiedText.includes('SUPER V LOCAL OCR'), 'OCR did not recognize and copy synthetic text');
+            const installed = await ocrEditor.ocr.languages(null);
+            for (const [language, text, expected] of [
+                ['chi_sim', '简体中文 文字识别', '简体中文'], ['chi_tra', '繁體中文 文字辨識', '繁體中文'],
+                ['jpn', '日本語 テキスト', '日本語'], ['kor', '한국어 텍스트', '한국어'],
+                ['spa', 'Texto español', 'español'], ['fra', 'Texte français', 'français'],
+            ]) {
+                if (!installed.includes(language)) continue;
+                const sample = new EditorDocument(640, 140);
+                sample.add({type: 'text', x: 20, y: 60, x2: 20, y2: 60, color: '#000000', width: 48, text});
+                const result = await ocrEditor.ocr.recognize(exportPng(white, sample.state), language, installed, null);
+                check(result.replace(/\s/gu, '').includes(expected), `${language}: synthetic recognition failed (${result})`);
+            }
             ocrEditor.ocrDialog.close();
             check(!ocrEditor.ocrDialog && ocrEditor.ocrCancel.is_cancelled(), 'Closing OCR did not cancel work');
         } finally { ocrEditor.window.close(); }
@@ -128,7 +140,7 @@ GLib.timeout_add(GLib.PRIORITY_DEFAULT, 300, () => {
         dialog.destroy();
         check(!base.get_child('extension').get_child('editor.png').query_exists(null), 'Editor created a scratch image');
         print(`EDITOR CHECKS COMPLETE: ${checks} checks, ${GLib.getenv('LANGUAGE')}`);
-    })().catch(error => { printerr(error.stack); status = 1; }).finally(() => {
+    })().catch(error => { printerr(error.message, error.stack); status = 1; }).finally(() => {
         editor.window.close();
         loop.quit();
     });

@@ -20,7 +20,7 @@ lint:
 	python3 scripts/lint.py
 
 test: check lint
-	$(NODE) --experimental-vm-modules --test tests/history.test.js tests/image.test.js tests/editor.test.js tests/export.test.js tests/editor-bridge.test.js tests/emoji.test.js tests/settings.test.js tests/lifecycle.test.js tests/shell-compat.test.js tests/popup.test.js tests/catalog.test.js tests/localization.test.js
+	$(NODE) --experimental-vm-modules --test tests/history.test.js tests/image.test.js tests/editor.test.js tests/export.test.js tests/ocr.test.js tests/editor-bridge.test.js tests/emoji.test.js tests/settings.test.js tests/lifecycle.test.js tests/shell-compat.test.js tests/popup.test.js tests/catalog.test.js tests/localization.test.js
 	$(MAKE) test-gjs
 
 test-gjs: translations

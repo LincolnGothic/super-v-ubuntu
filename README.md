@@ -315,7 +315,7 @@ requires opening its image from history again.
 
 ## Copy text from an image
 
-Click **Copy text from image** in the editor. Tesseract recognizes the edited,
+Click **Copy text from image** in the editor (or press **Ctrl+Shift+O**). Tesseract recognizes the edited,
 cropped image locally, then opens an editable result. Choose an installed language
 and click **Recognize text** to run again; **Copy text** copies the full result,
 while Ctrl+C copies a selection when one exists. Recognition can make mistakes;

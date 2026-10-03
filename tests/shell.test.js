@@ -26,13 +26,16 @@ export function init() {
     print('SHELL TEST INITIALIZED');
     const background = new Gio.Settings({schema_id: 'org.gnome.desktop.background'});
     background.set_string('picture-options', 'none');
-    Main.layoutManager.connect('startup-prepared', () => print('SHELL STARTUP PREPARED'));
-    Main.layoutManager.connect('startup-complete', () => print('SHELL STARTUP COMPLETE'));
-    GLib.timeout_add(GLib.PRIORITY_DEFAULT, 5000, () => {
-        print('SHELL STARTUP STATE', JSON.stringify({starting: Main.layoutManager._startingUp,
-            backgrounds: Main.layoutManager._bgManagers.map(m => m.backgroundActor?.content?.background?.isLoaded ?? null)}));
-        return GLib.SOURCE_REMOVE;
-    });
+    // GNOME 50 can finish startup while awaiting the automation module import,
+    // before main.js connects its startup-complete handler. Resume the official
+    // scripting runner only when that signal has already happened.
+    if (!Main.layoutManager._startingUp) {
+        GLib.idle_add(GLib.PRIORITY_DEFAULT, () => {
+            print('SHELL TEST: startup already complete; starting automation');
+            Scripting.runPerfScript({run, METRICS}, GLib.getenv('SHELL_PERF_OUTPUT'));
+            return GLib.SOURCE_REMOVE;
+        });
+    }
     new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}).set_boolean('enable-animations', false);
 }
 

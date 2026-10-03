@@ -15,8 +15,17 @@ export class OcrEngine {
     async recognize(bytes, language, installed, cancel) {
         imageInfo(bytes, 'image/png');
         const selected = ocrLanguageArgs(language, installed);
-        const output = await runProcess([this.program, 'stdin', 'stdout', '-l', selected, '--psm', '3'], bytes,
-            {cancel, outputLimit: MAX_OCR_TEXT_BYTES, timeoutMs: 30000});
-        return new TextDecoder('utf-8', {fatal: true}).decode(output).replace(/\0/gu, '').trim();
+        const deadline = GLib.get_monotonic_time() + 30000000;
+        for (const layout of ['3', '6']) {
+            const remaining = Math.floor((deadline - GLib.get_monotonic_time()) / 1000);
+            if (remaining <= 0) throw new Error('OCR deadline reached');
+            const output = await runProcess([this.program, 'stdin', 'stdout', '-l', selected, '--psm', layout], bytes,
+                {cancel, outputLimit: MAX_OCR_TEXT_BYTES, timeoutMs: remaining});
+            const text = new TextDecoder('utf-8', {fatal: true}).decode(output).replace(/\0/gu, '').trim();
+            if (text) return text;
+            // Automatic page segmentation can overlook a short text block.
+            // Retry that layout within the original total time budget.
+        }
+        return '';
     }
 }
