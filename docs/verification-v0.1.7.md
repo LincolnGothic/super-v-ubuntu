@@ -4,8 +4,8 @@ Validated on 2026-10-03 on GNOME Shell 50.1 in disposable Wayland sessions.
 Settings, clipboard items, files and GTK destinations were synthetic/private;
 no personal clipboard was read and the normal desktop was not modified.
 
-- 175 Node logic/adapter checks pass, including crop coordinates, undo/redo,
-  annotation bounds, automatic-editor opt-out/cancellation, stale transfer
+- 177 Node logic/adapter checks pass, including crop coordinates, undo/redo,
+  annotation bounds, automatic-editor opt-out/cancellation, both GNOME capture event orders, stale transfer
   rejection, image-history editing and process-exit/Copy ordering.
 - 35 existing native GJS/Gio image/storage checks and 17 actual gettext regional
   lookups pass. All six additional-language catalogs contain 303 translations.

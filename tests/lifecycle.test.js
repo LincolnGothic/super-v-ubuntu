@@ -347,7 +347,8 @@ async function controller() {
             open: async () => { main.opened = (main.opened ?? 0) + 1; }}};
     const mocks = {
         'gettext': {dgettext: (_domain, message) => message},
-        'gi://GLib': {default: {get_language_names: () => ['en'], PRIORITY_DEFAULT_IDLE: 0,
+        'gi://GLib': {default: {get_language_names: () => ['en'], PRIORITY_DEFAULT_IDLE: 0, PRIORITY_DEFAULT: 0,
+            timeout_add(_priority, _time, callback) { const id = ++signalId + 1000; sources.set(id, callback); return id; },
             idle_add(_priority, callback) { const id = sources.size + 1; sources.set(id, callback); return id; },
             source_remove: id => sources.delete(id)}},
         'gi://Gio': {default: {}}, 'gi://Meta': {default: {}}, 'gi://Shell': {default: {}},
@@ -596,4 +597,19 @@ test('editing a history image opens its original without pasting or replacing it
     assert.deepEqual(editors, [{bytes: pngBytes, mime: 'image/png'}]);
     assert.deepEqual(writes, []); assert.deepEqual(pastes, []);
     assert.equal(c.history.entries[0], entry);
+});
+
+test('GNOME 46 closed-before-saved ordering still opens the editor', async () => {
+    const {c, main, tick, editors} = await controller();
+    c.takeScreenshot(); tick();
+    main.screenshotUI.emit('closed');
+    main.screenshotUI.emit('screenshot-taken'); tick();
+    await settle(); assert.equal(editors.length, 1);
+});
+test('cancelled capture cannot adopt a later native screenshot', async () => {
+    const {c, main, tick, editors} = await controller();
+    c.takeScreenshot(); tick(); main.screenshotUI.emit('closed');
+    main.screenshotUI.visible = true; main.screenshotUI.emit('notify::visible');
+    main.screenshotUI.emit('screenshot-taken'); tick(); await settle();
+    assert.equal(editors.length, 0);
 });

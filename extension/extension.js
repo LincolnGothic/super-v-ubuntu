@@ -357,6 +357,8 @@ export default class SuperVExtension extends Extension {
     }
 
     _clearScreenshotSignals() {
+        if (this._captureTimeout) GLib.source_remove(this._captureTimeout);
+        this._captureTimeout = 0;
         for (const id of this._captureSignals ?? [])
             Main.screenshotUI.disconnect(id);
         this._captureSignals = [];
@@ -388,23 +390,43 @@ export default class SuperVExtension extends Extension {
             this._screenshotSource = 0;
             if (this._active && !Main.sessionMode.isLocked && !Main.sessionMode.isGreeter) {
                 let captured = false;
+                let closed = false;
+                const complete = () => {
+                    if (!captured || !closed)
+                        return;
+                    this._clearScreenshotSignals();
+                    if (!this.settings?.get_boolean('edit-after-screenshot'))
+                        return;
+                    // GNOME 46 can finish saving after the overlay has closed;
+                    // GNOME 50 waits for saving before starting its close.
+                    this._screenshotSource = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
+                        this._screenshotSource = 0;
+                        this.clipboard.readImage().then(image => {
+                            if (image && this._active && epoch === this._epoch && serial === this._captureSerial &&
+                                this.settings.get_boolean('edit-after-screenshot'))
+                                this._openEditor(image.bytes, image.mime);
+                        }).catch(() => {});
+                        return GLib.SOURCE_REMOVE;
+                    });
+                };
                 this._captureSignals = [
-                    Main.screenshotUI.connect('screenshot-taken', () => { captured = true; }),
+                    Main.screenshotUI.connect('screenshot-taken', () => { captured = true; complete(); }),
                     Main.screenshotUI.connect('closed', () => {
-                        this._clearScreenshotSignals();
-                        if (!captured || !this.settings?.get_boolean('edit-after-screenshot'))
-                            return;
-                        // Let Mutter publish the screenshot clipboard owner before
-                        // starting the same bounded transfer used by image history.
-                        this._screenshotSource = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-                            this._screenshotSource = 0;
-                            this.clipboard.readImage().then(image => {
-                                if (image && this._active && epoch === this._epoch && serial === this._captureSerial &&
-                                    this.settings.get_boolean('edit-after-screenshot'))
-                                    this._openEditor(image.bytes, image.mime);
-                            }).catch(() => {});
-                            return GLib.SOURCE_REMOVE;
-                        });
+                        closed = true;
+                        if (captured) {
+                            complete();
+                        } else {
+                            this._captureTimeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 3000, () => {
+                                this._captureTimeout = 0;
+                                this._clearScreenshotSignals();
+                                return GLib.SOURCE_REMOVE;
+                            });
+                        }
+                    }),
+                    // A cancelled capture must not adopt a later Print Screen.
+                    Main.screenshotUI.connect('notify::visible', () => {
+                        if (closed && Main.screenshotUI.visible)
+                            this._clearScreenshotSignals();
                     }),
                 ];
                 Main.screenshotUI.open().catch(() => {
