@@ -5,7 +5,6 @@ import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
-import Meta from 'gi://Meta';
 import Pango from 'gi://Pango';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
@@ -357,7 +356,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
 
     positionPanel() {
         if (!this._monitor || !this._panel.has_allocation() || !this.dialogLayout.has_allocation())
-            return;
+            return false;
         const centered = this.controller.settings.get_string('popup-position') === 'center';
         const area = Main.layoutManager.getWorkAreaForMonitor(this._monitor.index);
         const size = this._panel.get_transformed_size();
@@ -373,9 +372,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
             this._panel.set_style(`width: ${this._panelWidth}px;`);
             this.scroll.set_style(`height: ${this._scrollHeight}px; min-height: 0;`);
             this.refresh();
-            // A later added from BEFORE_REDRAW can run in the same frame.
-            // Wait for the new allocation instead of fitting stale sizes again.
-            return;
+            return false;
         }
         const position = this._manualPosition
             ? clampPanelPosition(this._manualPosition, area, size, gap)
@@ -386,26 +383,34 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         // Convert the desired screen point to the parent's coordinates and
         // subtract that allocation, including after reopening or a tab resize.
         const [valid, x, y] = this._panel.get_parent().transform_stage_point(position.x, position.y);
-        if (!valid) return;
+        if (!valid) return false;
         const box = this._panel.get_allocation_box();
-        this._panel.translation_x = x - box.x1;
-        this._panel.translation_y = y - box.y1;
-        this._panel.opacity = 255;
+        if (Math.abs((this._panel.translation_x || 0) - (x - box.x1)) > 0.01)
+            this._panel.translation_x = x - box.x1;
+        if (Math.abs((this._panel.translation_y || 0) - (y - box.y1)) > 0.01)
+            this._panel.translation_y = y - box.y1;
+        if (this._panel.opacity !== 255)
+            this._panel.opacity = 255;
+        return true;
     }
 
     _queuePosition() {
-        if (this._positionLater || !this._monitor ||
+        if (this._positionPaint || !this._monitor ||
             ![ModalDialog.State.OPENED, ModalDialog.State.OPENING].includes(this.state)) return;
-        this._positionLater = global.compositor.get_laters().add(Meta.LaterType.BEFORE_REDRAW, () => {
-            this._positionLater = 0;
-            this.positionPanel();
-            return GLib.SOURCE_REMOVE;
+        // BEFORE_REDRAW runs before Clutter finishes allocation. Reopening at
+        // the same size may emit no allocation notification, leaving an invisible
+        // modal forever. Paint completion guarantees a fresh layout each frame.
+        this._positionPaint = global.stage.connect('after-paint', () => {
+            this._cancelPosition();
+            if (!this.positionPanel())
+                this._queuePosition();
         });
+        this.dialogLayout.queue_redraw();
     }
 
     _cancelPosition() {
-        if (this._positionLater) global.compositor.get_laters().remove(this._positionLater);
-        this._positionLater = 0;
+        if (this._positionPaint) global.stage.disconnect(this._positionPaint);
+        this._positionPaint = 0;
     }
 
     _watchInputWindow(window) {

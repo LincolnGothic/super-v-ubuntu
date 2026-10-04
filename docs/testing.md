@@ -63,7 +63,10 @@ Record any custom notification bindings first; the command replaces them.
    to clear all and verify pins and recents disappear.
 4. Search a history term, try no-match text, press Ctrl+F, switch tabs with
    Ctrl+Tab, and press Escape. Verify click-outside closes and Tab can focus
-   pin/delete/settings controls. Reopen and verify search resets.
+   pin/delete/settings controls. Reopen and verify search resets. With both
+   empty and populated history, open and close the clipboard tab three times
+   without changing its contents; every opening must show a visible panel.
+   Repeat with Ubuntu's Yaru theme and verify screenshots still work afterward.
 5. Add and pin entries, disable/re-enable the extension, and verify persistence.
    Then log out/in and repeat. Turn off persistence, confirm the state file
    disappears, and log out/in: no history/recents should return. Pause capture

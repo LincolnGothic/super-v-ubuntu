@@ -42,6 +42,7 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
         grab_key_focus() { focus = this; this.emit('key-focus-in'); }
         set_style(style) { this.style = style; }
         hide() { this.visible = false; }
+        queue_redraw() {}
         destroy() { this.emit('destroy'); }
         has_allocation() { return Boolean(this.box); }
         get_allocation_box() { assert.ok(this.box, 'must wait for layout'); return {x1: 0, y1: 0, ...this.box}; }
@@ -119,9 +120,14 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
     const calls = [];
     const stage = Object.assign(new Actor(), {get_key_focus: () => focus, get_event_actor: event => event.actor ?? null});
     const display = new Actor({focus_window: null}), windowGroup = new Actor();
-    const laters = new Map(); let laterId = 0;
-    const compositor = {get_laters: () => ({add: (_type, callback) => { laters.set(++laterId, callback); return laterId; },
-        remove: id => laters.delete(id)})};
+    const paints = new Map(); let paintId = 0;
+    stage.connect = (signal, callback) => {
+        if (signal !== 'after-paint')
+            return Actor.prototype.connect.call(stage, signal, callback);
+        paints.set(++paintId, callback);
+        return paintId;
+    };
+    stage.disconnect = id => paints.delete(id);
     const controller = {history: new History(), emoji: new EmojiIndex(data.slice(0, count)),
         metadata: {'version-name': '0.1.3'},
         settings: {get_boolean: () => true, get_string: () => position},
@@ -145,7 +151,7 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
             monitors: [{x: 0, y: 0, width, height: 1080, index: 0}],
             getWorkAreaForMonitor: () => ({x: 0, y: 24, width, height: 1056}),
         }},
-    }, {stage, display, window_group: windowGroup, compositor, get_pointer: () => pointer, get_window_actors: () => []});
+    }, {stage, display, window_group: windowGroup, get_pointer: () => pointer, get_window_actors: () => []});
     const popup = new module.SuperVPopup();
     popup._init(controller);
     popup.showPanel();
@@ -153,11 +159,11 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
     const press = (key, ctrl = false) => popup._key({get_key_symbol: () => key,
         get_state: () => ctrl ? 1 : 0});
     const flushLayout = () => {
-        const pending = [...laters.values()]; laters.clear();
+        const pending = [...paints.values()];
         for (const callback of pending) callback();
     };
     return {popup, controller, calls, press, adjustment, stage, display, windowGroup, pointer, Actor,
-        laters, flushLayout, focus: () => focus};
+        paints, flushLayout, focus: () => focus};
 }
 
 test('loaded version is visible and all five tabs can be reached by keyboard', async () => {
@@ -228,24 +234,24 @@ test('placement accounts for the panel allocation and parent origin after reopen
 });
 
 test('closing or destroying a popup cancels its pending layout callback', async () => {
-    const {popup, laters, display, Actor} = await fixture();
+    const {popup, paints, display, Actor} = await fixture();
     const window = new Actor();
     display.emit('window-created', window);
-    assert.equal(laters.size, 1);
+    assert.equal(paints.size, 1);
     popup.close();
-    assert.equal(laters.size, 0);
+    assert.equal(paints.size, 0);
     popup._panel.emit('notify::allocation');
-    assert.equal(laters.size, 0);
+    assert.equal(paints.size, 0);
     popup.showPanel();
-    assert.equal(laters.size, 1);
+    assert.equal(paints.size, 1);
     popup.destroy();
-    assert.equal(laters.size, 0);
+    assert.equal(paints.size, 0);
     assert.equal(popup._inputWindows.size, 0);
     assert.equal(window.signals.size, 0);
 });
 
-test('fitting waits for a fresh allocation instead of repeatedly shrinking the old size', async () => {
-    const {popup, flushLayout, laters} = await fixture();
+test('fitting retries after the next paint with a fresh allocation', async () => {
+    const {popup, flushLayout, paints} = await fixture();
     popup._panel.box = {x1: 400, y1: 240};
     let height = 1200;
     popup._panel.get_transformed_size = () => [390, height];
@@ -253,15 +259,29 @@ test('fitting waits for a fresh allocation instead of repeatedly shrinking the o
     const fittedHeight = popup._scrollHeight;
     assert.ok(fittedHeight > 0 && fittedHeight < 330);
     assert.equal(popup._panel.opacity, 0);
-    assert.equal(laters.size, 0);
-    flushLayout();
-    assert.equal(popup._scrollHeight, fittedHeight);
+    assert.equal(paints.size, 1);
     height = 1020;
     popup._panel.emit('notify::allocation');
     flushLayout();
     const [x, y] = popup._panel.get_transformed_position();
     assert.equal(popup._panel.opacity, 255);
     assert.ok(x >= 0 && y >= 24 && y + height <= 1080);
+});
+
+test('reopening becomes visible even when an unchanged allocation emits no notification', async () => {
+    const {popup, flushLayout, paints} = await fixture();
+    popup._panel.box = {x1: 400, y1: 240};
+    flushLayout();
+    popup.close();
+    popup.showPanel();
+    popup._panel.box = null;
+    flushLayout();
+    assert.equal(popup._panel.opacity, 0);
+    assert.equal(paints.size, 1);
+    popup._panel.box = {x1: 400, y1: 240};
+    flushLayout();
+    assert.equal(popup._panel.opacity, 255);
+    assert.equal(paints.size, 0);
 });
 
 test('only primary application clicks update the remembered input anchor', async () => {

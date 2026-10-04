@@ -160,6 +160,14 @@ export async function run() {
     controller.popup = popup;
     try {
         check('popup opens', popup.showPanel());
+        await waitFor(() => popup._panel.opacity === 255);
+        check('initial clipboard panel is visible after layout', popup._panel.opacity === 255);
+        for (let reopen = 0; reopen < 3; reopen++) {
+            popup.close();
+            check('unchanged clipboard popup reopens', popup.showPanel());
+            await waitFor(() => popup._panel.opacity === 255);
+        }
+        check('unchanged clipboard panel becomes visible on every reopen', popup._panel.opacity === 255);
         popup._setTab('emoji');
         await Scripting.sleep(300);
         check('loaded version is visible', popup._title.text === 'Super V 0.1.11');

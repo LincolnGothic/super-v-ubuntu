@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Fix Super+V opening a fully transparent clipboard popup when layout is not ready, especially when reopening at the same size.
+- Position and reveal the popup after painting, retry after layout changes, and cancel pending callbacks when it closes.
+- Add visibility checks for the initial clipboard panel and repeated opens without changing its contents.
+
 ## 0.1.7 — 2026-10-03
 
 - Add a screenshot editor with cropping, arrows, rectangles, text, highlights, freehand drawing and opaque black covers.
