@@ -366,13 +366,15 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         const overflowWidth = size[0] - Math.max(1, area.width - 2 * gap);
         const overflowHeight = size[1] - Math.max(1, area.height - 2 * gap);
         if (overflowWidth > 0.5 && this._panelWidth > 1 || overflowHeight > 0.5 && this._scrollHeight > 0) {
+            this._panel.opacity = 0;
             this._panelWidth = Math.max(1, this._panelWidth - Math.max(0, overflowWidth) / scale);
             this._scrollHeight = Math.max(0, this._scrollHeight - Math.max(0, overflowHeight) / scale);
             this._emojiColumns = Math.max(1, Math.min(6, Math.floor((this._panelWidth - 36) / 54)));
             this._panel.set_style(`width: ${this._panelWidth}px;`);
             this.scroll.set_style(`height: ${this._scrollHeight}px; min-height: 0;`);
             this.refresh();
-            this._queuePosition();
+            // A later added from BEFORE_REDRAW can run in the same frame.
+            // Wait for the new allocation instead of fitting stale sizes again.
             return;
         }
         const position = this._manualPosition

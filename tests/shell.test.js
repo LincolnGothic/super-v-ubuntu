@@ -268,11 +268,23 @@ export async function run() {
         // single category row and keep its focused final button reachable.
         const context = St.ThemeContext.get_for_stage(global.stage);
         const originalFont = context.get_font();
+        const fontAllocation = new Promise(resolve => {
+            const signal = popup._panel.connect('notify::allocation', () => {
+                popup._panel.disconnect(signal);
+                resolve();
+            });
+        });
         context.set_font(Pango.FontDescription.from_string('Sans 16'));
         popup._panel.set_style('width: 270px;');
         popup._emojiColumns = 4;
         popup.refresh();
-        await Scripting.sleep(150);
+        await fontAllocation;
+        await waitFor(() => {
+            const bounds = rectangle(popup._panel);
+            return bounds.x >= area.x && bounds.y >= area.y &&
+                bounds.x + bounds.width <= area.x + area.width + 1 &&
+                bounds.y + bounds.height <= area.y + area.height + 1 && popup._panel.opacity === 255;
+        });
         const largeTextPanel = rectangle(popup._panel);
         check('larger text still fits the full panel in the work area',
             largeTextPanel.x >= area.x && largeTextPanel.y >= area.y &&
@@ -581,8 +593,10 @@ export async function run() {
             await waitFor(() => {
                 try { return new TextDecoder().decode(processState.load_contents(null)[1]).includes(') Z'); }
                 catch (error) {
-                    // The child can exit between an existence check and read.
+                    // procfs can return ENOENT or ESRCH while a task exits.
                     if (error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.NOT_FOUND)) return true;
+                    if (error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.FAILED))
+                        return !processState.query_exists(null);
                     throw error;
                 }
             });

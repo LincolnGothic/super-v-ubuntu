@@ -244,6 +244,26 @@ test('closing or destroying a popup cancels its pending layout callback', async 
     assert.equal(window.signals.size, 0);
 });
 
+test('fitting waits for a fresh allocation instead of repeatedly shrinking the old size', async () => {
+    const {popup, flushLayout, laters} = await fixture();
+    popup._panel.box = {x1: 400, y1: 240};
+    let height = 1200;
+    popup._panel.get_transformed_size = () => [390, height];
+    flushLayout();
+    const fittedHeight = popup._scrollHeight;
+    assert.ok(fittedHeight > 0 && fittedHeight < 330);
+    assert.equal(popup._panel.opacity, 0);
+    assert.equal(laters.size, 0);
+    flushLayout();
+    assert.equal(popup._scrollHeight, fittedHeight);
+    height = 1020;
+    popup._panel.emit('notify::allocation');
+    flushLayout();
+    const [x, y] = popup._panel.get_transformed_position();
+    assert.equal(popup._panel.opacity, 255);
+    assert.ok(x >= 0 && y >= 24 && y + height <= 1080);
+});
+
 test('only primary application clicks update the remembered input anchor', async () => {
     const {popup, display, Actor, pointer} = await fixture();
     const window = new Actor({has_pointer: () => true,
