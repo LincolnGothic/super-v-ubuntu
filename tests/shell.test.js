@@ -329,7 +329,12 @@ export async function run() {
         check('GIF empty state offers settings', popup._manageGifs.visible && popup._rows.length === 0);
         settings.set_string('popup-position', 'center');
         popup.positionPanel();
-        await Scripting.sleep(100);
+        await waitFor(() => {
+            const bounds = rectangle(popup._panel);
+            return popup._panel.opacity === 255 &&
+                Math.abs(bounds.x + bounds.width / 2 - area.x - area.width / 2) < 2 &&
+                Math.abs(bounds.y + bounds.height / 2 - area.y - area.height / 2) < 2;
+        });
         const center = rectangle(popup._panel);
         check('center setting uses the usable work area',
             Math.abs(center.x + center.width / 2 - area.x - area.width / 2) < 2 &&

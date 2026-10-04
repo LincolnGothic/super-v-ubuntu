@@ -52,7 +52,8 @@ The first pull-request matrix passed all six targets, but the merged release run
 caught a larger-text timing failure on Ubuntu 24.04 ARM64. Fitting now waits for
 the changed panel allocation instead of adding another BEFORE_REDRAW callback
 while the old size is still current. The native larger-text check waits for full
-bounds to settle rather than assuming a fixed 150ms layout interval. A Node
+bounds to settle rather than assuming a fixed 150ms layout interval. Center-mode
+checks also wait for the final placement after a tab changes size. A Node
 regression verifies that the stale size is not repeatedly fitted or shown.
 The same release run exposed a procfs race in the OCR cancellation fixture:
 Linux can report ESRCH while its process disappears. That check now confirms
