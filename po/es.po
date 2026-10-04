@@ -301,8 +301,8 @@ msgstr "Tamaño de los bloques"
 msgid "Move image"
 msgstr "Mover imagen"
 
-msgid "Near mouse pointer"
-msgstr "Cerca del puntero"
+msgid "Near last click"
+msgstr "Cerca del último clic"
 
 msgid "Next categories"
 msgstr "Categorías siguientes"
@@ -491,8 +491,8 @@ msgstr "Grosor / tamaño del texto"
 msgid "Super V"
 msgstr "Super V"
 
-msgid "Super+V opens near the mouse pointer, or in the center of the focused screen."
-msgstr "Super+V abre el selector cerca del puntero o en el centro de la pantalla activa."
+msgid "Opens near the last click in the focused app, with the mouse pointer as a fallback."
+msgstr "Se abre cerca del último clic en la aplicación activa; si no hay un clic guardado, usa el puntero del ratón."
 
 msgid "Surprised"
 msgstr "Sorpresa"

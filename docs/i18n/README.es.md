@@ -2,7 +2,7 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
-v0.1.10 corrige los clics de la barra de las imágenes fijadas. Ampliar, reducir, opacidad, copiar y cerrar funcionan con el ratón; Super+Mayús+S permite capturar otra imagen manteniendo las referencias fijadas. Arrastra la imagen o el espacio vacío de la barra para moverla; Escape durante el arrastre la cierra y libera la entrada.
+v0.1.11 corrige el panel de Super+V que quedaba fuera de la pantalla y las posiciones antiguas al volver a abrirlo. Se abre cerca del último clic en la aplicación activa, aunque muevas el ratón; si no hay un clic válido, usa el puntero actual. El tamaño se ajusta al área disponible y puedes arrastrar la barra de título para moverlo.
 
 v0.1.9 muestra un cuadro de texto con cursor sobre la imagen al elegir «Texto». Haz clic en otro lugar para moverlo y pulsa Intro para terminar. «Mosaico claro» permite dibujar libremente y ajustar el grosor del pincel y el tamaño de los bloques; cubre los píxeles con cuadros opacos blancos y gris claro. «Blanco y negro» es un filtro independiente que puedes deshacer. Super+Mayús+S y el botón de cámara muestran una nueva cruz sin el marco anterior: arrastra y suelta para capturar; Escape cancela. La imagen va al portapapeles y al historial opcional; «Guardar imagen» elige el archivo. Impr Pant mantiene los controles habituales de GNOME.
 
@@ -16,10 +16,10 @@ Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Debian 13 / GNOME 48 · Wa
 
 ## Primera instalación
 
-Descarga el [paquete v0.1.10](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.10/super-v-ubuntu_0.1.10_all.deb) y abre un terminal en la carpeta que contiene el archivo:
+Descarga el [paquete v0.1.11](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.11/super-v-ubuntu_0.1.11_all.deb) y abre un terminal en la carpeta que contiene el archivo:
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.10_all.deb
+sudo apt install ./super-v-ubuntu_0.1.11_all.deb
 ```
 
 Después de instalar, **guarda tu trabajo, cierra la sesión y vuelve a entrar**. Ejecuta estos comandos como usuario normal, sin sudo. El primero asigna Super+M a las notificaciones para dejar Super+V disponible; reemplaza cualquier atajo de notificaciones personalizado.
@@ -30,11 +30,11 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-Pulsa **Super+V**; el título debe mostrar **Super V 0.1.10**.
+Pulsa **Super+V**; el título debe mostrar **Super V 0.1.11**.
 
-## Actualizar a v0.1.10
+## Actualizar a v0.1.11
 
-Descarga el paquete anterior y ejecuta el mismo comando apt desde su carpeta. Se instala sobre la versión anterior; no hace falta desinstalarla. Después, **guarda tu trabajo, cierra la sesión y vuelve a entrar**, y comprueba **Super V 0.1.10** en el título de **Super+V**. Se conservan el idioma y los atajos, y se migra el historial de texto guardado, los elementos fijados y los emojis recientes. El historial configurado para borrarse al cerrar sesión se elimina según esa preferencia.
+Descarga el paquete anterior y ejecuta el mismo comando apt desde su carpeta. Se instala sobre la versión anterior; no hace falta desinstalarla. Después, **guarda tu trabajo, cierra la sesión y vuelve a entrar**, y comprueba **Super V 0.1.11** en el título de **Super+V**. Se conservan el idioma y los atajos, y se migra el historial de texto guardado, los elementos fijados y los emojis recientes. El historial configurado para borrarse al cerrar sesión se elimina según esa preferencia.
 
 Comprueba el paquete instalado y la extensión cargada por GNOME como usuario normal:
 
@@ -43,9 +43,9 @@ dpkg-query -W super-v-ubuntu
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-Ambos deben indicar **0.1.10** (el número interno de la extensión es 11). Si solo el paquete es nuevo, cierra y vuelve a abrir la sesión. Para el paquete del sistema, Path debe ser `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`. Si apunta a tu carpeta personal, guarda una copia de esa carpeta UUID y muévela fuera del directorio de extensiones; después vuelve a iniciar sesión. Si Super+V no responde, ejecuta el comando enable anterior; si abre notificaciones, revisa el comando de atajos de la primera instalación. Para abrir Ajustes directamente, usa `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`.
+Ambos deben indicar **0.1.11** (el número interno de la extensión es 12). Si solo el paquete es nuevo, cierra y vuelve a abrir la sesión. Para el paquete del sistema, Path debe ser `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`. Si apunta a tu carpeta personal, guarda una copia de esa carpeta UUID y muévela fuera del directorio de extensiones; después vuelve a iniciar sesión. Si Super+V no responde, ejecuta el comando enable anterior; si abre notificaciones, revisa el comando de atajos de la primera instalación. Para abrir Ajustes directamente, usa `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`.
 
-## Guía de ajustes de v0.1.10
+## Guía de ajustes de v0.1.11
 
 Abre Super+V y pulsa el botón de engranaje de la cabecera para abrir Ajustes.
 

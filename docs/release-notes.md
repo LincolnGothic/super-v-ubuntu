@@ -1,29 +1,27 @@
-Super V Ubuntu 0.1.10 fixes unresponsive pinned-image controls and blocked captures.
+Super V Ubuntu 0.1.11 fixes clipped and misplaced Super+V popups.
 
-The pin toolbar used to treat button presses as the start of a drag. This could
-consume the release needed to activate Zoom, Copy, Opacity or Close. Toolbar
-buttons now receive their complete clicks; only the image and empty header space
-start dragging.
+The popup now measures its full layout, fits the scrollable results to the usable
+monitor area, and positions itself after layout completes. Reopening or changing
+tabs no longer reuses an old allocation that can push the title off-screen.
 
-- Zoom in/out, Copy, Opacity and Close respond to real mouse clicks.
-- New screenshots work with a reference image still pinned on the desktop.
-- Starting capture releases any in-progress pin drag and pin keyboard focus.
-- Escape during a pin drag closes that reference and releases input.
-- Monitor changes and pin removal release drag input; cleanup dismisses the grab
-  even if disconnecting the event handler fails.
+- The default **Near last click** position remembers the last primary click in
+  the focused application, so moving the pointer away from its input field does
+  not move the popup to an unrelated location.
+- Moving that window preserves the relative point. Resizing it, switching to a
+  window without a recorded click, or having no click uses the mouse pointer.
+- Drag the title bar to reposition the popup. Its bounds stay inside the usable
+  screen, and header buttons retain their normal click behavior.
+- **Center of screen** remains available in Settings and uses the work area.
+- Position tracking keeps just one window and point in memory. It does not save
+  input text or keystrokes and is approximate rather than exact caret tracking.
 
-The native Wayland regression uses physical pointer/keyboard events for all five
-buttons, drag release/Escape, screenshot capture with a visible pin, and Close
-after capture cancellation. Ubuntu 24.04/GNOME 46, Ubuntu 26.04/GNOME 50 and Debian
-13/GNOME 48 on x86-64 and ARM64 gate publication. Four installers and SHA256SUMS
-are provided. All seven interface languages remain available.
+Native Wayland regressions cover 720p work-area fitting, reopening all five tabs
+at screen edges, larger text, title dragging, real header-button clicks, and
+application click anchoring after moving the pointer away. Publication requires
+Ubuntu 24.04/GNOME 46, Ubuntu 26.04/GNOME 50, and Debian 13/GNOME 48 on x86-64 and
+ARM64. All seven interface languages are included.
 
-Install the package for your distribution with `sudo apt install ./PACKAGE.deb`,
-then save your work, log out and back in. No uninstall is needed. GNOME keeps
+Install the package for your distribution with `sudo apt install ./PACKAGE.deb`.
+Then save your work, log out and back in. No uninstall is needed. GNOME keeps
 previous JavaScript modules loaded until a new session starts. The header should
-show **Super V 0.1.10**.
-
-If a reference is already stuck before updating, disable and re-enable only
-Super V with `gnome-extensions disable super-v-ubuntu@super-v-ubuntu.local` and
-`gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local`. This removes
-temporary screen references. History follows your persistence/clearing settings.
+show **Super V 0.1.11** (extension version 12).

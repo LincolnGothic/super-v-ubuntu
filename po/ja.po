@@ -301,8 +301,8 @@ msgstr "モザイクのブロックサイズ"
 msgid "Move image"
 msgstr "画像を移動"
 
-msgid "Near mouse pointer"
-msgstr "マウスポインターの近く"
+msgid "Near last click"
+msgstr "最後にクリックした位置の近く"
 
 msgid "Next categories"
 msgstr "次のカテゴリー"
@@ -491,8 +491,8 @@ msgstr "線の太さ／文字サイズ"
 msgid "Super V"
 msgstr "Super V"
 
-msgid "Super+V opens near the mouse pointer, or in the center of the focused screen."
-msgstr "Super+V でマウスポインターの近く、または使用中の画面の中央に開きます。"
+msgid "Opens near the last click in the focused app, with the mouse pointer as a fallback."
+msgstr "アクティブなアプリで最後にクリックした位置の近くに開きます。記録がなければマウスポインターの位置を使います。"
 
 msgid "Surprised"
 msgstr "驚き"

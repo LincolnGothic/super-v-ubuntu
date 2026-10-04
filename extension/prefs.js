@@ -147,8 +147,8 @@ export default class SuperVPreferences extends ExtensionPreferences {
         ocrLanguage.connect('notify::selected', () => settings.set_string('ocr-language', OCR_LANGUAGES[ocrLanguage.selected].id));
         exports.add(ocrLanguage);
         const position = new Adw.ComboRow({title: _('Picker position'),
-            subtitle: _('Super+V opens near the mouse pointer, or in the center of the focused screen.'),
-            model: Gtk.StringList.new([_('Near mouse pointer'), _('Center of screen')]),
+            subtitle: _('Opens near the last click in the focused app, with the mouse pointer as a fallback.'),
+            model: Gtk.StringList.new([_('Near last click'), _('Center of screen')]),
             selected: settings.get_string('popup-position') === 'center' ? 1 : 0});
         position.connect('notify::selected', () =>
             settings.set_string('popup-position', position.selected === 1 ? 'center' : 'pointer'));

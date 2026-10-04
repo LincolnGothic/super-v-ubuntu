@@ -5,6 +5,7 @@ import Clutter from 'gi://Clutter';
 import GObject from 'gi://GObject';
 import Gio from 'gi://Gio';
 import GLib from 'gi://GLib';
+import Meta from 'gi://Meta';
 import Pango from 'gi://Pango';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
@@ -14,7 +15,7 @@ import * as PopupMenu from 'resource:///org/gnome/shell/ui/popupMenu.js';
 import {getEventActor, verticalBoxProperties, horizontalBoxProperties} from './shell-compat.js';
 import {moveGridSelection} from './core/grid.js';
 import {CatalogIndex, kaomoji, symbols} from './core/catalog.js';
-import {placeNearPointer, pointInRect} from './core/placement.js';
+import {clampPanelPosition, placeNearPointer, pointInRect, rememberWindowClick, resolveWindowClick} from './core/placement.js';
 
 const categoryIcons = {All: '⊞', Recent: '🕘', 'Smileys & Emotion': '🙂',
     'People & Body': '👋', 'Animals & Nature': '🐾', 'Food & Drink': '🍔',
@@ -52,7 +53,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this._visibleCount = this.pageSize;
         this.catalogs = {kaomoji: new CatalogIndex(kaomoji, _), symbols: new CatalogIndex(symbols, _)};
         const horizontal = horizontalBoxProperties(St.BoxLayout, Clutter);
-        const header = new St.BoxLayout({...horizontal, style_class: 'super-v-header', x_expand: true});
+        const header = this._header = new St.BoxLayout({...horizontal, style_class: 'super-v-header', x_expand: true, reactive: true});
         this._title = new St.Label({text: `Super V ${controller.metadata?.['version-name'] ?? ''}`.trim(),
             style_class: 'super-v-title',
             x_expand: true, y_align: Clutter.ActorAlign.CENTER});
@@ -67,6 +68,16 @@ class SuperVPopup extends ModalDialog.ModalDialog {
             controller.openPreferences();
         });
         header.add_child(this._settingsButton);
+        header.connect('button-press-event', (_actor, event) => {
+            if (event.get_button() !== 1) return Clutter.EVENT_PROPAGATE;
+            const source = getEventActor(global.stage, event);
+            if (source && [this._screenshotButton, this._settingsButton].some(control => control.contains(source)))
+                return Clutter.EVENT_PROPAGATE;
+            const [x, y] = this._panel.get_transformed_position();
+            this._drag = {start: event.get_coords(), x, y};
+            this._hideTooltip();
+            return Clutter.EVENT_STOP;
+        });
         this.contentLayout.add_child(header);
         const tabs = new St.BoxLayout({...horizontal, style_class: 'super-v-tabs'});
         this._clipboardTab = button(_('Clipboard'), () => this._setTab('clipboard'));
@@ -148,6 +159,7 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this.contentLayout.add_child(this._hint);
         this.setInitialKeyFocus(this.search.clutter_text);
         this.connect('captured-event', (_actor, event) => {
+            if (this._dragEvent(event)) return Clutter.EVENT_STOP;
             if (event.type() === Clutter.EventType.KEY_PRESS)
                 return this._key(event);
             // A modal grab can start event propagation at this actor, skipping
@@ -155,14 +167,28 @@ class SuperVPopup extends ModalDialog.ModalDialog {
             return this._outsideEvent(event);
         });
         // Cover events delivered through the stage as well as the grab root.
-        global.stage.connectObject('captured-event', (_stage, event) => this._outsideEvent(event), this);
-        this.connect('opened', () => this.positionPanel());
-        this._panel.connect('notify::allocation', () => this.positionPanel());
+        global.stage.connectObject('captured-event', (_stage, event) => {
+            if (this._dragEvent(event)) return Clutter.EVENT_STOP;
+            return this._outsideEvent(event);
+        }, this);
+        // Mutter consumes native client events before Clutter's stage handlers.
+        // Window interaction timestamps still notify us while a click is down.
+        this._inputWindows = new Set();
+        global.display.connectObject('window-created', (_display, window) => this._watchInputWindow(window), this);
+        for (const actor of global.get_window_actors()) this._watchInputWindow(actor.meta_window);
+        this.connect('opened', () => this._queuePosition());
+        this._panel.connect('notify::allocation', () => this._queuePosition());
         this.connect('closed', () => {
+            this._drag = null;
+            this._cancelPosition();
             this._toneMenu.close();
             this._hideTooltip();
         });
         this.connect('destroy', () => {
+            this._cancelPosition();
+            for (const window of this._inputWindows) window.disconnectObject(this);
+            this._inputWindows.clear();
+            this._clickAnchor = null;
             this._hideTooltip();
             this._tooltip.destroy();
             this._toneMenu.destroy();
@@ -299,7 +325,11 @@ class SuperVPopup extends ModalDialog.ModalDialog {
         this.selected = 0;
         this._visibleCount = this.pageSize;
         this.search.set_text('');
-        this._anchor = global.get_pointer().slice(0, 2);
+        this._manualPosition = null;
+        this._drag = null;
+        this._panel.opacity = 0;
+        const window = global.display?.focus_window;
+        this._anchor = resolveWindowClick(this._clickAnchor, window, window?.get_frame_rect(), global.get_pointer());
         this._positionMode = this.controller.settings.get_string('popup-position');
         const monitor = this._positionMode === 'center'
             ? Main.layoutManager.focusMonitor ?? Main.layoutManager.primaryMonitor
@@ -307,40 +337,106 @@ class SuperVPopup extends ModalDialog.ModalDialog {
                 ?? Main.layoutManager.primaryMonitor;
         this._monitor = monitor;
         const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
-        const height = Math.max(160, Math.min(330, monitor.height / scale - 230));
-        const width = Math.max(220, Math.min(390, monitor.width / scale - 48));
+        const area = Main.layoutManager.getWorkAreaForMonitor(monitor.index);
+        this._scrollHeight = Math.max(0, Math.min(330, area.height / scale - 360));
+        this._panelWidth = Math.max(1, Math.min(390, area.width / scale - 60));
+        const width = this._panelWidth;
         // Leave room for popup padding and keep tiles usable on narrow monitors.
         this._emojiColumns = Math.max(1, Math.min(6, Math.floor((width - 36) / 54)));
-        this.scroll.set_style(`height: ${height}px;`);
+        this.scroll.set_style(`height: ${this._scrollHeight}px; min-height: 0;`);
         this._panel.set_style(`width: ${width}px;`);
         this.refresh();
         const opened = this.open();
         if (opened) {
             this._monitorConstraint.index = monitor.index;
-            this.positionPanel();
+            this._queuePosition();
             this.search.grab_key_focus();
         }
         return opened;
     }
 
     positionPanel() {
-        if (!this._monitor)
+        if (!this._monitor || !this._panel.has_allocation() || !this.dialogLayout.has_allocation())
             return;
         const centered = this.controller.settings.get_string('popup-position') === 'center';
-        this._panel.x_align = centered ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START;
-        this._panel.y_align = centered ? Clutter.ActorAlign.CENTER : Clutter.ActorAlign.START;
-        if (centered) {
-            this._panel.translation_x = 0;
-            this._panel.translation_y = 0;
-        } else if (this._panel.has_allocation() && this.dialogLayout.has_allocation()) {
-            const area = Main.layoutManager.getWorkAreaForMonitor(this._monitor.index);
-            const size = this._panel.get_transformed_size();
-            const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
-            const position = placeNearPointer(this._anchor, area, size, 12 * scale);
-            const origin = this.dialogLayout.get_transformed_position();
-            this._panel.translation_x = position.x - origin[0];
-            this._panel.translation_y = position.y - origin[1];
+        const area = Main.layoutManager.getWorkAreaForMonitor(this._monitor.index);
+        const size = this._panel.get_transformed_size();
+        const scale = St.ThemeContext.get_for_stage(global.stage).scale_factor;
+        const gap = 12 * scale;
+        const overflowWidth = size[0] - Math.max(1, area.width - 2 * gap);
+        const overflowHeight = size[1] - Math.max(1, area.height - 2 * gap);
+        if (overflowWidth > 0.5 && this._panelWidth > 1 || overflowHeight > 0.5 && this._scrollHeight > 0) {
+            this._panelWidth = Math.max(1, this._panelWidth - Math.max(0, overflowWidth) / scale);
+            this._scrollHeight = Math.max(0, this._scrollHeight - Math.max(0, overflowHeight) / scale);
+            this._emojiColumns = Math.max(1, Math.min(6, Math.floor((this._panelWidth - 36) / 54)));
+            this._panel.set_style(`width: ${this._panelWidth}px;`);
+            this.scroll.set_style(`height: ${this._scrollHeight}px; min-height: 0;`);
+            this.refresh();
+            this._queuePosition();
+            return;
         }
+        const position = this._manualPosition
+            ? clampPanelPosition(this._manualPosition, area, size, gap)
+            : centered ? clampPanelPosition([area.x + (area.width - size[0]) / 2,
+                area.y + (area.height - size[1]) / 2], area, size, gap)
+                : placeNearPointer(this._anchor, area, size, gap);
+        // The panel has its own allocation inside GNOME's centered wrapper.
+        // Convert the desired screen point to the parent's coordinates and
+        // subtract that allocation, including after reopening or a tab resize.
+        const [valid, x, y] = this._panel.get_parent().transform_stage_point(position.x, position.y);
+        if (!valid) return;
+        const box = this._panel.get_allocation_box();
+        this._panel.translation_x = x - box.x1;
+        this._panel.translation_y = y - box.y1;
+        this._panel.opacity = 255;
+    }
+
+    _queuePosition() {
+        if (this._positionLater || !this._monitor ||
+            ![ModalDialog.State.OPENED, ModalDialog.State.OPENING].includes(this.state)) return;
+        this._positionLater = global.compositor.get_laters().add(Meta.LaterType.BEFORE_REDRAW, () => {
+            this._positionLater = 0;
+            this.positionPanel();
+            return GLib.SOURCE_REMOVE;
+        });
+    }
+
+    _cancelPosition() {
+        if (this._positionLater) global.compositor.get_laters().remove(this._positionLater);
+        this._positionLater = 0;
+    }
+
+    _watchInputWindow(window) {
+        if (this._inputWindows.has(window)) return;
+        this._inputWindows.add(window);
+        window.connectObject('notify::user-time', () => this._rememberWindowInput(window),
+            'unmanaged', () => {
+                window.disconnectObject(this);
+                this._inputWindows.delete(window);
+                if (this._clickAnchor?.window === window) this._clickAnchor = null;
+            }, this);
+    }
+
+    _rememberWindowInput(window) {
+        if ([ModalDialog.State.OPENED, ModalDialog.State.OPENING].includes(this.state) || !window.has_pointer()) return;
+        const [x, y, modifiers] = global.get_pointer();
+        if (!(modifiers & Clutter.ModifierType.BUTTON1_MASK)) return;
+        this._clickAnchor = rememberWindowClick(window, window.get_frame_rect(), [x, y]);
+    }
+
+    _dragEvent(event) {
+        if (!this._drag) return false;
+        if (event.type() === Clutter.EventType.MOTION) {
+            const [x, y] = event.get_coords();
+            this._manualPosition = [this._drag.x + x - this._drag.start[0], this._drag.y + y - this._drag.start[1]];
+            this.positionPanel();
+            return true;
+        }
+        if (event.type() === Clutter.EventType.BUTTON_RELEASE && event.get_button() === 1) {
+            this._drag = null;
+            return true;
+        }
+        return false;
     }
 
     _outsideEvent(event) {

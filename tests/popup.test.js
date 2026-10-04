@@ -21,12 +21,14 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
             this.pseudoClasses = new Set();
             Object.assign(this, properties);
             this.clutter_text = {line_wrap: false};
+            if (properties.child) this.add_child(properties.child);
         }
         connect(signal, callback) { this.signals.set(signal, callback); }
         connectObject(...args) {
             for (let index = 0; index < args.length - 1; index += 2)
                 this.connect(args[index], args[index + 1]);
         }
+        disconnectObject() { this.signals.clear(); }
         emit(signal, ...args) { return this.signals.get(signal)?.(this, ...args); }
         add_child(child) { child.parent = this; this.children.push(child); }
         set_child(child) { this.children = []; this.add_child(child); }
@@ -42,8 +44,12 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
         hide() { this.visible = false; }
         destroy() { this.emit('destroy'); }
         has_allocation() { return Boolean(this.box); }
-        get_allocation_box() { assert.ok(this.box, 'must wait for layout'); return this.box; }
-        get_transformed_position() { return [this.translation_x || 0, this.translation_y || 0]; }
+        get_allocation_box() { assert.ok(this.box, 'must wait for layout'); return {x1: 0, y1: 0, ...this.box}; }
+        get_transformed_position() {
+            const [x, y] = this.parent?.get_transformed_position() ?? [0, 0];
+            return [x + (this.box?.x1 ?? 0) + (this.translation_x || 0), y + (this.box?.y1 ?? 0) + (this.translation_y || 0)];
+        }
+        transform_stage_point(x, y) { const origin = this.get_transformed_position(); return [true, x - origin[0], y - origin[1]]; }
         get_transformed_size() { return [390, 600]; }
         contains(actor) { return this === actor || this.children.some(child => child.contains(actor)); }
     }
@@ -93,7 +99,7 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
         }
         setInitialKeyFocus() {}
         open() { this.state = 1; return true; }
-        close() { this.closed = true; this.state = 0; }
+        close() { this.closed = true; this.state = 0; this.emit('closed'); }
     }
     const adjustment = new Actor({value: 0, page_size: 150});
     const categoryAdjustment = new Actor({value: 0, page_size: 200});
@@ -103,15 +109,19 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
         get: () => scrollValue,
         set: value => { scrollValue = Math.max(0, Math.min(value, adjustment.upper - adjustment.page_size)); },
     });
-    const clutter = {ActorAlign: {CENTER: 1, FILL: 0, START: 2}, ModifierType: {CONTROL_MASK: 1},
-        EventType: {BUTTON_PRESS: 1, KEY_PRESS: 2}, EVENT_STOP: true, EVENT_PROPAGATE: false};
+    const clutter = {ActorAlign: {CENTER: 1, FILL: 0, START: 2}, ModifierType: {CONTROL_MASK: 1, BUTTON1_MASK: 256},
+        EventType: {BUTTON_PRESS: 1, KEY_PRESS: 2, MOTION: 3, BUTTON_RELEASE: 4}, EVENT_STOP: true, EVENT_PROPAGATE: false};
     for (const key of ['Escape', 'Tab', 'ISO_Left_Tab', 'f', 'F', 'Up', 'Down', 'Left', 'Right',
         'Return', 'KP_Enter', 'Delete', 'Home', 'End'])
         clutter[`KEY_${key}`] = key;
     const st = {BoxLayout, Button: Actor, Label, Entry, ScrollView, Widget: Actor, Icon: Actor,
         Side: {TOP: 0}, PolicyType: {NEVER: 0, AUTOMATIC: 1}, ThemeContext: {get_for_stage: () => ({scale_factor: scale})}};
     const calls = [];
-    const stage = Object.assign(new Actor(), {get_key_focus: () => focus});
+    const stage = Object.assign(new Actor(), {get_key_focus: () => focus, get_event_actor: event => event.actor ?? null});
+    const display = new Actor({focus_window: null}), windowGroup = new Actor();
+    const laters = new Map(); let laterId = 0;
+    const compositor = {get_laters: () => ({add: (_type, callback) => { laters.set(++laterId, callback); return laterId; },
+        remove: id => laters.delete(id)})};
     const controller = {history: new History(), emoji: new EmojiIndex(data.slice(0, count)),
         metadata: {'version-name': '0.1.3'},
         settings: {get_boolean: () => true, get_string: () => position},
@@ -125,6 +135,7 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
         'gi://Shell': {default: {ActionMode: {POPUP: 1}}}, 'gi://St': {default: st},
         [resolve('extension/translations.js')]: {gettext: translate},
         'gi://GLib': {default: {}},
+        'gi://Meta': {default: {LaterType: {BEFORE_REDRAW: 1}}},
         'resource:///org/gnome/shell/ui/popupMenu.js': {PopupMenu, PopupMenuItem,
             PopupMenuManager: class { addMenu() {} }, Ornament: {DOT: 1, NONE: 0}},
         'resource:///org/gnome/shell/ui/modalDialog.js': {ModalDialog, State: {OPENED: 1, OPENING: 2}},
@@ -134,14 +145,19 @@ async function fixture({count = 125, width = 1920, scale = 1, position = 'pointe
             monitors: [{x: 0, y: 0, width, height: 1080, index: 0}],
             getWorkAreaForMonitor: () => ({x: 0, y: 24, width, height: 1056}),
         }},
-    }, {stage, get_pointer: () => pointer});
+    }, {stage, display, window_group: windowGroup, compositor, get_pointer: () => pointer, get_window_actors: () => []});
     const popup = new module.SuperVPopup();
     popup._init(controller);
     popup.showPanel();
     popup._setTab('emoji');
     const press = (key, ctrl = false) => popup._key({get_key_symbol: () => key,
         get_state: () => ctrl ? 1 : 0});
-    return {popup, controller, calls, press, adjustment, stage, focus: () => focus};
+    const flushLayout = () => {
+        const pending = [...laters.values()]; laters.clear();
+        for (const callback of pending) callback();
+    };
+    return {popup, controller, calls, press, adjustment, stage, display, windowGroup, pointer, Actor,
+        laters, flushLayout, focus: () => focus};
 }
 
 test('loaded version is visible and all five tabs can be reached by keyboard', async () => {
@@ -182,7 +198,7 @@ test('GIF favorites render previews and dispatch binary insertion', async () => 
     assert.equal(calls[0][1].path, '/tmp/wave.gif');
 });
 
-test('near-pointer placement clamps at screen edges and center mode resets translations', async () => {
+test('near-pointer placement clamps at screen edges and center mode uses the work area', async () => {
     const {popup, controller} = await fixture({pointer: [1910, 1070]});
     popup._panel.box = {};
     popup.positionPanel();
@@ -190,9 +206,96 @@ test('near-pointer placement clamps at screen edges and center mode resets trans
     assert.equal(popup._panel.translation_y, 458);
     controller.settings.get_string = () => 'center';
     popup.positionPanel();
-    assert.equal(popup._panel.x_align, 1);
-    assert.equal(popup._panel.translation_x, 0);
-    assert.equal(popup._panel.translation_y, 0);
+    assert.deepEqual(popup._panel.get_transformed_position(), [765, 252]);
+});
+
+test('placement accounts for the panel allocation and parent origin after reopening', async () => {
+    const {popup, pointer, flushLayout} = await fixture();
+    popup.dialogLayout.box = {x1: 100, y1: 50};
+    popup._panel.box = {x1: 400, y1: 240};
+    flushLayout();
+    assert.deepEqual(popup._panel.get_transformed_position(), [512, 412]);
+    popup.positionPanel();
+    assert.deepEqual(popup._panel.get_transformed_position(), [512, 412]);
+    popup.close();
+    pointer.splice(0, 2, 900, 100);
+    popup.showPanel();
+    popup._panel.box = {x1: 420, y1: 260};
+    assert.equal(popup._panel.opacity, 0);
+    flushLayout();
+    assert.deepEqual(popup._panel.get_transformed_position(), [912, 112]);
+    assert.equal(popup._panel.opacity, 255);
+});
+
+test('closing or destroying a popup cancels its pending layout callback', async () => {
+    const {popup, laters, display, Actor} = await fixture();
+    const window = new Actor();
+    display.emit('window-created', window);
+    assert.equal(laters.size, 1);
+    popup.close();
+    assert.equal(laters.size, 0);
+    popup._panel.emit('notify::allocation');
+    assert.equal(laters.size, 0);
+    popup.showPanel();
+    assert.equal(laters.size, 1);
+    popup.destroy();
+    assert.equal(laters.size, 0);
+    assert.equal(popup._inputWindows.size, 0);
+    assert.equal(window.signals.size, 0);
+});
+
+test('only primary application clicks update the remembered input anchor', async () => {
+    const {popup, display, Actor, pointer} = await fixture();
+    const window = new Actor({has_pointer: () => true,
+        get_frame_rect: () => ({x: 100, y: 100, width: 800, height: 600})});
+    display.focus_window = window;
+    display.emit('window-created', window);
+    display.emit('window-created', window);
+    assert.equal(popup._inputWindows.size, 1);
+    popup.close();
+    pointer.splice(0, 3, 200, 500, 256);
+    window.emit('notify::user-time');
+    const anchor = popup._clickAnchor;
+    assert.equal(anchor.window, window);
+    pointer.splice(0, 3, 400, 300, 1);
+    window.emit('notify::user-time');
+    pointer[2] = 512;
+    window.emit('notify::user-time');
+    pointer[2] = 256;
+    window.has_pointer = () => false;
+    window.emit('notify::user-time');
+    assert.equal(popup._clickAnchor, anchor);
+    pointer.splice(0, 3, 1800, 100, 0);
+    popup.showPanel();
+    assert.deepEqual([...popup._anchor], [200, 500]);
+    pointer.splice(0, 3, 300, 300, 256);
+    window.has_pointer = () => true;
+    window.emit('notify::user-time');
+    assert.equal(popup._clickAnchor, anchor);
+    window.emit('unmanaged');
+    assert.equal(popup._clickAnchor, null);
+    assert.equal(popup._inputWindows.size, 0);
+    assert.equal(window.signals.size, 0);
+});
+
+test('title drag clamps the popup and header controls do not begin a drag', async () => {
+    const {popup, stage, flushLayout} = await fixture();
+    popup._panel.box = {x1: 400, y1: 240};
+    flushLayout();
+    const press = actor => ({actor, get_button: () => 1, get_coords: () => [550, 430]});
+    for (const control of [popup._screenshotButton, popup._screenshotButton.get_child(), popup._settingsButton]) {
+        assert.equal(popup._header.emit('button-press-event', press(control)), false);
+        assert.equal(popup._drag, null);
+    }
+    assert.equal(popup._header.emit('button-press-event', press(popup._title)), true);
+    stage.emit('captured-event', {type: () => 3, get_coords: () => [-2000, -2000]});
+    assert.deepEqual(popup._panel.get_transformed_position(), [12, 36]);
+    assert.equal(stage.emit('captured-event', {type: () => 4, get_button: () => 1}), true);
+    assert.equal(popup._drag, null);
+    popup.close();
+    popup.showPanel();
+    flushLayout();
+    assert.deepEqual(popup._panel.get_transformed_position(), [512, 412]);
 });
 
 test('outside clicks dismiss through the stage or modal grab root; inside and closed clicks propagate', async () => {
@@ -200,7 +303,7 @@ test('outside clicks dismiss through the stage or modal grab root; inside and cl
     popup._panel.box = {};
     popup.positionPanel();
     const [x, y] = popup._panel.get_transformed_position();
-    const click = coords => ({type: () => 1, get_coords: () => coords});
+    const click = coords => ({type: () => 1, get_button: () => 1, get_coords: () => coords});
     assert.equal(stage.emit('captured-event', click([x + 20, y + 20])), false);
     assert.equal(popup.closed, undefined);
     assert.equal(stage.emit('captured-event', click([0, 0])), true);
@@ -232,9 +335,9 @@ test('emoji form six-column rows and the partial row keeps empty, unfocusable ce
 
 test('narrow monitors reduce columns and normal HiDPI monitors retain six', async () => {
     const narrow = await fixture({width: 300});
-    assert.equal(narrow.popup._emojiColumns, 4);
+    assert.equal(narrow.popup._emojiColumns, 3);
     narrow.press('Down');
-    assert.equal(narrow.popup.selected, 4);
+    assert.equal(narrow.popup.selected, 3);
     const hidpi = await fixture({width: 1920, scale: 2});
     assert.equal(hidpi.popup._emojiColumns, 6);
 });

@@ -301,8 +301,8 @@ msgstr "Taille des carreaux"
 msgid "Move image"
 msgstr "Déplacer l’image"
 
-msgid "Near mouse pointer"
-msgstr "Près du pointeur"
+msgid "Near last click"
+msgstr "Près du dernier clic"
 
 msgid "Next categories"
 msgstr "Catégories suivantes"
@@ -491,8 +491,8 @@ msgstr "Épaisseur / taille du texte"
 msgid "Super V"
 msgstr "Super V"
 
-msgid "Super+V opens near the mouse pointer, or in the center of the focused screen."
-msgstr "Super+V ouvre le sélecteur près du pointeur ou au centre de l’écran actif."
+msgid "Opens near the last click in the focused app, with the mouse pointer as a fallback."
+msgstr "S’ouvre près du dernier clic dans l’application active ; à défaut, utilise la position du pointeur."
 
 msgid "Surprised"
 msgstr "Surprise"

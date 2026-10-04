@@ -85,3 +85,19 @@ Version 50 uses a native pan gesture; older versions use pointer event methods.
 CI exercises actual native pointer input on every supported version and CPU.
 The extension cancels an active selector through its existing GrabHelper, without
 patching the shared screenshot UI or changing Print Screen behavior.
+
+## v0.1.11 popup placement
+
+GNOME 50.1's [native event dispatcher](https://github.com/GNOME/mutter/blob/50.1/src/core/events.c)
+updates window user time for button presses before client input consumes the
+Clutter event. [Window user-time updates](https://github.com/GNOME/mutter/blob/50.1/src/core/window.c)
+notify the GObject property. Super V observes that notification only when the
+primary button is down and that window has the pointer, avoiding an input grab
+or polling timer. Window closure and popup destruction disconnect the observers.
+
+The visible panel's allocation is distinct from its modal wrapper. Placement uses
+[transform_stage_point](https://gnome.pages.gitlab.gnome.org/mutter/clutter/method.Actor.transform_stage_point.html)
+to convert screen coordinates into the parent's coordinates, then subtracts the
+panel's own allocation. A compositor BEFORE_REDRAW callback defers placement
+until layout is current. Native regressions exercise this path on all supported
+GNOME versions, including reopening every tab at screen edges on a 720p monitor.
