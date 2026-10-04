@@ -20,6 +20,7 @@ import {ImageLibrary} from '../extension/images.js';
 import {getDefaultSeat} from '../extension/shell-compat.js';
 import SuperVExtension from '../extension/extension.js';
 import {EditorBridge} from '../extension/editor-bridge.js';
+import {placeNearPointer} from '../extension/core/placement.js';
 
 export const METRICS = {};
 export function init() {
@@ -37,6 +38,8 @@ export function init() {
         });
     }
     new Gio.Settings({schema_id: 'org.gnome.desktop.interface'}).set_boolean('enable-animations', false);
+    // Match first-install setup in this memory-backed, isolated session.
+    new Gio.Settings({schema_id: 'org.gnome.shell.keybindings'}).set_strv('toggle-message-tray', ['<Super>m']);
 }
 
 function check(name, condition) {
@@ -159,7 +162,7 @@ export async function run() {
         check('popup opens', popup.showPanel());
         popup._setTab('emoji');
         await Scripting.sleep(300);
-        check('loaded version is visible', popup._title.text === 'Super V 0.1.10');
+        check('loaded version is visible', popup._title.text === 'Super V 0.1.11');
         check('six equally sized emoji per row', popup._rows.length === 60 &&
             popup.list.get_first_child().get_n_children() === 6);
         const cells = popup._rows.slice(0, 7).map(rectangle);
@@ -182,6 +185,27 @@ export async function run() {
             translation: [popup._panel.translation_x, popup._panel.translation_y]})}`);
         check('near-pointer panel stays within its work area', rect.x >= area.x && rect.y >= area.y &&
             rect.x + rect.width <= area.x + area.width + 1 && rect.y + rect.height <= area.y + area.height + 1);
+        if (GLib.getenv('SUPER_V_TEST_PLACEMENT') === '1') {
+            for (const anchor of [[2, 2], [global.stage.width - 2, global.stage.height - 2],
+                [800, global.stage.height - 20], [300, 100]]) {
+                popup.close();
+                pointer.notify_absolute_motion(GLib.get_monotonic_time(), ...anchor);
+                await Scripting.sleep(100);
+                popup.showPanel();
+                for (const tab of ['clipboard', 'emoji', 'kaomoji', 'symbols', 'gifs']) {
+                    popup._setTab(tab);
+                    await Scripting.sleep(100);
+                    const current = rectangle(popup._panel);
+                    const expected = placeNearPointer(popup._anchor, area, [current.width, current.height], 12);
+                    check(`reopened ${tab} follows its new anchor at ${anchor}`,
+                        Math.abs(current.x - expected.x) < 2 && Math.abs(current.y - expected.y) < 2);
+                    check(`reopened ${tab} stays in its work area at ${anchor}`,
+                        current.x >= area.x && current.y >= area.y && current.x + current.width <= area.x + area.width + 1 &&
+                        current.y + current.height <= area.y + area.height + 1);
+                }
+            }
+            popup._setTab('emoji');
+        }
         // Exercise a long translated category and both visible clipboard footer buttons.
         popup.group = 'Animals & Nature';
         popup.refresh();
@@ -249,6 +273,11 @@ export async function run() {
         popup._emojiColumns = 4;
         popup.refresh();
         await Scripting.sleep(150);
+        const largeTextPanel = rectangle(popup._panel);
+        check('larger text still fits the full panel in the work area',
+            largeTextPanel.x >= area.x && largeTextPanel.y >= area.y &&
+            largeTextPanel.x + largeTextPanel.width <= area.x + area.width + 1 &&
+            largeTextPanel.y + largeTextPanel.height <= area.y + area.height + 1);
         const narrowCategories = [...popup._categoryButtons.values()].map(rectangle);
         check('larger text and narrow layout retain one category row', narrowCategories.every(cell =>
             Math.abs(cell.y - narrowCategories[0].y) < 1));
@@ -290,9 +319,47 @@ export async function run() {
         popup.positionPanel();
         await Scripting.sleep(100);
         const center = rectangle(popup._panel);
-        const monitor = popup._monitor;
-        check('center setting clears pointer translation', popup._panel.translation_x === 0 &&
-            Math.abs(center.x + center.width / 2 - monitor.x - monitor.width / 2) < 2);
+        check('center setting uses the usable work area',
+            Math.abs(center.x + center.width / 2 - area.x - area.width / 2) < 2 &&
+            Math.abs(center.y + center.height / 2 - area.y - area.height / 2) < 2);
+        const title = rectangle(popup._title);
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), title.x + 30, title.y + title.height / 2);
+        await Scripting.sleep(50);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+        await Scripting.sleep(50);
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), title.x + 170, title.y + title.height / 2 + 10);
+        await Scripting.sleep(100);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+        await Scripting.sleep(50);
+        const moved = rectangle(popup._panel);
+        check('physical title drag moves the popup and releases on mouse up',
+            moved.x > center.x + 100 && !popup._drag && popup.state === ModalDialog.State.OPENED);
+        const movedTitle = rectangle(popup._title);
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), movedTitle.x + 30, movedTitle.y + movedTitle.height / 2);
+        await Scripting.sleep(50);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+        await Scripting.sleep(50);
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), 0, 0);
+        await Scripting.sleep(100);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+        await Scripting.sleep(50);
+        const clamped = rectangle(popup._panel);
+        check('dragging toward the screen edge keeps the title and full popup visible',
+            clamped.x >= area.x && clamped.y >= area.y &&
+            clamped.x + clamped.width <= area.x + area.width + 1 &&
+            clamped.y + clamped.height <= area.y + area.height + 1 && !popup._drag);
+        const tabBounds = rectangle(popup._emojiTab);
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), tabBounds.x + tabBounds.width / 2, tabBounds.y + tabBounds.height / 2);
+        await Scripting.sleep(50);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+        await Scripting.sleep(100);
+        check('tab buttons still respond after dragging the popup', popup.tab === 'emoji' && !popup._drag);
+        popup.close();
+        popup.showPanel();
+        await Scripting.sleep(100);
+        check('reopening resets the drag position', !popup._manualPosition &&
+            Math.abs(rectangle(popup._panel).x + rectangle(popup._panel).width / 2 - area.x - area.width / 2) < 2);
         pointer.notify_absolute_motion(GLib.get_monotonic_time(), center.x + 80, center.y + 72);
         await Scripting.sleep(100);
         pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
@@ -317,6 +384,18 @@ export async function run() {
                 Math.ceil(frame.width), Math.ceil(frame.height), output);
             output.close(null);
         }
+        popup.showPanel();
+        await Scripting.sleep(100);
+        const settingsButton = rectangle(popup._settingsButton);
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), settingsButton.x + settingsButton.width / 2,
+            settingsButton.y + settingsButton.height / 2);
+        await Scripting.sleep(50);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+        await Scripting.sleep(50);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+        await Scripting.sleep(100);
+        check('physical Settings click activates without starting a title drag',
+            popup.state === ModalDialog.State.CLOSED && !popup._drag);
     } finally {
         popup.destroy();
     }
@@ -339,9 +418,26 @@ export async function run() {
             const destination = global.get_window_actors().find(actor => actor.meta_window.get_title() === 'Super V image receiver').meta_window;
             destination.activate(global.get_current_time());
             await Scripting.sleep(150);
-            extension._target = destination;
-            extension.popup.showPanel();
+            const inputFrame = destination.get_frame_rect();
+            const inputPoint = [inputFrame.x + 40, inputFrame.y + inputFrame.height - 40];
+            pointer.notify_absolute_motion(GLib.get_monotonic_time(), ...inputPoint);
+            await Scripting.sleep(50);
+            pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+            await Scripting.sleep(50);
+            pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+            await Scripting.sleep(50);
+            check('native application click is remembered for its window', extension.popup._clickAnchor?.window === destination);
+            pointer.notify_absolute_motion(GLib.get_monotonic_time(), global.stage.width - 2, 100);
+            await Scripting.sleep(50);
+            for (const key of [Clutter.KEY_Super_L, Clutter.KEY_v])
+                keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.PRESSED);
+            for (const key of [Clutter.KEY_v, Clutter.KEY_Super_L])
+                keyboard.notify_keyval(GLib.get_monotonic_time(), key, Clutter.KeyState.RELEASED);
+            await waitFor(() => extension.popup.state === ModalDialog.State.OPENED);
             await Scripting.sleep(100);
+            check('actual Super+V retains the focused paste destination', extension._target === destination);
+            check('popup follows the last input click after the pointer moves away',
+                extension.popup._anchor.every((coordinate, index) => Math.abs(coordinate - inputPoint[index]) < 2));
             const imageEntry = extension.history.entries.find(entry => entry.mime === mime);
             check('clipboard image has a native thumbnail and accessible label',
                 extension.popup._rows[0].get_child().get_n_children() === 2 &&
@@ -513,12 +609,12 @@ export async function run() {
         };
         extension.popup.showPanel();
         await Scripting.sleep(100);
-        extension.popup._screenshotButton.emit('clicked', 1);
+        await clickActor(extension.popup._screenshotButton);
         await dragArea();
         check('Screenshot button closes picker before manual selection', extension.popup.state === ModalDialog.State.CLOSED);
-        await waitFor(() => extension.history.entries.some(entry => entry.kind === 'image' && entry.width === 1280));
+        await waitFor(() => extension.history.entries.some(entry => entry.kind === 'image' && entry.width === global.stage.width));
         check('native screenshot automatically becomes an image history entry',
-            extension.history.entries.some(entry => entry.kind === 'image' && entry.width === 1280 && entry.height === 960));
+            extension.history.entries.some(entry => entry.kind === 'image' && entry.width === global.stage.width && entry.height === global.stage.height));
         await waitFor(() => global.get_window_actors().some(actor => actor.meta_window.get_title() === _('Screenshot editor')));
         check('Super V capture opens the editor automatically', !!extension.editor.child);
         const editorWindow = global.get_window_actors().find(actor => actor.meta_window.get_title() === _('Screenshot editor')).meta_window;
@@ -550,7 +646,7 @@ export async function run() {
         check('closing the editor keeps the copied image available', (await extension.clipboard.readImage())?.mime === 'image/png');
         extension.settings.set_boolean('history-enabled', true);
         await waitFor(() => !global.get_window_actors().some(actor => actor.meta_window.get_title() === _('Screenshot editor')));
-        const screenshotEntry = extension.history.entries.find(entry => entry.width === 1280);
+        const screenshotEntry = extension.history.entries.find(entry => entry.width === global.stage.width);
         extension.screenPins.add(GLib.base64_decode(fixtures.png), 'image/png', null, screenshotEntry.digest);
         extension.deleteEntry(screenshotEntry.id);
         check('deleting an automatic screenshot source closes its screen pins by digest', !extension.screenPins.items.size);

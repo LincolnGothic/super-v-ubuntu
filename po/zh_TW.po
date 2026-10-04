@@ -301,8 +301,8 @@ msgstr "馬賽克方塊大小"
 msgid "Move image"
 msgstr "移動圖片"
 
-msgid "Near mouse pointer"
-msgstr "滑鼠游標附近"
+msgid "Near last click"
+msgstr "靠近上次點擊的位置"
 
 msgid "Next categories"
 msgstr "後面的類別"
@@ -491,8 +491,8 @@ msgstr "線寬／文字大小"
 msgid "Super V"
 msgstr "Super V"
 
-msgid "Super+V opens near the mouse pointer, or in the center of the focused screen."
-msgstr "Super+V 在滑鼠游標附近或目前螢幕中央開啟。"
+msgid "Opens near the last click in the focused app, with the mouse pointer as a fallback."
+msgstr "在目前應用程式中上次點擊的位置附近開啟；沒有記錄時使用滑鼠游標位置。"
 
 msgid "Surprised"
 msgstr "驚訝"

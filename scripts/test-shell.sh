@@ -16,7 +16,7 @@ for task_language in ${SUPER_V_TEST_LANGUAGES:-en zh_CN zh_TW ja es fr ko}; do
         export LANGUAGE="$task_language" LC_ALL=en_US.UTF-8
         printf 'Language: %s\n' "$task_language"
         timeout 60s dbus-run-session -- gnome-shell --headless --wayland --no-x11 \
-            --virtual-monitor=1280x960 --mode=user --automation-script="$task_base/tests/shell.test.js" \
+            --virtual-monitor="${SUPER_V_TEST_MONITOR:-1280x960}" --mode=user --automation-script="$task_base/tests/shell.test.js" \
             2>&1 | tee "$task_session/shell.log"
         rg 'SHELL CHECKS COMPLETE' "$task_session/shell.log"
     )

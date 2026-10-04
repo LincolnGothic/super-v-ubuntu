@@ -12,43 +12,43 @@ GPL-3.0-or-later; Unicode data uses Unicode-3.0.
 [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) ·
 [한국어](docs/i18n/README.ko.md)
 
-**Current release: [v0.1.10](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.10)** ·
-[Download installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.10/super-v-ubuntu_0.1.10_all.deb) ·
+**Current release: [v0.1.11](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.11)** ·
+[Download installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.11/super-v-ubuntu_0.1.11_all.deb) ·
 [First installation](#install-the-debian-package) · [Upgrade](#upgrade-from-an-older-version) ·
-[Feature guide](#use-v0110) · [Troubleshooting](#troubleshooting)
+[Feature guide](#use-v0111) · [Troubleshooting](#troubleshooting)
 
 **Release status:** automated logic, package, and isolated GNOME Wayland checks
 are available. Image capture, native screenshot capture, and GTK image paste
 are covered by the isolated tests. Full application and desktop acceptance is
-tracked in [testing](docs/testing.md). See [v0.1.10 validation](docs/verification-v0.1.10.md).
+tracked in [testing](docs/testing.md). See [v0.1.11 validation](docs/verification-v0.1.11.md).
 
 ## Platforms and downloads
 
 | Desktop / Wayland session | x86-64 and ARM64 installer |
 | --- | --- |
-| Ubuntu 24.04 LTS / GNOME 46 | [Ubuntu 24.04 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.10/super-v-ubuntu_0.1.10_ubuntu24.04_all.deb) |
-| Ubuntu 26.04 LTS / GNOME 50 | [Ubuntu 26.04 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.10/super-v-ubuntu_0.1.10_ubuntu26.04_all.deb) |
-| Debian 13 / GNOME 48 | [Debian 13 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.10/super-v-ubuntu_0.1.10_debian13_all.deb) |
+| Ubuntu 24.04 LTS / GNOME 46 | [Ubuntu 24.04 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.11/super-v-ubuntu_0.1.11_ubuntu24.04_all.deb) |
+| Ubuntu 26.04 LTS / GNOME 50 | [Ubuntu 26.04 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.11/super-v-ubuntu_0.1.11_ubuntu26.04_all.deb) |
+| Debian 13 / GNOME 48 | [Debian 13 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.11/super-v-ubuntu_0.1.11_debian13_all.deb) |
 
 Choose your distribution's package. Each installer is marked **Architecture: all**
 because the extension uses JavaScript, translations, and schemas; it has no compiled
 CPU-specific binary. The same installer works on **amd64 (x86-64)** and **arm64
 (AArch64)** and uses the distribution's native GJS, GTK, and Tesseract packages.
 CI builds and runs the native Wayland tests separately on all six distribution/CPU
-combinations. An [all-target installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.10/super-v-ubuntu_0.1.10_all.deb)
+combinations. An [all-target installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.11/super-v-ubuntu_0.1.11_all.deb)
 is also available; it allows GNOME 46, 48, or 50. Distribution installers restrict
 the GNOME dependency to their tested major version.
 
 Check `dpkg --print-architecture` and `gnome-shell --version` before installation.
 GNOME 47, 49, 51+, X11, and non-GNOME desktops are not supported. API inspection
 and isolated runtime results are recorded in [the API audit](docs/api-audit.md)
-and [v0.1.10 verification](docs/verification-v0.1.10.md). Interactive desktop acceptance
+and [v0.1.11 verification](docs/verification-v0.1.11.md). Interactive desktop acceptance
 remains distinct from these automated checks. No Electron, background daemon, or
 `xdotool` is needed.
 
-v0.1.10 fixes pinned-image toolbar clicks and releases interrupted drag input. Zoom, opacity, Copy and Close work with mouse clicks, and Super+Shift+S can capture again while a reference stays pinned.
+v0.1.11 keeps the popup within the usable screen, places it near the last click in the focused app, and adds title-bar dragging. Reopening and switching tabs recalculate the final position after layout.
 
-## Use v0.1.10
+## Use v0.1.11
 
 Open **Super+V**, then click the gear button in the header to open Settings.
 
@@ -123,12 +123,12 @@ clipboard items and bundled emoji. Full desktop acceptance is tracked in
 
 Already using Super V? Follow [Upgrade from an older version](#upgrade-from-an-older-version).
 
-Download [`super-v-ubuntu_0.1.10_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.10/super-v-ubuntu_0.1.10_all.deb)
-from [release v0.1.10](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.10),
+Download [`super-v-ubuntu_0.1.11_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.11/super-v-ubuntu_0.1.11_all.deb)
+from [release v0.1.11](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.11),
 then open a terminal in the folder containing the downloaded file and run:
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.10_all.deb
+sudo apt install ./super-v-ubuntu_0.1.11_all.deb
 ```
 
 **Save your work, log out, and log back in** so GNOME discovers the system
@@ -147,7 +147,7 @@ It replaces any custom notification shortcut. To restore GNOME's defaults,
 run `gsettings reset org.gnome.shell.keybindings toggle-message-tray` after
 disabling this extension.
 
-Press **Super+V**; the header should show **Super V 0.1.10**. Capture begins after
+Press **Super+V**; the header should show **Super V 0.1.11**. Capture begins after
 extension initialization, with a default
 100-entry limit and persistent history. Change preferences to pause capture,
 disable persistence or automatic paste, and choose another shortcut.
@@ -156,17 +156,17 @@ Enabling this extension grants it access to clipboard text and images; read
 
 ## Upgrade from an older version
 
-1. Download the [v0.1.10 installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.10/super-v-ubuntu_0.1.10_all.deb).
+1. Download the [v0.1.11 installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.11/super-v-ubuntu_0.1.11_all.deb).
 2. Open a terminal in the download's folder and run the command below. Installing
    it over the previous package upgrades Super V; no uninstall is needed.
 
    ```sh
-   sudo apt install ./super-v-ubuntu_0.1.10_all.deb
+   sudo apt install ./super-v-ubuntu_0.1.11_all.deb
    ```
 
 3. **Save your work, log out, and log back in.** On Wayland, GNOME keeps the
    extension's previous code loaded until you start a new session.
-4. Press **Super+V** and check that the header shows **Super V 0.1.10**. Your
+4. Press **Super+V** and check that the header shows **Super V 0.1.11**. Your
    language and shortcut settings remain. Saved text history, pins, and emoji
    recents migrate; history configured to clear at logout is erased as requested.
 
@@ -178,8 +178,8 @@ dpkg-query -W super-v-ubuntu
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-The package should report **0.1.10**; the extension's **Version** should also
-report **0.1.10** (the internal extension number is 11). If the package is new but
+The package should report **0.1.11**; the extension's **Version** should also
+report **0.1.11** (the internal extension number is 11). If the package is new but
 GNOME still reports an old version, log out/in before reinstalling.
 
 The extension's **Path** should be
@@ -217,13 +217,19 @@ category labels. The hand button opens a skin-tone menu.
 
 ## Position and dismissal
 
-Click the input field you want to use, then press Super+V. By default the panel
-opens near the mouse pointer and stays inside that monitor's work area. In
-Settings, **Picker position → Center of screen** restores centered placement.
-The shortcut remains the trigger; clicking an input field alone does not open
-the panel. Pointer placement is approximate: GNOME does not expose a universal
-text-caret position across application toolkits. Clicking anywhere outside
-the panel closes it without pasting; Escape and Super+V also close it.
+Click the input field you want to use, then press Super+V. The default
+**Picker position → Near last click** uses the last primary click in the focused
+application, even after the mouse moves away. Moving that window preserves the
+relative point; resizing it or switching to an application without a recorded
+click falls back to the mouse pointer. Only one window and point are remembered
+in memory; no input text or keystrokes are recorded for positioning.
+
+The popup measures its final layout and reduces the scrollable body to fit the
+monitor's usable work area. Drag the title bar to move it; dragging stops at the
+screen edges. **Picker position → Center of screen** centers it in the usable
+area. Reopening resets manual placement. This is approximate input positioning,
+not exact text-caret tracking. Clicking outside closes without pasting; Escape
+and Super+V also close it.
 
 ## Clipboard
 
@@ -450,7 +456,7 @@ sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 gettext
     gir1.2-gtk-4.0 gir1.2-adw-1 gir1.2-gdkpixbuf-2.0 lintian git gh
 make test
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.10_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.11_all.deb
 ```
 
 No npm dependencies or runtime downloads are required. Debian's build invokes

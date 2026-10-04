@@ -301,8 +301,8 @@ msgstr "모자이크 타일 크기"
 msgid "Move image"
 msgstr "이미지 이동"
 
-msgid "Near mouse pointer"
-msgstr "마우스 포인터 근처"
+msgid "Near last click"
+msgstr "마지막 클릭 위치 근처"
 
 msgid "Next categories"
 msgstr "다음 카테고리"
@@ -491,8 +491,8 @@ msgstr "선 굵기 / 글자 크기"
 msgid "Super V"
 msgstr "Super V"
 
-msgid "Super+V opens near the mouse pointer, or in the center of the focused screen."
-msgstr "Super+V를 누르면 마우스 포인터 근처 또는 활성 화면 중앙에 열립니다."
+msgid "Opens near the last click in the focused app, with the mouse pointer as a fallback."
+msgstr "활성 앱에서 마지막으로 클릭한 위치 근처에 열립니다. 기록이 없으면 마우스 포인터 위치를 사용합니다."
 
 msgid "Surprised"
 msgstr "놀람"

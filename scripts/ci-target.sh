@@ -20,3 +20,5 @@ fi
 make translations
 glib-compile-schemas --strict extension/schemas
 ./scripts/test-shell.sh | tee "shell-${task_target}-${task_arch}.log"
+SUPER_V_TEST_LANGUAGES=en SUPER_V_TEST_PLACEMENT=1 SUPER_V_TEST_MONITOR=1280x720 \
+    ./scripts/test-shell.sh | tee "shell-placement-${task_target}-${task_arch}.log"

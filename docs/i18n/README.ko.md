@@ -2,7 +2,7 @@
 
 [English](../../README.md) · [简体中文](README.zh-CN.md) · [繁體中文](README.zh-TW.md) · [日本語](README.ja.md) · [Español](README.es.md) · [Français](README.fr.md) · [한국어](README.ko.md)
 
-v0.1.10은 화면에 고정한 이미지의 도구 모음이 반응하지 않는 문제를 수정합니다. 확대, 축소, 불투명도, 복사, 닫기 버튼을 클릭할 수 있으며 이미지를 고정한 상태에서도 Super+Shift+S로 새 스크린샷을 찍을 수 있습니다. 이미지나 도구 모음의 빈 공간을 드래그하여 이동하세요. 드래그 중 Escape를 누르면 이미지를 닫고 입력을 해제합니다.
+v0.1.11은 Super+V 패널이 화면 밖으로 벗어나거나 다시 열 때 이전 위치에 남는 문제를 수정합니다. 활성 앱에서 마지막으로 클릭한 위치 근처에 열리므로 마우스를 옮겨도 입력란 근처에 표시됩니다. 유효한 클릭 기록이 없으면 현재 포인터 위치를 사용합니다. 화면의 사용 가능한 영역에 맞게 크기가 조정되며 제목 표시줄을 드래그하여 이동할 수 있습니다.
 
 v0.1.9에서 «텍스트»를 선택하면 이미지 위에 커서가 있는 입력 상자가 나타납니다. 다른 위치를 클릭하여 이동하고 Enter로 완료하세요. «밝은 모자이크»는 자유롭게 그릴 수 있으며 브러시 굵기와 타일 크기를 조절합니다. 흰색과 밝은 회색의 불투명한 사각형으로 픽셀을 덮습니다. «흑백 필터»는 실행 취소 가능한 별도 기능입니다. Super+Shift+S와 카메라 버튼은 이전 선택 테두리 없이 새 십자 커서만 표시합니다. 드래그 후 놓으면 캡처하고 Escape로 취소합니다. 이미지는 클립보드와 선택적 기록에 들어가며 «이미지 저장»에서 파일 위치를 선택합니다. Print Screen은 기존 GNOME 캡처 화면을 유지합니다.
 
@@ -16,10 +16,10 @@ Ubuntu 24.04 / GNOME 46 · Ubuntu 26.04 / GNOME 50 · Debian 13 / GNOME 48 · Wa
 
 ## 처음 설치
 
-[v0.1.10 패키지](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.10/super-v-ubuntu_0.1.10_all.deb)를 다운로드하고 파일이 있는 폴더에서 터미널을 여세요.
+[v0.1.11 패키지](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.11/super-v-ubuntu_0.1.11_all.deb)를 다운로드하고 파일이 있는 폴더에서 터미널을 여세요.
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.10_all.deb
+sudo apt install ./super-v-ubuntu_0.1.11_all.deb
 ```
 
 설치 후 **작업을 저장하고 로그아웃한 다음 다시 로그인**하세요. 다음 명령은 일반 사용자로 실행합니다(sudo 사용 안 함). 첫 번째 명령은 알림 단축키를 Super+M으로 설정하여 Super+V를 사용할 수 있게 합니다. 기존 사용자 지정 알림 단축키는 변경됩니다.
@@ -30,11 +30,11 @@ gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-**Super+V**를 누르면 제목에 **Super V 0.1.10**이 표시되어야 합니다.
+**Super+V**를 누르면 제목에 **Super V 0.1.11**이 표시되어야 합니다.
 
-## v0.1.10으로 업데이트
+## v0.1.11으로 업데이트
 
-위 패키지를 다운로드하고 해당 폴더에서 같은 apt 명령을 실행하세요. 이전 패키지를 덮어써서 업데이트하므로 먼저 제거할 필요가 없습니다. **작업을 저장하고 로그아웃한 다음 다시 로그인**한 뒤, **Super+V** 제목이 **Super V 0.1.10**인지 확인하세요. 언어와 단축키 설정은 유지되며 저장된 텍스트 기록, 고정 항목 및 최근 이모지가 이전됩니다. 로그아웃 시 삭제하도록 설정한 기록은 해당 설정에 따라 삭제됩니다.
+위 패키지를 다운로드하고 해당 폴더에서 같은 apt 명령을 실행하세요. 이전 패키지를 덮어써서 업데이트하므로 먼저 제거할 필요가 없습니다. **작업을 저장하고 로그아웃한 다음 다시 로그인**한 뒤, **Super+V** 제목이 **Super V 0.1.11**인지 확인하세요. 언어와 단축키 설정은 유지되며 저장된 텍스트 기록, 고정 항목 및 최근 이모지가 이전됩니다. 로그아웃 시 삭제하도록 설정한 기록은 해당 설정에 따라 삭제됩니다.
 
 일반 사용자로 설치된 패키지와 GNOME이 불러온 확장 기능의 버전을 확인하세요.
 
@@ -43,9 +43,9 @@ dpkg-query -W super-v-ubuntu
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-두 버전 모두 **0.1.10**이어야 합니다(확장 기능 내부 번호는 11). 패키지만 새 버전이면 먼저 로그아웃하고 다시 로그인하세요. 시스템 패키지의 Path는 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`입니다. 홈 폴더를 가리키면 해당 UUID 폴더를 백업하고 확장 기능 디렉터리 밖으로 옮긴 후 다시 로그인하세요. Super+V가 반응하지 않으면 위의 enable 명령을 실행하고, 알림을 열면 처음 설치의 알림 단축키 명령을 확인하세요. 설정을 직접 열려면 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`을 실행하세요.
+두 버전 모두 **0.1.11**이어야 합니다(확장 기능 내부 번호는 12). 패키지만 새 버전이면 먼저 로그아웃하고 다시 로그인하세요. 시스템 패키지의 Path는 `/usr/share/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local`입니다. 홈 폴더를 가리키면 해당 UUID 폴더를 백업하고 확장 기능 디렉터리 밖으로 옮긴 후 다시 로그인하세요. Super+V가 반응하지 않으면 위의 enable 명령을 실행하고, 알림을 열면 처음 설치의 알림 단축키 명령을 확인하세요. 설정을 직접 열려면 `gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local`을 실행하세요.
 
-## v0.1.10 설정 안내
+## v0.1.11 설정 안내
 
 Super+V를 열고 제목 옆의 톱니바퀴 버튼을 눌러 설정을 여세요.
 
