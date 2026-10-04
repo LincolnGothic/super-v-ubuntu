@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Expand the About description with the Super+Shift+S screenshot shortcut, editing, annotations, screen pins and local OCR.
+
 ## 0.1.12 — 2026-10-04
 
 - Fix Super+V opening a fully transparent clipboard popup when layout is not ready, especially when reopening at the same size.

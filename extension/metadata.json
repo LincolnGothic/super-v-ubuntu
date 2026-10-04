@@ -1,7 +1,7 @@
 {
   "uuid": "super-v-ubuntu@super-v-ubuntu.local",
   "name": "Super V Ubuntu",
-  "description": "A Windows-style Super+V picker for Ubuntu GNOME, with text/image clipboard history, screenshots, emoji, kaomoji, symbols, and local GIF favorites.",
+  "description": "A Windows-style Super+V picker for Ubuntu GNOME, with text and image clipboard history, emoji, kaomoji, symbols, and local GIF favorites. Capture screenshots with Super+Shift+S, edit and annotate them, pin images on screen, and extract text with local OCR.",
   "shell-version": [
     "46",
     "48",
