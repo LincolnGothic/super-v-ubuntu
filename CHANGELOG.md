@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.1.12 — 2026-10-04
 
 - Fix Super+V opening a fully transparent clipboard popup when layout is not ready, especially when reopening at the same size.
 - Position and reveal the popup after painting, retry after layout changes, and cancel pending callbacks when it closes.

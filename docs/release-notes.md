@@ -1,27 +1,25 @@
-Super V Ubuntu 0.1.11 fixes clipped and misplaced Super+V popups.
+Super V Ubuntu 0.1.12 fixes Super+V opening an invisible clipboard popup.
 
-The popup now measures its full layout, fits the scrollable results to the usable
-monitor area, and positions itself after layout completes. Reopening or changing
-tabs no longer reuses an old allocation that can push the title off-screen.
+The shortcut could open the clipboard panel while it stayed fully transparent,
+especially when reopening with unchanged contents. Its positioning callback ran
+before Clutter finished layout, and an unchanged allocation could leave no later
+notification to reveal the panel.
 
-- The default **Near last click** position remembers the last primary click in
-  the focused application, so moving the pointer away from its input field does
-  not move the popup to an unrelated location.
-- Moving that window preserves the relative point. Resizing it, switching to a
-  window without a recorded click, or having no click uses the mouse pointer.
-- Drag the title bar to reposition the popup. Its bounds stay inside the usable
-  screen, and header buttons retain their normal click behavior.
-- **Center of screen** remains available in Settings and uses the work area.
-- Position tracking keeps just one window and point in memory. It does not save
-  input text or keystrokes and is approximate rather than exact caret tracking.
+The popup now waits until painting completes before measuring, positioning, and
+becoming visible. Layout changes retry on the next frame, and closing or destroying
+the popup cancels pending callbacks. Work-area fitting, placement near the last
+click, title-bar dragging, clipboard image paste, screenshots, the editor, screen
+pins, and OCR remain available.
 
-Native Wayland regressions cover 720p work-area fitting, reopening all five tabs
-at screen edges, larger text, title dragging, real header-button clicks, and
-application click anchoring after moving the pointer away. Publication requires
-Ubuntu 24.04/GNOME 46, Ubuntu 26.04/GNOME 50, and Debian 13/GNOME 48 on x86-64 and
-ARM64. All seven interface languages are included.
+Regression checks verify a visible initial clipboard panel and three repeated
+opens with unchanged contents. Native Wayland checks also cover screenshots,
+image paste, screen pins, larger text, dragging, and popup placement. Publication
+requires all six Ubuntu 24.04/GNOME 46, Ubuntu 26.04/GNOME 50, and Debian 13/GNOME 48
+jobs across x86-64 and ARM64. All seven interface languages are included.
 
-Install the package for your distribution with `sudo apt install ./PACKAGE.deb`.
-Then save your work, log out and back in. No uninstall is needed. GNOME keeps
-previous JavaScript modules loaded until a new session starts. The header should
-show **Super V 0.1.11** (extension version 12).
+Download the package for your distribution and install it with
+`sudo apt install ./PACKAGE.deb`. No uninstall is needed. Then save your work,
+log out and back in so GNOME loads the new JavaScript modules. The header should
+show **Super V 0.1.12** (extension version 13). A user-local copy of the same
+extension UUID takes precedence over the system package; see the upgrade guide
+if GNOME still reports an older version.

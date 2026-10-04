@@ -86,6 +86,15 @@ CI exercises actual native pointer input on every supported version and CPU.
 The extension cancels an active selector through its existing GrabHelper, without
 patching the shared screenshot UI or changing Print Screen behavior.
 
+## v0.1.12 popup visibility
+
+The popup uses Clutter Stage's `after-paint` signal to apply placement after
+allocation finishes. A single pending signal handler is disconnected before it
+runs; missing or resized layout schedules the next frame, and close/destroy
+cancels the handler. Unchanged translation and opacity values are not written.
+The fix-only CI matrix exercised this path on GNOME 46, 48, and 50, on both
+amd64 and arm64, including seven-language and 720p placement sessions.
+
 ## v0.1.11 popup placement
 
 GNOME 50.1's [native event dispatcher](https://github.com/GNOME/mutter/blob/50.1/src/core/events.c)
