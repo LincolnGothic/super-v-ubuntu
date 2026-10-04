@@ -268,11 +268,23 @@ export async function run() {
         // single category row and keep its focused final button reachable.
         const context = St.ThemeContext.get_for_stage(global.stage);
         const originalFont = context.get_font();
+        const fontAllocation = new Promise(resolve => {
+            const signal = popup._panel.connect('notify::allocation', () => {
+                popup._panel.disconnect(signal);
+                resolve();
+            });
+        });
         context.set_font(Pango.FontDescription.from_string('Sans 16'));
         popup._panel.set_style('width: 270px;');
         popup._emojiColumns = 4;
         popup.refresh();
-        await Scripting.sleep(150);
+        await fontAllocation;
+        await waitFor(() => {
+            const bounds = rectangle(popup._panel);
+            return bounds.x >= area.x && bounds.y >= area.y &&
+                bounds.x + bounds.width <= area.x + area.width + 1 &&
+                bounds.y + bounds.height <= area.y + area.height + 1 && popup._panel.opacity === 255;
+        });
         const largeTextPanel = rectangle(popup._panel);
         check('larger text still fits the full panel in the work area',
             largeTextPanel.x >= area.x && largeTextPanel.y >= area.y &&
@@ -317,7 +329,12 @@ export async function run() {
         check('GIF empty state offers settings', popup._manageGifs.visible && popup._rows.length === 0);
         settings.set_string('popup-position', 'center');
         popup.positionPanel();
-        await Scripting.sleep(100);
+        await waitFor(() => {
+            const bounds = rectangle(popup._panel);
+            return popup._panel.opacity === 255 &&
+                Math.abs(bounds.x + bounds.width / 2 - area.x - area.width / 2) < 2 &&
+                Math.abs(bounds.y + bounds.height / 2 - area.y - area.height / 2) < 2;
+        });
         const center = rectangle(popup._panel);
         check('center setting uses the usable work area',
             Math.abs(center.x + center.width / 2 - area.x - area.width / 2) < 2 &&
@@ -581,8 +598,10 @@ export async function run() {
             await waitFor(() => {
                 try { return new TextDecoder().decode(processState.load_contents(null)[1]).includes(') Z'); }
                 catch (error) {
-                    // The child can exit between an existence check and read.
+                    // procfs can return ENOENT or ESRCH while a task exits.
                     if (error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.NOT_FOUND)) return true;
+                    if (error.matches(Gio.IOErrorEnum, Gio.IOErrorEnum.FAILED))
+                        return !processState.query_exists(null);
                     throw error;
                 }
             });

@@ -41,12 +41,24 @@ input grab, text collection, or persistent positioning data is added.
   checks, screenshot capture, screen pins, OCR, shutdown clearing, and session
   persistence checks. Larger inherited text retains the full panel bounds; real
   Settings and Screenshot clicks activate without beginning a title drag.
-- `make test` passes 197 Node tests, 35 GJS checks, 17 Gettext/regional checks,
+- `make test` passes 198 Node tests, 35 GJS checks, 17 Gettext/regional checks,
   lint, schema, generated data, and translation completeness.
 
 Local universal and Ubuntu 26.04 packages pass file, translation, ownership,
 version, architecture, and dependency audits. Local lintian is unavailable; CI
 requires it for both universal and distribution packages.
+
+The first pull-request matrix passed all six targets, but the merged release run
+caught a larger-text timing failure on Ubuntu 24.04 ARM64. Fitting now waits for
+the changed panel allocation instead of adding another BEFORE_REDRAW callback
+while the old size is still current. The native larger-text check waits for full
+bounds to settle rather than assuming a fixed 150ms layout interval. Center-mode
+checks also wait for the final placement after a tab changes size. A Node
+regression verifies that the stale size is not repeatedly fitted or shown.
+The same release run exposed a procfs race in the OCR cancellation fixture:
+Linux can report ESRCH while its process disappears. That check now confirms
+the process has vanished or retries while it is still present; OCR runtime code
+is unchanged.
 
 CI gates merge/publication on all six distribution/CPU combinations. Every job
 runs all seven interface languages, an additional English 1280×720 placement
