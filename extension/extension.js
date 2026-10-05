@@ -379,75 +379,81 @@ export default class SuperVExtension extends Extension {
 
     _cancelScreenshot() {
         this._captureSerial = (this._captureSerial ?? 0) + 1;
+        this._areaCapture?.hide();
+        this._areaCapture?.set_content(null);
         this._areaCapture?._grabHelper.ungrab();
         this._areaCapture = null;
         if (this._screenshotSource) GLib.source_remove(this._screenshotSource);
         this._screenshotSource = 0;
     }
 
-    takeScreenshot() {
+    async takeScreenshot() {
         if (!this._active || !this._ready || Main.sessionMode.isLocked || Main.sessionMode.isGreeter)
             return;
         this._cancelScreenshot();
-        this.screenPins?.releaseInput();
         this._selectionEpoch++;
         this.popup.close();
         this.pasteBackend.cancel();
-        this.editor.close();
         this.pendingRestore = null;
         const serial = this._captureSerial;
         const epoch = this._epoch;
         const current = () => this._active && epoch === this._epoch && serial === this._captureSerial &&
             !Main.sessionMode.isLocked && !Main.sessionMode.isGreeter;
-        // Each native selector starts with only a crosshair. It has no previous
-        // rectangle, and disappears before the selected pixels are captured.
-        this._screenshotSource = GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-            this._screenshotSource = 0;
-            if (!current()) return GLib.SOURCE_REMOVE;
-            const selector = this._areaCapture = new SelectArea();
-            (async () => {
-                let stream = null;
-                try {
-                    let area;
-                    try { area = await selector.selectAsync(); }
-                    catch { return; } // Escape and loss of the modal grab cancel selection.
-                    if (!area || !current()) return;
-                    if (area.width > MAX_IMAGE_DIMENSION || area.height > MAX_IMAGE_DIMENSION ||
-                        area.width * area.height > MAX_IMAGE_PIXELS) {
-                        Main.notify('Super V', _('Screenshot is too large. Select a smaller area.'));
-                        return;
-                    }
-                    // SelectArea schedules its actor destruction on the next idle.
-                    await new Promise(resolve => GLib.idle_add(GLib.PRIORITY_DEFAULT_IDLE, () => {
-                        resolve(); return GLib.SOURCE_REMOVE;
-                    }));
-                    if (!current()) return;
-                    stream = Gio.MemoryOutputStream.new_resizable();
-                    await new Shell.Screenshot().screenshot_area(area.x, area.y, area.width, area.height, stream);
-                    stream.close(null);
-                    if (!current()) return;
-                    if (stream.get_data_size() > MAX_IMAGE_BYTES) {
-                        Main.notify('Super V', _('Screenshot is too large. Select a smaller area.'));
-                        return;
-                    }
-                    const bytes = stream.steal_as_bytes().get_data();
-                    this.clipboard.writeImage(bytes, 'image/png');
-                    if (this.settings.get_boolean('history-enabled')) {
-                        const image = this.images.add(bytes, 'image/png');
-                        this.history.addImage(image); this.changed();
-                    }
-                    if (this.settings.get_boolean('edit-after-screenshot'))
-                        this._openEditor(bytes, 'image/png');
-                } catch (error) {
-                    if (current() && !error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
-                        Main.notify('Super V', _('Could not open the screenshot tool. Try Print Screen.'));
-                } finally {
-                    if (stream && !stream.is_closed()) stream.close(null);
-                    if (this._areaCapture === selector) this._areaCapture = null;
-                }
-            })();
-            return GLib.SOURCE_REMOVE;
-        });
+        let selector = null;
+        let stream = null;
+        try {
+            // Capture immediately, before a modal grab dismisses notifications or
+            // menus. Selection and export both use these same frozen pixels.
+            const [content, scale] = await new Shell.Screenshot().screenshot_stage_to_content();
+            if (!current()) return;
+            this.screenPins?.releaseInput();
+            this.editor.close();
+            selector = this._areaCapture = new SelectArea();
+            selector.set_content(content);
+            let area;
+            try { area = await selector.selectAsync(); }
+            catch { area = null; } // Escape and loss of the modal grab cancel selection.
+            selector.hide();
+            selector.set_content(null);
+            if (this._areaCapture === selector) this._areaCapture = null;
+            if (!area || !current()) return;
+            const [x, y, width, height] = [area.x, area.y, area.width, area.height]
+                .map(value => Math.round(value * scale));
+            const texture = content.get_texture();
+            if (width < 1 || height < 1 || x < 0 || y < 0 ||
+                x + width > texture.get_width() || y + height > texture.get_height())
+                return;
+            if (width > MAX_IMAGE_DIMENSION || height > MAX_IMAGE_DIMENSION ||
+                width * height > MAX_IMAGE_PIXELS) {
+                Main.notify('Super V', _('Screenshot is too large. Select a smaller area.'));
+                return;
+            }
+            stream = Gio.MemoryOutputStream.new_resizable();
+            // Coordinates above are texture pixels; scale=1 preserves native
+            // resolution, including on HiDPI and mixed-scale desktops.
+            await Shell.Screenshot.composite_to_stream(texture, x, y, width, height,
+                1, null, 0, 0, 1, stream);
+            stream.close(null);
+            if (!current()) return;
+            if (stream.get_data_size() > MAX_IMAGE_BYTES) {
+                Main.notify('Super V', _('Screenshot is too large. Select a smaller area.'));
+                return;
+            }
+            const bytes = stream.steal_as_bytes().get_data();
+            this.clipboard.writeImage(bytes, 'image/png');
+            if (this.settings.get_boolean('history-enabled')) {
+                const image = this.images.add(bytes, 'image/png');
+                this.history.addImage(image); this.changed();
+            }
+            if (this.settings.get_boolean('edit-after-screenshot'))
+                this._openEditor(bytes, 'image/png');
+        } catch (error) {
+            if (current() && !error.matches?.(Gio.IOErrorEnum, Gio.IOErrorEnum.CANCELLED))
+                Main.notify('Super V', _('Could not open the screenshot tool. Try Print Screen.'));
+        } finally {
+            if (stream && !stream.is_closed()) stream.close(null);
+            if (this._areaCapture === selector) this._areaCapture = null;
+        }
     }
 
     _shouldPersist() {

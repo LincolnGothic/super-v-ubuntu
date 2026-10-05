@@ -9,7 +9,7 @@ Users explicitly enable it; package scripts never change user settings.
 
 `core/history.js`, `core/emoji.js`, `core/settings.js`, and `core/paste.js` are
 platform-independent modules exercised under Node and GJS. `clipboard.js`
-listens to Mutter's `Meta.Selection::owner-changed`, transfers text and PNG/JPEG images with
+listens to Mutter's `Meta.Selection::owner-changed`, transfers text and supported clipboard images with
 byte bounds, rejects advertised password-manager MIME types, and prevents
 stale asynchronous reads from entering history. Focus-based exclusions are
 best effort, not reliable clipboard-origin identification.
@@ -29,7 +29,7 @@ Deletion and persistence changes are ordered after pending image writes.
 The clear-on-shutdown preference forces memory-only storage, avoiding reliance
 on shutdown callbacks; no history can be restored after the session ends.
 The Screenshot button and second keybinding release the picker’s modal grab
-before opening Main.screenshotUI. The normal clipboard monitor captures its PNG.
+before freezing the desktop and opening a fresh SelectArea over that snapshot.
 
 
 `editor-bridge.js` launches one temporary GJS/GTK4 process, sending validated
@@ -117,9 +117,19 @@ size. The renderer uses a small repeating opaque gray/white Cairo pattern.
 Grayscale is document state with undo/redo; a weak cache holds the converted source
 pixbuf, while annotation colors remain independent.
 
-Super V creates a new exported GNOME SelectArea for every capture. Its rectangle
-is hidden until a drag; after selection finishes and the actor is removed, a
-Shell Screenshot writes the area to a memory stream. Epoch/serial checks invalidate
-pending selection/capture on clear, lock, disable or another capture. The result
-is bounded and written to the clipboard/history, then optionally opened in the
-editor. No extra raw screenshot file is saved by this area-capture path.
+Super V synchronously requests a stage snapshot as capture starts, before taking
+an input grab. A new exported GNOME SelectArea displays that content and starts
+with a hidden rectangle. After selection, composite_to_stream crops the retained
+texture using scaled physical coordinates, preserving native resolution. The
+live desktop is not captured again. Epoch/serial checks invalidate pending
+snapshot/selection/export on clear, lock, disable or another capture. Selection
+releases its content before export; no raw screenshot file is saved. The bounded
+PNG goes to the clipboard/history and optionally the editor.
+
+`clipboard-image.js` preserves validated PNG/JPEG bytes regardless of MIME alias
+or mislabeling. Bounded BMP/WebP data is decoded with dimensions checked at
+size-prepared and exported to bounded PNG. Failed transfers try another offered
+format. URI-list/GNOME file offers can import one explicit local image file via
+asynchronous, cancellable reads, regular-file checks, a timeout and a byte cap.
+Remote URIs, multiple files and non-image extensions are rejected. Password MIME
+hints, pause/exclusions, generation checks and lock cleanup apply to all paths.

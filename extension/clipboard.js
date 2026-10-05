@@ -6,6 +6,7 @@ import St from 'gi://St';
 import {MAX_TEXT_BYTES, matchesApplication} from './core/settings.js';
 import {validateGif} from './core/gif.js';
 import {imageInfo, MAX_IMAGE_BYTES} from './core/image.js';
+import {imageMimes, fileMimes, normalizeClipboardImage, localImageFile, readImageFile} from './clipboard-image.js';
 
 const selectionType = Meta.SelectionType.SELECTION_CLIPBOARD;
 const sensitive = ['x-kde-passwordmanagerhint', 'application/x-keepassxc',
@@ -35,11 +36,17 @@ export class ClipboardMonitor {
             if (this._suspended || !this.settings.get_boolean('history-enabled') ||
                 matchesApplication(this.identifiers(), this.settings.get_strv('excluded-apps')))
                 return;
-            const image = (this.selection.get_mimetypes(selectionType) ?? [])
-                .some(mime => ['image/png', 'image/jpeg'].includes(mime));
-            (image ? this.readImage() : this.readText()).then(value => {
+            const hasImage = (this.selection.get_mimetypes(selectionType) ?? [])
+                .some(mime => [...imageMimes, ...fileMimes].includes(mime));
+            const read = async () => {
+                const image = await this.readImage();
+                if (image || generation !== this.generation) return image;
+                return this.readText();
+            };
+            (hasImage ? read() : this.readText()).then(value => {
                 if (!this._active || generation !== this.generation || value === null)
                     return;
+                const image = typeof value !== 'string';
                 const key = image ? this._imageKey(value.bytes) : value;
                 const now = GLib.get_monotonic_time();
                 for (const [value, expiry] of this._ownWrites) {
@@ -90,15 +97,32 @@ export class ClipboardMonitor {
         const mimes = this.selection.get_mimetypes(selectionType) ?? [];
         if (mimes.some(x => sensitive.some(hint => x.toLowerCase().includes(hint))))
             return null;
-        const mime = ['image/png', 'image/jpeg'].find(value => mimes.includes(value));
-        if (!mime)
-            return null;
-        const bytes = await this._read(mime, MAX_IMAGE_BYTES);
+        const generation = this.generation;
+        for (const mime of imageMimes.filter(value => mimes.includes(value))) {
+            const bytes = await this._read(mime, MAX_IMAGE_BYTES);
+            if (!this._active || generation !== this.generation) return null;
+            try { return normalizeClipboardImage(bytes, mime); } catch {}
+        }
+        const mime = fileMimes.find(value => mimes.includes(value));
+        if (!mime) return null;
+        const bytes = await this._read(mime, MAX_TEXT_BYTES);
+        if (!bytes || !this._active || generation !== this.generation) return null;
+        const cancellable = new Gio.Cancellable();
+        this._reads.add(cancellable);
+        let timedOut = false;
+        const timeout = GLib.timeout_add(GLib.PRIORITY_DEFAULT, 3000, () => {
+            timedOut = true; cancellable.cancel(); return GLib.SOURCE_REMOVE;
+        });
         try {
-            imageInfo(bytes, mime);
-            return {bytes, mime};
+            const file = localImageFile(bytes, mime);
+            if (!file) return null;
+            const image = await readImageFile(file, cancellable);
+            return this._active && generation === this.generation ? image : null;
         } catch {
             return null;
+        } finally {
+            if (!timedOut) GLib.source_remove(timeout);
+            this._reads.delete(cancellable);
         }
     }
 

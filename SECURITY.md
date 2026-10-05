@@ -104,7 +104,18 @@ a public issue. Private security reporting must be enabled by the owner after
 publication; its availability has not been verified in this local checkout.
 Include version, GNOME version, reproduction steps and redacted logs.
 
-Super V’s fresh crosshair selection captures only after its overlay disappears.
+Super V freezes the desktop before its fresh crosshair selector takes an input
+grab. The preview and export use that same snapshot, including visible transient
+notifications and menus.
 It writes the PNG to the clipboard and optional bounded image history, without
 an extra raw screenshot file. Cancellation, clear, lock and disable invalidate
 pending captures before they can copy, store or open an editor.
+
+Clipboard image import also recognizes MIME aliases and mislabeled PNG/JPEG data.
+Supported BMP/WebP input is decoded only with bounded dimensions and converted
+to bounded PNG. URI-list or GNOME file clipboard offers may cause one explicitly
+copied local PNG/JPEG/BMP/WebP file to be read into history. File reads reject
+non-regular files and symlinks at the metadata check, have a three-second timeout,
+and cap bytes during transfer. Remote links and file collections are ignored.
+All imports obey history pause, app exclusions, password hints and generation
+cancellation. Reading a copied file does not delete or modify its original.

@@ -55,6 +55,7 @@ function clipboardFixture() {
     return {selection, values, settings, captured, binary, pending, timers, finish,
         event: type => changed?.(selection, type),
         mocks: {'gi://Gio': {default: gio}, 'gi://GLib': {default: glib},
+            'gi://GdkPixbuf': {default: {}},
             'gi://Meta': {default: {SelectionType: {SELECTION_CLIPBOARD: 1}}},
             'gi://St': {default: {Clipboard: {get_default: () => clipboard}, ClipboardType: {CLIPBOARD: 1}}}},
         global: {display: {get_selection: () => selection}},
@@ -195,6 +196,34 @@ test('PNG capture takes precedence over accompanying text and preserves bytes', 
     await settle();
     assert.deepEqual(f.captured, [{bytes: pngBytes, mime: 'image/png'}]);
     m.destroy();
+});
+for (const mime of ['image/x-png', 'image/jpg', 'image/pjpeg']) {
+    test(`clipboard image MIME alias is normalized: ${mime}`, async () => {
+        const f = clipboardFixture(); const m = await monitor(f);
+        f.selection.mimes = [mime]; f.event(1); f.finish(pngBytes);
+        await settle();
+        assert.deepEqual(f.captured, [{bytes: pngBytes, mime: 'image/png'}]);
+        m.destroy();
+    });
+}
+test('clipboard tries JPEG when the advertised PNG transfer is empty', async () => {
+    const f = clipboardFixture(); const m = await monitor(f);
+    f.selection.mimes = ['image/png', 'image/jpeg']; f.event(1);
+    f.finish(new Uint8Array()); await settle();
+    assert.equal(f.pending[0].mime, 'image/jpeg');
+    f.finish(pngBytes); await settle();
+    assert.deepEqual(f.captured, [{bytes: pngBytes, mime: 'image/png'}]); m.destroy();
+});
+test('a failed image read cannot start a text read for a newer clipboard owner', async () => {
+    const f = clipboardFixture(); const m = await monitor(f);
+    f.selection.mimes = ['image/png', 'text/plain']; f.event(1);
+    const old = f.pending[0];
+    f.selection.mimes = ['text/plain']; f.event(1);
+    f.finish(new Uint8Array()); await settle();
+    assert.equal(old.cancellable.cancelled, true);
+    assert.equal(f.pending.length, 1);
+    f.finish('new'); await settle();
+    assert.deepEqual(f.captured, ['new']); m.destroy();
 });
 for (const change of ['new owner', 'paused', 'lock', 'disable', 'excluded app']) {
     test(`image read is discarded after ${change}`, async () => {
@@ -340,7 +369,9 @@ async function controller() {
     const sources = new Map();
     const signals = new Map();
     let signalId = 0;
-    const main = {selectors: [], notify() {}, sessionMode: {isLocked: false, isGreeter: false},
+    const texture = {get_width: () => 16384, get_height: () => 16384};
+    const content = {get_texture: () => texture};
+    const main = {texture, content, selectors: [], notify() {}, sessionMode: {isLocked: false, isGreeter: false},
         screenshotUI: {connect(name, handler) { signals.set(++signalId, {name, handler}); return signalId; },
             disconnect(id) { signals.delete(id); },
             emit(name) { for (const signal of [...signals.values()]) if (signal.name === name) signal.handler(); },
@@ -357,10 +388,17 @@ async function controller() {
             close() { this.closed = true; }, is_closed() { return this.closed; },
             get_data_size: () => pngBytes.length, steal_as_bytes: () => ({get_data: () => pngBytes})})}}},
         'gi://Meta': {default: {}}, 'gi://Shell': {default: {Screenshot: class {
-            async screenshot_area(...args) { main.area = args.slice(0, 4); await main.capturePromise; }
+            async screenshot_stage_to_content() {
+                main.frozen = true; await main.freezePromise; return [content, main.scale ?? 1];
+            }
+            static async composite_to_stream(...args) {
+                main.composite = args; main.area = args.slice(1, 5); await main.capturePromise;
+            }
         }}},
         'resource:///org/gnome/shell/ui/screenshot.js': {SelectArea: class {
             constructor() { main.selectors.push(this); this._grabHelper = {ungrab: () => this.finish(null)}; }
+            set_content(value) { this.content = value; }
+            hide() { this.hidden = true; }
             selectAsync() { main.opened = (main.opened ?? 0) + 1;
                 return new Promise(resolve => { this.finish = resolve; }); }
         }},
@@ -416,22 +454,21 @@ test('image history choice copies original binary data and preserves its paste t
     assert.equal(c.pendingRestore, null);
     assert.equal(c.history.entries[0], entry);
 });
-test('screenshot opens native controls only after the picker closes', async () => {
-    const {c, main, sources} = await controller();
-    let closed = false;
-    c.popup.close = () => { closed = true; };
+test('screenshot freezes pixels after closing the picker and before opening controls', async () => {
+    const {c, main} = await controller();
+    c.popup.close = () => { assert.equal(main.frozen, undefined); };
+    c.screenPins = {releaseInput() { assert.equal(main.frozen, true); }};
     c.takeScreenshot();
-    assert.equal(closed, true);
+    assert.equal(main.frozen, true);
     assert.equal(main.opened, undefined);
-    [...sources.values()][0]();
     await settle();
     assert.equal(main.opened, 1);
+    assert.equal(main.selectors[0].content, main.content);
 });
-test('locking before queued screenshot prevents native controls from opening', async () => {
-    const {c, main, sources} = await controller();
+test('locking while freezing prevents native controls from opening', async () => {
+    const {c, main} = await controller();
     c.takeScreenshot();
     main.sessionMode.isLocked = true;
-    [...sources.values()][0]();
     await settle();
     assert.equal(main.opened, undefined);
 });
@@ -580,7 +617,7 @@ test('unreadable GIF leaves the clipboard and paste target untouched', async () 
 for (const outcome of ['capture', 'cancel', 'disabled setting', 'clear', 'lock']) {
     test(`manual area editor respects ${outcome}`, async () => {
         const {c, main, tick, editors, writes} = await controller();
-        c.takeScreenshot(); tick();
+        c.takeScreenshot(); await settle(); tick();
         if (outcome === 'disabled setting') c.settings.get_boolean = key => key !== 'edit-after-screenshot';
         main.selectors[0].finish(outcome === 'cancel' ? null : {x: 5, y: 7, width: 64, height: 48});
         if (outcome === 'clear') c.clear(true);
@@ -595,7 +632,7 @@ test('clear during native capture prevents clipboard and editor writes', async (
     const {c, main, tick, editors, writes} = await controller();
     let resolve;
     main.capturePromise = new Promise(done => { resolve = done; });
-    c.takeScreenshot(); tick();
+    c.takeScreenshot(); await settle(); tick();
     main.selectors[0].finish({x: 0, y: 0, width: 64, height: 48});
     await settle(); tick(); await settle();
     c.clear(true); resolve(); await settle();
@@ -614,8 +651,8 @@ test('editing a history image opens its original without pasting or replacing it
 
 test('every capture has a new selector and cancelled selection cannot adopt later Print Screen', async () => {
     const {c, main, tick, editors} = await controller();
-    c.takeScreenshot(); tick(); const first = main.selectors[0];
-    c.takeScreenshot(); tick(); const second = main.selectors[1];
+    c.takeScreenshot(); await settle(); tick(); const first = main.selectors[0];
+    c.takeScreenshot(); await settle(); tick(); const second = main.selectors[1];
     assert.notEqual(first, second);
     first.finish({x: 0, y: 0, width: 64, height: 48});
     second.finish(null); await settle(); tick(); await settle();
@@ -624,7 +661,27 @@ test('every capture has a new selector and cancelled selection cannot adopt late
 });
 test('an oversized selection is rejected before allocating its capture', async () => {
     const {c, main, tick, writes} = await controller();
-    c.takeScreenshot(); tick(); main.selectors[0].finish({x: 0, y: 0, width: 8192, height: 8192});
+    c.takeScreenshot(); await settle(); tick(); main.selectors[0].finish({x: 0, y: 0, width: 8192, height: 8192});
     await settle(); tick(); await settle();
     assert.equal(main.area, undefined); assert.equal(writes.length, 0);
+});
+
+test('a changed desktop is cropped from the original frozen texture at native scale', async () => {
+    const {c, main, writes} = await controller();
+    main.scale = 2;
+    c.takeScreenshot(); await settle();
+    const selector = main.selectors[0];
+    main.content = {get_texture() { throw new Error('Live desktop must not be captured'); }};
+    selector.finish({x: 5, y: 7, width: 64, height: 48}); await settle();
+    assert.equal(main.composite[0], main.texture);
+    assert.deepEqual(main.area, [10, 14, 128, 96]);
+    assert.equal(main.composite[5], 1);
+    assert.equal(selector.content, null);
+    assert.equal(writes.length, 1);
+});
+test('clear while a snapshot is pending prevents a frozen selector from appearing', async () => {
+    const {c, main, writes} = await controller();
+    let finish; main.freezePromise = new Promise(resolve => { finish = resolve; });
+    c.takeScreenshot(); c.clear(true); finish(); await settle();
+    assert.equal(main.opened, undefined); assert.equal(writes.length, 0);
 });

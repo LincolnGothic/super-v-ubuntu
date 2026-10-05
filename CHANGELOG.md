@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.13 — 2026-10-04
+
+- Expand the About description with screenshots, annotations, screen pins and local OCR.
+- Freeze the desktop when Super+Shift+S starts, before opening the crosshair selector. Select and export from the same snapshot, preserving transient notifications and menus.
+- Read PNG/JPEG MIME aliases and try another offered image format if the first transfer fails. Convert supported BMP/WebP clipboard data to PNG.
+- Import a single copied local PNG/JPEG/BMP/WebP file from URI-list or GNOME file clipboard offers. Keep existing image limits, password hints, app exclusions and cancellation.
+
 ## 0.1.12 — 2026-10-04
 
 - Fix Super+V opening a fully transparent clipboard popup when layout is not ready, especially when reopening at the same size.

@@ -12,43 +12,46 @@ GPL-3.0-or-later; Unicode data uses Unicode-3.0.
 [Español](docs/i18n/README.es.md) · [Français](docs/i18n/README.fr.md) ·
 [한국어](docs/i18n/README.ko.md)
 
-**Current release: [v0.1.12](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.12)** ·
-[Download installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.12/super-v-ubuntu_0.1.12_all.deb) ·
+**Current release: [v0.1.13](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.13)** ·
+[Download installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.13/super-v-ubuntu_0.1.13_all.deb) ·
 [First installation](#install-the-debian-package) · [Upgrade](#upgrade-from-an-older-version) ·
-[Feature guide](#use-v0111) · [Troubleshooting](#troubleshooting)
+[Feature guide](#use-v0113) · [Troubleshooting](#troubleshooting)
 
 **Release status:** automated logic, package, and isolated GNOME Wayland checks
 are available. Image capture, native screenshot capture, and GTK image paste
 are covered by the isolated tests. Full application and desktop acceptance is
-tracked in [testing](docs/testing.md). See [v0.1.12 validation](docs/verification-v0.1.12.md).
+tracked in [testing](docs/testing.md). See [v0.1.13 validation](docs/verification-v0.1.13.md).
 
 ## Platforms and downloads
 
 | Desktop / Wayland session | x86-64 and ARM64 installer |
 | --- | --- |
-| Ubuntu 24.04 LTS / GNOME 46 | [Ubuntu 24.04 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.12/super-v-ubuntu_0.1.12_ubuntu24.04_all.deb) |
-| Ubuntu 26.04 LTS / GNOME 50 | [Ubuntu 26.04 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.12/super-v-ubuntu_0.1.12_ubuntu26.04_all.deb) |
-| Debian 13 / GNOME 48 | [Debian 13 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.12/super-v-ubuntu_0.1.12_debian13_all.deb) |
+| Ubuntu 24.04 LTS / GNOME 46 | [Ubuntu 24.04 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.13/super-v-ubuntu_0.1.13_ubuntu24.04_all.deb) |
+| Ubuntu 26.04 LTS / GNOME 50 | [Ubuntu 26.04 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.13/super-v-ubuntu_0.1.13_ubuntu26.04_all.deb) |
+| Debian 13 / GNOME 48 | [Debian 13 package](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.13/super-v-ubuntu_0.1.13_debian13_all.deb) |
 
 Choose your distribution's package. Each installer is marked **Architecture: all**
 because the extension uses JavaScript, translations, and schemas; it has no compiled
 CPU-specific binary. The same installer works on **amd64 (x86-64)** and **arm64
 (AArch64)** and uses the distribution's native GJS, GTK, and Tesseract packages.
 CI builds and runs the native Wayland tests separately on all six distribution/CPU
-combinations. An [all-target installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.12/super-v-ubuntu_0.1.12_all.deb)
+combinations. An [all-target installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.13/super-v-ubuntu_0.1.13_all.deb)
 is also available; it allows GNOME 46, 48, or 50. Distribution installers restrict
 the GNOME dependency to their tested major version.
 
 Check `dpkg --print-architecture` and `gnome-shell --version` before installation.
 GNOME 47, 49, 51+, X11, and non-GNOME desktops are not supported. API inspection
 and isolated runtime results are recorded in [the API audit](docs/api-audit.md)
-and [v0.1.12 verification](docs/verification-v0.1.12.md). Interactive desktop acceptance
+and [v0.1.13 verification](docs/verification-v0.1.13.md). Interactive desktop acceptance
 remains distinct from these automated checks. No Electron, background daemon, or
 `xdotool` is needed.
 
-v0.1.12 fixes Super+V opening an invisible clipboard popup, especially when reopening with unchanged contents. The popup waits for completed layout before positioning and becoming visible. Work-area fitting, placement near the last click, title-bar dragging, and screenshots remain available.
+v0.1.13 freezes the desktop when Super+Shift+S starts, preserving notifications
+and menus while you select an area. Clipboard history recognizes image MIME
+aliases and mislabeled PNG/JPEG data, converts supported BMP/WebP pixels, and
+imports one copied local image file. See [validation](docs/verification-v0.1.13.md).
 
-## Use v0.1.12
+## Use v0.1.13
 
 Open **Super+V**, then click the gear button in the header to open Settings.
 
@@ -123,12 +126,12 @@ clipboard items and bundled emoji. Full desktop acceptance is tracked in
 
 Already using Super V? Follow [Upgrade from an older version](#upgrade-from-an-older-version).
 
-Download [`super-v-ubuntu_0.1.12_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.12/super-v-ubuntu_0.1.12_all.deb)
-from [release v0.1.12](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.12),
+Download [`super-v-ubuntu_0.1.13_all.deb`](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.13/super-v-ubuntu_0.1.13_all.deb)
+from [release v0.1.13](https://github.com/LincolnGothic/super-v-ubuntu/releases/tag/v0.1.13),
 then open a terminal in the folder containing the downloaded file and run:
 
 ```sh
-sudo apt install ./super-v-ubuntu_0.1.12_all.deb
+sudo apt install ./super-v-ubuntu_0.1.13_all.deb
 ```
 
 **Save your work, log out, and log back in** so GNOME discovers the system
@@ -147,7 +150,7 @@ It replaces any custom notification shortcut. To restore GNOME's defaults,
 run `gsettings reset org.gnome.shell.keybindings toggle-message-tray` after
 disabling this extension.
 
-Press **Super+V**; the header should show **Super V 0.1.12**. Capture begins after
+Press **Super+V**; the header should show **Super V 0.1.13**. Capture begins after
 extension initialization, with a default
 100-entry limit and persistent history. Change preferences to pause capture,
 disable persistence or automatic paste, and choose another shortcut.
@@ -156,17 +159,17 @@ Enabling this extension grants it access to clipboard text and images; read
 
 ## Upgrade from an older version
 
-1. Download the [v0.1.12 installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.12/super-v-ubuntu_0.1.12_all.deb).
+1. Download the [v0.1.13 installer](https://github.com/LincolnGothic/super-v-ubuntu/releases/download/v0.1.13/super-v-ubuntu_0.1.13_all.deb).
 2. Open a terminal in the download's folder and run the command below. Installing
    it over the previous package upgrades Super V; no uninstall is needed.
 
    ```sh
-   sudo apt install ./super-v-ubuntu_0.1.12_all.deb
+   sudo apt install ./super-v-ubuntu_0.1.13_all.deb
    ```
 
 3. **Save your work, log out, and log back in.** On Wayland, GNOME keeps the
    extension's previous code loaded until you start a new session.
-4. Press **Super+V** and check that the header shows **Super V 0.1.12**. Your
+4. Press **Super+V** and check that the header shows **Super V 0.1.13**. Your
    language and shortcut settings remain. Saved text history, pins, and emoji
    recents migrate; history configured to clear at logout is erased as requested.
 
@@ -178,8 +181,8 @@ dpkg-query -W super-v-ubuntu
 gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
 ```
 
-The package should report **0.1.12**; the extension's **Version** should also
-report **0.1.12** (the internal extension number is 13). If the package is new but
+The package should report **0.1.13**; the extension's **Version** should also
+report **0.1.13** (the internal extension number is 14). If the package is new but
 GNOME still reports an old version, log out/in before reinstalling.
 
 The extension's **Path** should be
@@ -243,17 +246,21 @@ ordinary trimming and **Clear unpinned**. A total 2 MiB text budget may trim
 ordinary entries earlier than their count limit.
 
 Copied **PNG and JPEG images** appear in the same history with a thumbnail and
-pixel dimensions. Choose an image to copy its original bytes and send your
-application’s paste shortcut; the receiving app must accept images. Images can
-be pinned and deleted just like text. Search matches “Image” in your chosen
-language, PNG/JPEG, or dimensions; it does not search text inside images.
-Copying an image file or a URL is different from copying image pixels.
+pixel dimensions. PNG/JPEG aliases and mislabeled image data are recognized;
+supported BMP/WebP pixels are converted to PNG. A single copied local image file
+is also imported when the app supplies a URI-list or GNOME file clipboard offer.
+Remote image URLs and groups of files are not downloaded or imported.
+Choose an image to copy its stored bytes and send your application’s paste
+shortcut; the receiving app must accept images. Images can be pinned and deleted
+just like text. Search matches “Image” in your chosen language, PNG/JPEG, or
+dimensions; it does not search text inside images.
 
 Images are limited to **8 MiB each and 32 MiB total**, including pins, with at
-most 8192 pixels per side and 16 megapixels. Older unpinned images are removed
-when that budget is full. PNG/JPEG data is checked before a bounded thumbnail
-is decoded. Other image formats and rich text are ignored. Existing text
-history, pins, and emoji recents migrate on upgrade.
+most 8192 pixels per side and 16 megapixels. Input and converted PNG output must
+both fit the limits. Older unpinned images are removed when that budget is full.
+PNG/JPEG data is checked before a bounded thumbnail is decoded. WebP requires a
+system GdkPixbuf decoder. Other image formats and rich text are ignored. Existing
+text history, pins, and emoji recents migrate on upgrade.
 
 Use Up/Down to select, Enter to paste, Delete to remove the selected entry,
 Escape to close, Ctrl+F to focus search, and Ctrl+Tab to cycle through all five tabs.
@@ -278,8 +285,11 @@ extension cannot verify that a receiving application accepted the text.
 
 Click the camera button in the Super+V header or press **Super+Shift+S**.
 A fresh crosshair appears with **no remembered selection rectangle**. Drag the
-area you want; releasing the mouse captures it after the selector disappears.
-Escape cancels. The PNG goes to the clipboard and, when enabled, image history.
+area you want, then release the mouse to finish selection.
+The desktop freezes as capture starts, before selection opens. Drag over this
+snapshot; the exported pixels retain notifications, menus and other transient
+content that was visible when capture began. Escape cancels. The PNG goes to the
+clipboard and, when enabled, image history.
 The previous editor closes before the new selection starts.
 
 The Super V area capture does not automatically save another raw screenshot
@@ -456,7 +466,7 @@ sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 gettext
     gir1.2-gtk-4.0 gir1.2-adw-1 gir1.2-gdkpixbuf-2.0 lintian git gh
 make test
 make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.12_all.deb
+lintian --fail-on error,warning ../super-v-ubuntu_0.1.13_all.deb
 ```
 
 No npm dependencies or runtime downloads are required. Debian's build invokes

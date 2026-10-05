@@ -1,25 +1,30 @@
-Super V Ubuntu 0.1.12 fixes Super+V opening an invisible clipboard popup.
+Super V Ubuntu 0.1.13 preserves transient desktop content in screenshots and expands image clipboard compatibility.
 
-The shortcut could open the clipboard panel while it stayed fully transparent,
-especially when reopening with unchanged contents. Its positioning callback ran
-before Clutter finished layout, and an unchanged allocation could leave no later
-notification to reveal the panel.
+Super+Shift+S now freezes the desktop before opening the fresh crosshair selector.
+Select and export from the same snapshot, retaining notifications and menus even
+if they disappear from the live desktop. Escape cancels without replacing the
+clipboard; clear, lock, disable and another capture cancel stale work.
 
-The popup now waits until painting completes before measuring, positioning, and
-becoming visible. Layout changes retry on the next frame, and closing or destroying
-the popup cancels pending callbacks. Work-area fitting, placement near the last
-click, title-bar dragging, clipboard image paste, screenshots, the editor, screen
-pins, and OCR remain available.
+Image history recognizes PNG/JPEG MIME aliases and actual image bytes when an app
+mislabels the format. If one offered image transfer fails, it tries another.
+Supported BMP/WebP data is converted to PNG. A single copied local image file can
+be imported from URI-list or GNOME file clipboard offers. Image size limits,
+password hints, history pause, app exclusions and cancellation still apply.
+Remote links and file collections are not imported. WebP needs a system decoder.
 
-Regression checks verify a visible initial clipboard panel and three repeated
-opens with unchanged contents. Native Wayland checks also cover screenshots,
-image paste, screen pins, larger text, dragging, and popup placement. Publication
-requires all six Ubuntu 24.04/GNOME 46, Ubuntu 26.04/GNOME 50, and Debian 13/GNOME 48
-jobs across x86-64 and ARM64. All seven interface languages are included.
+The reported source was QQ’s Copy image. Native tests cover JPEG advertised as
+PNG, bitmap import, local file offers, and the exact exported color of an element
+that disappears during screenshot selection. The exact QQ application workflow
+still requires desktop acceptance.
 
-Download the package for your distribution and install it with
-`sudo apt install ./PACKAGE.deb`. No uninstall is needed. Then save your work,
-log out and back in so GNOME loads the new JavaScript modules. The header should
-show **Super V 0.1.12** (extension version 13). A user-local copy of the same
-extension UUID takes precedence over the system package; see the upgrade guide
-if GNOME still reports an older version.
+Local checks pass: 206 Node tests, 44 GJS checks, 17 Gettext/regional checks, and
+isolated GNOME Shell 50.1 Wayland sessions in all seven interface languages.
+Publication requires all six Ubuntu 24.04/GNOME 46, Ubuntu 26.04/GNOME 50 and
+Debian 13/GNOME 48 jobs across x86-64 and ARM64, including lintian and package
+installation/removal checks.
+
+Download your distribution’s package and install with `sudo apt install ./PACKAGE.deb`.
+No uninstall is needed. Save your work, log out and back in so GNOME loads the new
+modules. Super+V should show **Super V 0.1.13** (extension version 14). Copy the
+image again after upgrading. See the upgrade guide if a user-local copy overrides
+the system extension.

@@ -189,3 +189,17 @@ Additional interactive checks:
 
 Automated checks do not establish hardware GPU behavior, all receiving apps,
 OCR accuracy on arbitrary documents, or interactive monitor/lock acceptance.
+
+## v0.1.13 regressions
+
+- Open a notification/menu, press Super+Shift+S, wait for it to disappear, and
+  select its original location. Preview and output must retain it. Cancel another
+  selection; check clipboard, clear/lock/disable, and repeated shortcuts.
+- Copy a photo with QQ’s Copy image. It should appear as a thumbnail in Super+V
+  and paste into an image-capable app. Repeat with PNG/JPEG aliases, JPEG offered
+  as PNG, and BMP pixels. The exact installed QQ path requires desktop acceptance.
+- Copy one local PNG/JPEG/BMP image file. Import URI-list and GNOME file offers;
+  delete the source afterward and verify the history image still pastes. Reject
+  links, multiple files, invalid images, oversized inputs and symlinks.
+- Native automation removes a colored desktop element during selection and
+  verifies the exported pixel color still matches the frozen snapshot.

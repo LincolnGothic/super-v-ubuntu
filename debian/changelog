@@ -1,3 +1,11 @@
+super-v-ubuntu (0.1.13) unstable; urgency=medium
+
+  * Freeze screenshot pixels before opening area selection, preserving popups.
+  * Import clipboard image aliases, bitmaps and single copied local image files.
+  * Add cancellation, native image import and frozen-pixel regression checks.
+
+ -- Super V Ubuntu contributors <super-v-ubuntu@users.noreply.github.com>  Sun, 04 Oct 2026 23:24:00 -0700
+
 super-v-ubuntu (0.1.12) unstable; urgency=medium
 
   * Fix invisible Super+V clipboard popups on initial and repeated opens.
