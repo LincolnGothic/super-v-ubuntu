@@ -1,5 +1,7 @@
 // SPDX-License-Identifier: GPL-3.0-or-later
 import Gio from 'gi://Gio';
+import GdkPixbuf from 'gi://GdkPixbuf';
+import {normalizeClipboardImage, localImageFile, readImageFile} from '../extension/clipboard-image.js';
 import GLib from 'gi://GLib';
 import Gtk from 'gi://Gtk?version=4.0';
 import Adw from 'gi://Adw';
@@ -102,6 +104,48 @@ async function run() {
     check('GJS emoji search/skin tone', emoji.search('scientist', 'All', 'medium').some(x => x.text === '👩🏽‍🔬'));
     const fixtures = JSON.parse(new TextDecoder().decode(
         Gio.File.new_for_path('tests/fixtures/images.json').load_contents(null)[1]));
+    const portablePng = GLib.base64_decode(fixtures.png);
+    const portableJpeg = GLib.base64_decode(fixtures.jpeg);
+    check('Clipboard aliases preserve original PNG and JPEG bytes',
+        normalizeClipboardImage(portablePng, 'image/x-png').bytes === portablePng &&
+        normalizeClipboardImage(portableJpeg, 'image/jpg').bytes === portableJpeg);
+    check('JPEG mislabeled as image/png is stored as its actual format',
+        normalizeClipboardImage(portableJpeg, 'image/png').mime === 'image/jpeg');
+    const bitmap = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, false, 8, 7, 5);
+    bitmap.fill(0x123456ff);
+    const bmpBytes = bitmap.save_to_bufferv('bmp', [], [])[1];
+    const normalized = normalizeClipboardImage(bmpBytes, 'image/x-MS-bmp');
+    check('Native clipboard bitmap conversion produces a validated PNG',
+        normalized.mime === 'image/png' && imageInfo(normalized.bytes, normalized.mime).width === 7);
+    const oversized = bmpBytes.slice();
+    new DataView(oversized.buffer, oversized.byteOffset, oversized.byteLength).setUint32(18, 9000, true);
+    let oversizedRejected = false;
+    try { normalizeClipboardImage(oversized, 'image/bmp'); } catch { oversizedRejected = true; }
+    check('Oversized clipboard bitmap is rejected before export', oversizedRejected);
+    const localPhoto = Gio.File.new_for_path(`${base}/copied photo.bmp`);
+    localPhoto.replace_contents(bmpBytes, null, false, Gio.FileCreateFlags.PRIVATE, null);
+    const encode = text => new TextEncoder().encode(text);
+    for (const [mime, text] of [['text/uri-list', `# image\r\n${localPhoto.get_uri()}\r\n`],
+        ['x-special/gnome-copied-files', `copy\n${localPhoto.get_uri()}`]]) {
+        const selected = localImageFile(encode(text), mime);
+        const photo = await readImageFile(selected, null);
+        check(`Native copied local image import: ${mime}`, imageInfo(photo.bytes, photo.mime).height === 5);
+    }
+    check('Remote links, non-images and multiple files cannot trigger file reads',
+        !localImageFile(encode('https://example.com/photo.png'), 'text/uri-list') &&
+        !localImageFile(encode('file://remote/path/photo.png'), 'text/uri-list') &&
+        !localImageFile(encode('file:///tmp/password.txt'), 'text/uri-list') &&
+        !localImageFile(encode(`${localPhoto.get_uri()}\n${localPhoto.get_uri()}`), 'text/uri-list'));
+    const photoLink = Gio.File.new_for_path(`${base}/link.png`);
+    photoLink.make_symbolic_link(localPhoto.get_path(), null);
+    let photoLinkRejected = false;
+    try { await readImageFile(photoLink, null); } catch { photoLinkRejected = true; }
+    check('Copied image symlinks are rejected', photoLinkRejected);
+    const cancelled = new Gio.Cancellable(); cancelled.cancel();
+    let cancelledPhoto = false;
+    try { await readImageFile(localPhoto, cancelled); } catch { cancelledPhoto = true; }
+    check('Cancelled local image read produces no image', cancelledPhoto);
+    photoLink.delete(null); localPhoto.delete(null);
     const images = new ImageLibrary();
     const imageHistory = new History();
     for (const [format, mime] of [['png', 'image/png'], ['jpeg', 'image/jpeg']]) {

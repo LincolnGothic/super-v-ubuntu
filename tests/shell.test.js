@@ -2,6 +2,7 @@
 // Run only inside GNOME Shell's headless automation session, never under Node.
 import Clutter from 'gi://Clutter';
 import Gio from 'gi://Gio';
+import GdkPixbuf from 'gi://GdkPixbuf';
 import GLib from 'gi://GLib';
 import Shell from 'gi://Shell';
 import St from 'gi://St';
@@ -170,7 +171,7 @@ export async function run() {
         check('unchanged clipboard panel becomes visible on every reopen', popup._panel.opacity === 255);
         popup._setTab('emoji');
         await Scripting.sleep(300);
-        check('loaded version is visible', popup._title.text === 'Super V 0.1.12');
+        check('loaded version is visible', popup._title.text === 'Super V 0.1.13');
         check('six equally sized emoji per row', popup._rows.length === 60 &&
             popup.list.get_first_child().get_n_children() === 6);
         const cells = popup._rows.slice(0, 7).map(rectangle);
@@ -480,6 +481,29 @@ export async function run() {
                 throw new Error(`Image receiver failed: ${received[2]}`);
             check(`actual ${format} image paste reaches the original GTK window`, received[1].includes('IMAGE PASTE RECEIVED'));
         }
+        const clipboardBitmap = GdkPixbuf.Pixbuf.new(GdkPixbuf.Colorspace.RGB, false, 8, 7, 5);
+        clipboardBitmap.fill(0x876543ff);
+        for (const [format, offered, stored] of [['jpeg', 'image/png', 'image/jpeg'],
+            ['bmp', 'image/x-MS-bmp', 'image/png']]) {
+            const bytes = clipboardBitmap.save_to_bufferv(format, [], [])[1];
+            clipboard.set_content(St.ClipboardType.CLIPBOARD, offered, new GLib.Bytes(bytes));
+            await waitFor(() => extension.history.entries.some(entry => entry.width === 7 && entry.mime === stored));
+            const imported = extension.history.entries.find(entry => entry.width === 7 && entry.mime === stored);
+            check(`Mutter imports ${format} clipboard pixels advertised as ${offered}`, imported.height === 5);
+            extension.deleteEntry(imported.id);
+        }
+        const copiedFile = Gio.File.new_for_path(`${GLib.getenv('XDG_STATE_HOME')}/copied image.bmp`);
+        copiedFile.replace_contents(clipboardBitmap.save_to_bufferv('bmp', [], [])[1], null, false,
+            Gio.FileCreateFlags.PRIVATE, null);
+        for (const mime of ['text/uri-list', 'x-special/gnome-copied-files']) {
+            const uri = `${mime === 'text/uri-list' ? '' : 'copy\n'}${copiedFile.get_uri()}\r\n`;
+            clipboard.set_content(St.ClipboardType.CLIPBOARD, mime, new GLib.Bytes(new TextEncoder().encode(uri)));
+            await waitFor(() => extension.history.entries.some(entry => entry.width === 7));
+            const imported = extension.history.entries.find(entry => entry.width === 7);
+            check(`Mutter captures a copied local image through ${mime}`, imported.mime === 'image/png');
+            extension.deleteEntry(imported.id);
+        }
+        copiedFile.delete(null);
         const pinId = extension.screenPins.add(GLib.base64_decode(fixtures.png), 'image/png', 'fixture');
         const pin = extension.screenPins.items.get(pinId);
         await Scripting.sleep(100);
@@ -616,6 +640,35 @@ export async function run() {
             check('terminating the editor stops in-flight OCR without copying its result', !unexpectedCopy);
             await waitFor(() => !global.get_window_actors().some(actor => actor.meta_window.get_title() === _('Screenshot editor')));
         } finally { slowBridge.close(); }
+        // A transient desktop element disappears during selection. Both the
+        // preview and exported pixels must still come from the shortcut snapshot.
+        const autoEditBeforeFreeze = extension.settings.get_boolean('edit-after-screenshot');
+        extension.settings.set_boolean('edit-after-screenshot', false);
+        const transient = new St.Widget({x: 200, y: 200, width: 80, height: 60,
+            style: 'background-color: #123456;'});
+        Main.uiGroup.add_child(transient);
+        await Scripting.sleep(100);
+        extension.takeScreenshot();
+        await waitFor(() => extension._areaCapture?.visible);
+        const frozenSelector = extension._areaCapture;
+        check('native area preview displays the frozen desktop', !!frozenSelector.get_content());
+        transient.destroy();
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), 210, 210);
+        await Scripting.sleep(50);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.PRESSED);
+        await Scripting.sleep(50);
+        pointer.notify_absolute_motion(GLib.get_monotonic_time(), 230, 230);
+        await Scripting.sleep(50);
+        pointer.notify_button(GLib.get_monotonic_time(), 1, Clutter.ButtonState.RELEASED);
+        await waitFor(() => extension.history.entries.some(entry => entry.width === 21 && entry.height === 21));
+        const frozenEntry = extension.history.entries.find(entry => entry.width === 21 && entry.height === 21);
+        const frozenLoader = GdkPixbuf.PixbufLoader.new_with_mime_type('image/png');
+        frozenLoader.write(extension.images.get(frozenEntry).bytes); frozenLoader.close();
+        const frozenPixel = frozenLoader.get_pixbuf().get_pixels();
+        check('native exported pixels retain the transient element after it disappears',
+            frozenPixel[0] === 0x12 && frozenPixel[1] === 0x34 && frozenPixel[2] === 0x56);
+        extension.deleteEntry(frozenEntry.id);
+        extension.settings.set_boolean('edit-after-screenshot', autoEditBeforeFreeze);
         const pictures = GLib.get_user_special_dir(GLib.UserDirectory.DIRECTORY_PICTURES);
         check('native screenshot output stays in the disposable session',
             pictures.startsWith(GLib.getenv('XDG_CONFIG_HOME').replace(/\/config$/u, '/')));
