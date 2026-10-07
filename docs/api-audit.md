@@ -1,5 +1,21 @@
 # GNOME 46, 48 and 50 API audit
 
+## Screenshot shortcut in Overview (2026-10-07)
+
+GNOME's Activities and Show Apps views acquire a modal grab with
+`Shell.ActionMode.OVERVIEW`; keybindings are filtered against the current mode.
+The screenshot binding therefore includes OVERVIEW alongside NORMAL and POPUP.
+It freezes the visible view before opening selection, without first hiding the
+overview. Lock/greeter guards and the clipboard picker binding remain unchanged.
+
+Inspected upstream Overview implementations:
+[46.0](https://github.com/GNOME/gnome-shell/blob/46.0/js/ui/overview.js),
+[48.0](https://github.com/GNOME/gnome-shell/blob/48.0/js/ui/overview.js), and
+[50.1](https://github.com/GNOME/gnome-shell/blob/50.1/js/ui/overview.js).
+The [50.1 window manager](https://github.com/GNOME/gnome-shell/blob/50.1/js/ui/windowManager.js)
+filters keybindings by their allowed modes. Native regression tests exercise
+actual Super+Shift+S input, drag capture and Escape in both Overview views.
+
 Source inspection performed against upstream **46.0** and **50.1**.
 These are API requirements, not GUI test results. The 50.1 audit was performed
 on 2026-10-01 after the user's desktop diagnostics identified that version.

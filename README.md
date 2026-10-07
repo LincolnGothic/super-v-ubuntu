@@ -284,6 +284,8 @@ extension cannot verify that a receiving application accepted the text.
 ## Take a screenshot
 
 Click the camera button in the Super+V header or press **Super+Shift+S**.
+The shortcut also works in **Activities** and **Show Apps**, including while
+the app search field is focused.
 A fresh crosshair appears with **no remembered selection rectangle**. Drag the
 area you want, then release the mouse to finish selection.
 The desktop freezes as capture starts, before selection opens. Drag over this

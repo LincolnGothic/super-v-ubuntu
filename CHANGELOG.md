@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Allow Super+Shift+S to capture GNOME's Activities and Show Apps views, including when app search has keyboard focus.
+- Add native keyboard, capture and cancellation checks for both Overview views.
+
 ## 0.1.13 — 2026-10-04
 
 - Expand the About description with screenshots, annotations, screen pins and local OCR.
