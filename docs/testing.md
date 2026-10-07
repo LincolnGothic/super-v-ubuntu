@@ -130,6 +130,10 @@ Record any custom notification bindings first; the command replaces them.
     GNOME’s separate window/screen controls; the picker must not cover the capture. Escape should cancel without
     a new entry. Change and disable the screenshot shortcut in Settings. With
     history paused, Super V still copies the screenshot but no history is added.
+    Repeat in Activities and Show Apps with the app search field focused:
+    Super+Shift+S must start selection without typing into search or closing the
+    overview first. Capture the visible view, then cancel another capture with
+    Escape; the overview and search must remain usable without a new history item.
 16. Enable Clear history on shutdown with text, images, pins and emoji recents
     present. Confirm JSON and managed image files disappear and current items
     remain in memory. Copy more items and verify no files return. Restart or

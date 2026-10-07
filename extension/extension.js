@@ -188,8 +188,10 @@ export default class SuperVExtension extends Extension {
         Main.wm.addKeybinding('open-popup', this.settings, Meta.KeyBindingFlags.NONE,
             Shell.ActionMode.NORMAL | Shell.ActionMode.POPUP, () => this.toggle());
         this._binding = true;
+        // Activities and Show Apps use OVERVIEW, including their search entry.
         Main.wm.addKeybinding('take-screenshot', this.settings, Meta.KeyBindingFlags.NONE,
-            Shell.ActionMode.NORMAL | Shell.ActionMode.POPUP, () => this.takeScreenshot());
+            Shell.ActionMode.NORMAL | Shell.ActionMode.POPUP | Shell.ActionMode.OVERVIEW,
+            () => this.takeScreenshot());
         this._screenshotBinding = true;
         this.changed();
     }
