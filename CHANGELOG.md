@@ -10,147 +10,86 @@
 - Expand the About description with screenshots, annotations, screen pins and local OCR.
 - Freeze the desktop when Super+Shift+S starts, before opening the crosshair selector. Select and export from the same snapshot, preserving transient notifications and menus.
 - Read PNG/JPEG MIME aliases and try another offered image format if the first transfer fails. Convert supported BMP/WebP clipboard data to PNG.
-- Import a single copied local PNG/JPEG/BMP/WebP file from URI-list or GNOME file clipb…7140 tokens truncated…d. Enabling it removes existing saved history, after pending writes finish,
-while retaining the current session’s items in memory. It takes priority over
-**Remember after logout**. Returning to persistent history requires disabling
-this option and enabling Remember after logout.
+- Import a single copied local PNG/JPEG/BMP/WebP file from URI-list or GNOME file clipboard offers. Keep existing image limits, password hints, app exclusions and cancellation.
 
-## Emoji
+## 0.1.12 — 2026-10-04
 
-The bundled database contains 3,944 fully-qualified Emoji 17.0 sequences,
-including ZWJ, flags and skin-tone combinations, with CLDR 48 names and keywords in the six additional languages and English.
-Search by name, keyword or emoji. Select All, Recent or a Unicode group directly
-from the horizontal category bar; the hand button opens the skin-tone menu.
-All includes mixed-tone sequences; individual tones match uniform variants.
-Recents are capped at 30 and follow the persistence preference.
+- Fix Super+V opening a fully transparent clipboard popup when layout is not ready, especially when reopening at the same size.
+- Position and reveal the popup after painting, retry after layout changes, and cancel pending callbacks when it closes.
+- Add visibility checks for the initial clipboard panel and repeated opens without changing its contents.
 
-Emoji appear as large symbols in a six-column grid, with fewer columns on
-narrow monitors. Up/Down move between rows and focus the grid; Left/Right
-then move between emoji. Enter inserts the selected emoji, or click a tile.
-Use Ctrl+F to return to search, where Left/Right still move the text cursor.
-Emoji names remain available to screen readers. More results load as keyboard
-selection passes the current page, or with **Show more**.
+## 0.1.7 — 2026-10-03
 
-Emoji insertion saves the previous bounded plain-text clipboard in memory,
-copies the emoji, and sends the configured paste shortcut. Reopen the popup
-and choose **Restore clipboard** after paste has finished if you want the old
-text back. Restoration only happens if the clipboard still contains that
-emoji; newer copies are preserved. There is no timed restoration, since a
-Wayland paste consumer provides no reliable completion acknowledgment here.
-Images, rich-text formats, oversized text and password-marked clipboard data
-are not snapshotted. Temporary emoji and restore writes do not enter history.
-New emoji may appear as missing glyphs with older installed emoji fonts.
-The database is complete even where the system font cannot render a sequence.
+- Add a screenshot editor with cropping, arrows, rectangles, text, highlights, freehand drawing and opaque black covers.
+- Undo/redo edits, zoom and pan, and copy or save a flattened PNG.
+- Open the editor after Super V captures by default; switch this off in Settings.
+- Edit existing PNG/JPEG history images with the pencil button or Ctrl+E.
+- Include all seven interface languages and bounded, temporary pipe communication.
 
-## Kaomoji, symbols and GIFs
+## 0.1.6 — 2026-10-03
 
-The **;-)** tab contains text emoticons, and **Ω** contains math symbols, Greek
-letters, arrows, currency, punctuation and units. Search by name or character,
-choose a category, and click or press Enter to insert. Their grids use the same
-keyboard navigation and guarded prior-text restoration as emoji.
+- Capture and paste PNG/JPEG images with thumbnail previews and private storage.
+- Open native screenshot controls with the camera button or configurable Super+Shift+S.
+- Keep history only in memory with Clear history on shutdown.
 
-In **Settings → GIF favorites**, choose local `.gif` files. The GIF tab previews
-their first frame and searches filenames. Up to 40 favorites are supported;
-each file must be at most 8 MiB with dimensions no larger than 2048 × 2048.
-Files remain in their original location, so moving or deleting one requires
-re-adding it. Removing a favorite does not delete the original file.
+## 0.1.5 — 2026-10-02
 
-Choosing a GIF copies the original `image/gif` bytes and sends the normal paste
-shortcut. The destination must accept images; some apps paste a still frame
-or do not accept this format. GIF insertion replaces the clipboard without a
-restore snapshot, and image data does not enter text history. There is no
-online GIF search, account, API key or runtime network request.
+- Choose any of the seven supported languages in Settings, or follow the system.
+- Update the interface, preferences and localized search without logging out.
+- Select emoji, kaomoji and symbol categories directly in horizontal bars.
+- Add category tooltips, horizontal scrolling, keyboard navigation and a compact skin-tone menu.
 
-## Privacy
+## 0.1.4 — 2026-10-02
 
-Everything stays local. There is no telemetry, synchronization, analytics,
-logging of clipboard contents, or runtime network access. Persistent state is
-plaintext at `${XDG_STATE_HOME:-$HOME/.local/state}/super-v-ubuntu/history.json`,
-with image files in its `images/` subdirectory and 0700 directory/0600 file modes. Common password-manager MIME hints are
-rejected; focused-app exclusions are best effort because Mutter does not
-provide reliable origin identities for every copy. Private browsing and
-password fields without a hint are not automatically detected. See `SECURITY.md`
-for exact erasure steps and limitations.
+- Follow the desktop language: English, Simplified Chinese, Traditional Chinese,
+  Japanese, Spanish, French or Korean; use English when no translation is available.
+- Translate popup controls, settings, notifications, accessible labels, kaomoji
+  and symbol names. Keep category IDs, history and recents stable across languages.
+- Search emoji using bundled CLDR 48 names and keywords in the selected language;
+  English aliases remain searchable. No runtime downloads.
+- Add six translated quick-start guides and a gettext contribution workflow.
+- Compile and audit translation catalogs and localized data in both installation
+  methods; check actual GJS lookups and isolated Shell layouts in seven languages.
 
-## Build and development
+## 0.1.3 — 2026-10-02
 
-On Ubuntu 24.04:
+Open the picker near the mouse pointer by default, with a centered option in
+Settings. Clamp it within the monitor work area. Dismiss on an outside click
+even when another Shell actor receives the event. Show the loaded version in
+the header to diagnose stale user-local extension copies. Keep the six-column,
+glyph-only emoji grid introduced in v0.1.2.
 
-```sh
-sudo apt install build-essential debhelper libglib2.0-bin nodejs python3 gettext locales eslint gjs \
-    gir1.2-gtk-4.0 gir1.2-adw-1 gir1.2-gdkpixbuf-2.0 lintian git gh
-make test
-make package
-lintian --fail-on error,warning ../super-v-ubuntu_0.1.13_all.deb
-```
+Add searchable kaomoji and symbol grids with categories, and local GIF
+favorites managed through a file chooser in Settings. Preview the first frame
+and copy image/gif bytes for apps that accept images. GIFs are limited to 40
+favorites, 8 MiB per file and 2048 × 2048 pixels. No online GIF service or runtime
+network access. Add regression coverage for all new interactions and GIF reads.
 
-No npm dependencies or runtime downloads are required. Debian's build invokes
-the checks, ESLint, Node tests and GJS integration tests itself. `make package`
-uses debhelper/dpkg-buildpackage and writes the `.deb` into the parent directory.
-`make install-local` installs just the runtime extension for your current user;
-run it without sudo, log out/in, then enable the UUID as above. This user copy
-takes precedence over a system copy, so remove it when testing the `.deb`.
-See `docs/development.md`, `docs/architecture.md` and `CONTRIBUTING.md`.
+## 0.1.2 — 2026-10-02
 
-## Troubleshooting
+Display emoji as large, centered tiles in a six-column grid instead of text
+rows, reducing the column count on narrow monitors. Preserve accessible names,
+search, categories, tones and recents. Add row/column arrow-key navigation,
+keep the focused selection visible when loading more results, and preserve
+Left/Right text editing in the search field. Clipboard history retains its
+list layout and pin/delete controls.
 
-**Super+V does not open:** check `gnome-extensions info` below. If the extension
-is disabled, run `gnome-extensions enable super-v-ubuntu@super-v-ubuntu.local`
-without sudo. If Super+V opens notifications, run the notification-shortcut
-command in [First installation](#install-the-debian-package); Super+M will still
-open notifications.
+## 0.1.1 — 2026-10-01
 
-**An old version or missing new settings:** follow the package, loaded-version,
-and Path checks in [Upgrade](#upgrade-from-an-older-version). Save your work and
-log out/in after an installation or upgrade.
+Add GNOME Shell 50 API compatibility for Ubuntu 26.04 Wayland, preserving the
+GNOME 46 path. Use current widget orientation, stage event actors and stage
+context backend lookup. Fix application paste when an older Shell returns
+the stage as its unfocused actor. Add eight compatibility regression checks.
+Metadata and Debian dependencies allow GNOME 46 and 50. Real desktop
+acceptance remains pending on both targets.
 
-**Cannot open Settings from the picker:** run
-`gnome-extensions prefs super-v-ubuntu@super-v-ubuntu.local` without sudo.
+## 0.1.0 — 2026-09-30
 
-First inspect version, session and extension state:
+Initial GNOME 46 implementation: event-driven bounded clipboard capture,
+newest-first deduplicated text history, search, pins, keyboard and mouse
+selection, private local persistence, conservative focus-checked paste,
+Unicode 17/CLDR 48 emoji categories/keywords/tones/recents, GTK4/libadwaita
+preferences, GSettings, Debian packaging, offline automated tests and CI.
 
-```sh
-gnome-shell --version
-printf '%s\n' "$XDG_SESSION_TYPE"
-gnome-extensions info super-v-ubuntu@super-v-ubuntu.local
-journalctl --user -b -o cat | rg 'super-v-ubuntu|Super V|JS ERROR'
-```
-
-If the extension was newly installed or its code changed, log out/in on Wayland.
-Alt+F2 then `r` does not restart a Wayland shell. A shortcut conflict may require
-changing the GTK accelerator in preferences, e.g. `<Control><Alt>v`. GNOME's
-extension system cannot always detect another program claiming the same key.
-If a terminal does not paste, add its identifier or select a paste override.
-If capture is missing, check capture/exclusion settings, the 16 KiB text limit and the image limits.
-Corrupt state is erased with a generic notification, without copying it into
-logs or retaining backups. Report shell errors with clipboard content redacted.
-
-## Uninstall
-
-```sh
-gnome-extensions disable super-v-ubuntu@super-v-ubuntu.local
-sudo apt remove super-v-ubuntu
-```
-
-Uninstalling does not remove user history. To erase it, follow `SECURITY.md`.
-For a user-installed copy, disable it first and remove only its UUID directory:
-
-```sh
-rm -rf -- "${XDG_DATA_HOME:-$HOME/.local/share}/gnome-shell/extensions/super-v-ubuntu@super-v-ubuntu.local"
-```
-
-## Publish
-
-GitHub Actions validates and builds each main-branch push. After these checks
-pass, the release job publishes the package and `SHA256SUMS` for the version
-in `package.json`, then downloads them again to verify the checksum. Existing
-versioned releases are left unchanged. Pull requests do not publish releases.
-The release job alone has repository contents-write permission; the build
-job uses read-only permission. See the repository's Actions page for actual
-run results. The dated record in `docs/verification.md` describes local checks
-performed before initial publication, not current GitHub publication status.
-
-The owner can run `./scripts/publish.sh` from a clean main checkout with GitHub CLI
-credentials. It pushes main, waits for the six native CI targets and automatic
-release publication, then downloads all installers and verifies `SHA256SUMS`.
-It refuses a different origin or an existing private repository.
+Real Wayland GUI tests and remote CI/release results remain unverified until
+they are actually run. See the completion record in `docs/verification.md`.
